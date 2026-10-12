@@ -26,7 +26,9 @@ func registerMath(rt *runner.Runtime) {
 	rt.RegisterFunc("floor", func(num any) float64 { return math.Floor(phpval.Float(num)) })
 	// ceil returns the next highest integer value of $num as a float, so ceil(4.3) is float(5).
 	rt.RegisterFunc("ceil", func(num any) float64 { return math.Ceil(phpval.Float(num)) })
-	// round returns $num rounded to $precision decimal places as a float, always half away from zero; a $mode argument is accepted and ignored, so only PHP_ROUND_HALF_UP is honoured.
+	// round returns $num rounded to $precision decimal places as a float,
+	// always half away from zero; a $mode argument is accepted and ignored,
+	// so only PHP_ROUND_HALF_UP is honoured.
 	rt.RegisterFunc("round", func(num any, opts ...any) float64 {
 		precision := 0
 		if len(opts) > 0 {
@@ -36,7 +38,8 @@ func registerMath(rt *runner.Runtime) {
 	})
 	// sqrt returns the square root of $num as a float, or NAN when $num is negative.
 	rt.RegisterFunc("sqrt", func(num any) float64 { return math.Sqrt(phpval.Float(num)) })
-	// pow returns $num raised to the power $exponent, an int when both are int and the result fits, a float otherwise.
+	// pow returns $num raised to the power $exponent, an int when both are
+	// int and the result fits, a float otherwise.
 	rt.RegisterFunc("pow", phpPow)
 	// log returns the logarithm of $num in base $base, natural (base M_E) when $base is omitted.
 	rt.RegisterFunc("log", func(num any, base ...any) float64 {
@@ -45,20 +48,28 @@ func registerMath(rt *runner.Runtime) {
 		}
 		return phpLog(phpval.Float(num), phpval.Float(base[0]))
 	})
-	// min returns the lowest value of $value and $values, or of the single array argument; values compare as PHP 8 compares them and the value itself is returned, so min(1, "2", 3) is int(1).
+	// min returns the lowest value of $value and $values, or of the single
+	// array argument; values compare as PHP 8 compares them and the value
+	// itself is returned, so min(1, "2", 3) is int(1).
 	rt.RegisterFunc("min", func(args ...any) (any, error) { return phpMinMax("min", args, -1) })
-	// max returns the highest value of $value and $values, or of the single array argument; values compare as PHP 8 compares them and the value itself is returned, so max(1, "2", 3) is int(3).
+	// max returns the highest value of $value and $values, or of the single
+	// array argument; values compare as PHP 8 compares them and the value
+	// itself is returned, so max(1, "2", 3) is int(3).
 	rt.RegisterFunc("max", func(args ...any) (any, error) { return phpMinMax("max", args, 1) })
-	// number_format formats $num with $decimals decimals, $decimal_separator between the parts and $thousands_separator every three digits of the integer part, rounding half away from zero.
+	// number_format formats $num with $decimals decimals, $decimal_separator
+	// between the parts and $thousands_separator every three digits of the
+	// integer part, rounding half away from zero.
 	rt.RegisterFunc("number_format", phpNumberFormat)
-	// hexdec returns the number $hex_string names in hexadecimal, ignoring any character outside 0-9 a-f A-F, as PHP does; a value past PHP_INT_MAX keeps accumulating as a float.
+	// hexdec returns the number $hex_string names in hexadecimal, ignoring
+	// any character outside 0-9 a-f A-F, as PHP does; a value past
+	// PHP_INT_MAX keeps accumulating as a float.
 	rt.RegisterFunc("hexdec", phpHexdec)
 }
 
 // phpHexdec backs hexdec. PHP reads the digits it recognises and skips the
 // rest without a word (hexdec("0x1A") is 26 because the x is skipped), and
 // switches to float arithmetic at the first digit that would overflow the
-// int, which is why hexdec("7fffffffffffffff") is PHP_INT_MAX and one more
+// int, so hexdec("7fffffffffffffff") is PHP_INT_MAX and one more
 // digit of anything is a float.
 func phpHexdec(hexString string) any {
 	var asInt int64
@@ -165,9 +176,9 @@ func mulInt64(x, y int64) (int64, bool) {
 }
 
 // phpLog backs log with an explicit base. Bases 2 and 10 read through
-// math.Log2 and math.Log10, which is what PHP does: the division of two
+// math.Log2 and math.Log10, as PHP does: the division of two
 // logarithms is a digit out on some exact powers, and log(1024, 2) has to be
-// float(10) rather than 10.000000000000002.
+// float(10) where the division produces 10.000000000000002.
 func phpLog(num, base float64) float64 {
 	switch base {
 	case 2:
@@ -181,7 +192,7 @@ func phpLog(num, base float64) float64 {
 
 // phpMinMax backs min and max. Either one collection or a list of values is
 // accepted, every candidate is ordered with phpval.Compare, and the winning
-// element is returned as it was given, so max(1, "2", 3) is int(3) rather than
+// element is returned as it was given, so max(1, "2", 3) is int(3) and not
 // a number the comparison produced. want is 1 for max and -1 for min.
 //
 // Equal values are broken the way PHP breaks them, which is not the same way
@@ -215,7 +226,7 @@ func phpMinMax(name string, args []any, want int) (any, error) {
 // A negative $decimals rounds the integer, so it is not a pure digit copy: the
 // digits past the cut are dropped and the kept ones carry, the same rule
 // roundDecimal applies to a decimal string.
-func integerDigits(num any, decimals int) (neg bool, integer, fraction string, exact bool) {
+func integerDigits(num any, decimals int) (integer, fraction string, neg, exact bool) {
 	var n int64
 	switch v := num.(type) {
 	case int64:
@@ -223,7 +234,7 @@ func integerDigits(num any, decimals int) (neg bool, integer, fraction string, e
 	case int:
 		n = int64(v)
 	default:
-		return false, "", "", false
+		return "", "", false, false
 	}
 
 	neg = n < 0
@@ -257,7 +268,7 @@ func integerDigits(num any, decimals int) (neg bool, integer, fraction string, e
 	if allZeroDigits(digits) {
 		neg = false
 	}
-	return neg, digits, fraction, true
+	return digits, fraction, neg, true
 }
 
 // phpNumberFormat backs number_format.
@@ -274,10 +285,10 @@ func phpNumberFormat(num any, opts ...any) string {
 		thousandsSeparator = phpval.String(opts[2])
 	}
 
-	// An integer is grouped from its own digits rather than through a float.
+	// An integer is grouped from its own digits and never through a float.
 	// float64 carries 53 bits of mantissa, so routing PHP_INT_MAX through one
-	// would print 9,223,372,036,854,776,000 instead of the number given.
-	neg, integer, fraction, exact := integerDigits(num, decimals)
+	// would print 9,223,372,036,854,776,000 in place of the number given.
+	integer, fraction, neg, exact := integerDigits(num, decimals)
 	if !exact {
 		value := phpval.Float(num)
 		if math.IsNaN(value) {
@@ -289,7 +300,7 @@ func phpNumberFormat(num any, opts ...any) string {
 			}
 			return "inf"
 		}
-		neg, integer, fraction = roundDecimal(value, decimals)
+		integer, fraction, neg = roundDecimal(value, decimals)
 	}
 	// A value that rounds to zero has no sign in PHP: number_format(-0.4) is
 	// "0", not "-0".
@@ -317,11 +328,11 @@ func phpNumberFormat(num any, opts ...any) string {
 
 // phpRound rounds v to precision decimal places, half away from zero.
 //
-// The rounding is done on the decimal text rather than on the binary value.
+// The rounding is done on the decimal text and not on the binary value.
 // PHP rounds what the number prints as, and the two disagree wherever a decimal
 // literal has no exact float: 1.005 is stored as 1.00499999999999989..., so
 // math.Round(1.005*100)/100 is 1.0 where PHP's round(1.005, 2) is 1.01.
-// Formatting with 'f' and -1 first yields the shortest decimal that reads back
+// Formatting with 'f' and -1 first produces the shortest decimal that reads back
 // as the same float ("1.005"), which is the number the script wrote, and
 // rounding that text reproduces PHP for every case. Rounding through
 // FormatFloat with a precision instead would round half to even, making
@@ -330,7 +341,7 @@ func phpRound(v float64, precision int) float64 {
 	if math.IsNaN(v) || math.IsInf(v, 0) {
 		return v
 	}
-	neg, integer, fraction := roundDecimal(v, precision)
+	integer, fraction, neg := roundDecimal(v, precision)
 	var text strings.Builder
 	text.Grow(len(integer) + len(fraction) + 2)
 	if neg {
@@ -358,9 +369,9 @@ func phpRound(v float64, precision int) float64 {
 // position of its point. Dropping everything from index cut = len(integer) +
 // precision and incrementing the digit before it when the first dropped digit
 // is 5 or more is decimal half-away-from-zero rounding, and it needs no
-// arithmetic on the float, which is the point: the float cannot represent the
-// value the script wrote.
-func roundDecimal(v float64, precision int) (neg bool, integer, fraction string) {
+// arithmetic on the float, because the float cannot represent the value a
+// script wrote.
+func roundDecimal(v float64, precision int) (integer, fraction string, neg bool) {
 	text := strconv.FormatFloat(v, 'f', -1, 64)
 	if strings.HasPrefix(text, "-") {
 		neg, text = true, text[1:]
@@ -400,12 +411,12 @@ func roundDecimal(v float64, precision int) (neg bool, integer, fraction string)
 			kept = append([]byte{'0'}, kept...)
 		}
 		split := len(kept) - precision
-		return neg, string(kept[:split]), string(kept[split:])
+		return string(kept[:split]), string(kept[split:]), neg
 	}
 	if allZeroDigits(string(kept)) {
-		return neg, "0", ""
+		return "0", "", neg
 	}
-	return neg, string(kept) + strings.Repeat("0", -precision), ""
+	return string(kept) + strings.Repeat("0", -precision), "", neg
 }
 
 // incrementDigits adds one to a decimal digit string, growing it by a leading

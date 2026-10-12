@@ -29,9 +29,9 @@ type StorageDisk struct {
 // the script could have written a file into by hand.
 //
 // With no path it falls through to the host's temporary directory, which is
-// outside the root and deliberately so: no script can name it, so it is not a
-// path a tenant chose. That is the spelling tests/fixtures/bindings/session_manager.phpt
-// uses, and DefaultStoragePath is what keeps two roots out of one directory
+// outside the root by decision: no script can name it, so it is no path a
+// tenant chose. That is the spelling tests/fixtures/bindings/session_manager.phpt
+// uses, and DefaultStoragePath keeps two roots out of one directory
 // there.
 func newRootedStorageDisk(rt *runner.Runtime, dir string, storagePaths ...string) (*StorageDisk, error) {
 	if len(storagePaths) == 0 || storagePaths[0] == "" {
@@ -58,17 +58,12 @@ func newRootedStorageDisk(rt *runner.Runtime, dir string, storagePaths ...string
 // DefaultStoragePath answers the directory a Session\Storage\Disk named no path
 // writes to, for an application rooted at dir.
 //
-// One directory per root, not one for the process. prune() takes an age and not
-// an ID, so while every root shared a directory, `new Session\Storage\Disk`
-// followed by prune() on any site of a virtual-host server deleted every other
-// site's sessions. Nothing had to be guessed and no path had to be named, which
-// is why rooting the path a script writes does not reach this. The leaf is a
-// digest of the absolute root: two roots cannot collide, the same root answers
-// the same directory across restarts, and the name tells a reader nothing about
-// its neighbours.
+// The leaf is a digest of the absolute root, so two roots cannot collide and
+// the same root answers the same directory across restarts. An empty dir keeps
+// the bare directory, and prune() skips subdirectories.
 //
-// An empty dir has nothing to key on and keeps the bare directory. Prune skips
-// subdirectories, so a host that bound no root cannot reach a scoped one either.
+// What a shared directory did to a virtual-host server is docs/security.md,
+// "Isolation between sites".
 func DefaultStoragePath(dir string) string {
 	base := filepath.Join(os.TempDir(), "phpscript-sessions")
 	if dir == "" {
@@ -85,8 +80,8 @@ func DefaultStoragePath(dir string) string {
 // With no path, it uses DefaultStoragePath for no application root.
 //
 // The path is taken as given. A Go host chooses it, so there is nothing to
-// confine it against; the path a PHP script names goes through
-// newRootedStorageDisk instead.
+// confine it against; the path a PHP script names resolves through
+// newRootedStorageDisk.
 func NewStorageDisk(storagePaths ...string) (*StorageDisk, error) {
 	storagePath := DefaultStoragePath("")
 	if len(storagePaths) > 0 {
