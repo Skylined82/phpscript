@@ -130,9 +130,9 @@ var statePool = sync.Pool{
 				// A suspended frame's foreach still holds its listing, so
 				// the walk has to reach it or a recursive walk under-reports
 				// everything but the innermost loop.
-				yieldIterators(yield, frame.iterators)
+				yieldIterators(frame.iterators, yield)
 			}
-			yieldIterators(yield, st.iterators)
+			yieldIterators(st.iterators, yield)
 		}
 		return st
 	},
@@ -332,7 +332,7 @@ type iteratorState struct {
 
 // yieldIterators passes a live-value walker everything one frame's foreach state
 // is holding: the container being walked and every entry taken off it.
-func yieldIterators(yield func(any), iterators []*iteratorState) {
+func yieldIterators(iterators []*iteratorState, yield func(any)) {
 	for _, iterator := range iterators {
 		if iterator == nil {
 			continue
@@ -474,7 +474,7 @@ func (st *execState) WriteBack(vars map[string]any) {
 }
 
 // Run executes a validated flat instruction stream.
-func Run(program *Program, host Host) error {
+func Run(host Host, program *Program) error {
 	if program == nil {
 		return nil
 	}
@@ -1148,7 +1148,7 @@ func run(program *Program, host Host, entryPC int, seeds []localSeed, globals ma
 			if !ok {
 				return fmt.Errorf("flatstack: pc %d: host does not implement value invocation", st.pc)
 			}
-			value, callErr := invoker.InvokeValue(callee, arguments)
+			value, callErr := invoker.InvokeValue(arguments, callee)
 			if callErr != nil {
 				if st.handle(callErr) {
 					continue
