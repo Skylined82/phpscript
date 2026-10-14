@@ -155,7 +155,7 @@ An area not in this table is not in scope. Adding one is a decision about the sc
 
 No registered name has to change; the migration outstanding is on the Go side.
 
-**Move PHP's own library out of `stdlib/stdlib.go`.** The functions PHP defines were spread across `stdlib/stdlib.go` and `stdlib/platform.go`. They split two ways on a behavioural line. `stdlib/compat` holds the surface whose behaviour is the interpreter's: output buffering, `preg_*`, the date functions, each one defined by what the engine does and not by what it computes. `stdlib/core` holds the surface that computes: `strlen`, `array_merge`, `json_encode`. Either way `stdlib` keeps only `Register`, `RegisterFS` and the exception type.
+**Move PHP's own library out of `stdlib/stdlib.go`.** The functions PHP defines split two ways on a behavioural line. `stdlib/compat` holds the surface whose behaviour is the interpreter's: output buffering, `preg_*`, the date functions, each one defined by what the engine does and not by what it computes. `stdlib/core` holds the surface that computes: `strlen`, `array_merge`, `json_encode`. Either way `stdlib` keeps only `Register`, `RegisterFS` and the exception type.
 
 The exception type stays because `Register` installs it before anything else, and `stdlib` blank-imports `core`, so moving the registration there would make a cycle.
 

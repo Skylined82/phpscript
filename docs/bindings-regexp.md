@@ -95,9 +95,9 @@ Four behaviours, stated here so nobody has to find them:
 
 ## Step 4: the half of the method set declared over bytes
 
-`regexp.Regexp` has 24 matching methods, and half of them are declared over `[]byte` where the others take `string`: `Find`, `FindSubmatch`, `FindAllSubmatch`, `ReplaceAll`. Before this binding a `[]byte` reaching PHP was neither a string nor a usable value - `echo` printed nothing, `strlen` measured zero, and a byte slice reached the reflection fallback as a slice, so `count()` answered a byte count and `foreach` yielded integers.
+`regexp.Regexp` has 24 matching methods, and half of them are declared over `[]byte` where the others take `string`: `Find`, `FindSubmatch`, `FindAllSubmatch`, `ReplaceAll`. Without the rule below, a `[]byte` reaching PHP is neither a string nor a usable value - `echo` printed nothing, `strlen` measured zero, and a byte slice reached the reflection fallback as a slice, so `count()` answered a byte count and `foreach` yielded integers.
 
-The rule the runtime now applies is one sentence: **a Go `[]byte` is a PHP string.** PHP's strings are byte strings, which is the same claim the generated reference was already making by publishing a `[]byte` return as `string`. `phpval.Bytes` is the test, and it is asked at every point a byte slice would otherwise read as a list:
+The rule the runtime now applies is one sentence: **a Go `[]byte` is a PHP string.** PHP's strings are byte strings, and the generated reference makes the same claim by publishing a `[]byte` return as `string`. `phpval.Bytes` is the test, and it is asked at every point a byte slice would otherwise read as a list:
 
 | Reads a `[]byte` as           | Where                                                                                                                                                     |
 |-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -303,7 +303,7 @@ go install .
 phpscript test --matrix -v ./tests/fixtures/bindings/...
 ```
 
-`go install .` first. `phpscript test` runs the binary on `PATH`, so an edited runtime that has not been installed is tested in the state it was installed in.
+`go install .` first. `phpscript test` runs the binary on `PATH`, so an edited runtime nobody installs is tested in the state of its last install.
 
 ## Step 6: the Go test
 

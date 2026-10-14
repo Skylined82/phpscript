@@ -47,7 +47,7 @@ How a key combines decides what a site inherits:
 | `mail`                                       | replaced whole        | Inherits every server the operator configured     |
 | `runner`, `telemetry`, `routes`, `flatstack` | merged field by field | Inherits the operator's value for each field      |
 
-`env` and `mail` replace because a merge was worse. The mail block was once a single unnamed server, and a site setting only `host` and `from` kept the operator's `username` and `password` and went on authenticating as the operator. That is why both are collections keyed by name.
+`env` and `mail` replace because a merge leaks. A single unnamed server is a struct, and a site setting only `host` and `from` would keep the operator's `username` and `password` and go on authenticating as the operator. That is why both are collections keyed by name.
 
 A merged block has the mirror-image property: a site's `runner.writable_paths` replaces the operator's list for that site, so the operator cannot confine a site that declares one. Confining a tenant's writes is the filesystem's job and not the configuration's.
 
@@ -77,7 +77,7 @@ It is one value for the process. An operator decides what the runtime they start
 
 ## The filesystem boundary
 
-Every path a script names resolves against the root the bindings were bound to, and no spelling escapes it. A path written from `/` names the root itself, the spelling `getcwd()`, `realpath()`, `__DIR__` and `__FILE__` all answer with, and a `..` is collapsed against the root with no way out of it (`stdlib/files/files.go:80`, `runner/runner.go:1139`). There is no spelling for a host path:
+Every path a script names resolves against the root the bindings hold, and no spelling escapes it. A path written from `/` names the root itself, the spelling `getcwd()`, `realpath()`, `__DIR__` and `__FILE__` all answer with, and a `..` is collapsed against the root with no way out of it (`stdlib/files/files.go:80`, `runner/runner.go:1139`). There is no spelling for a host path:
 
 ```php
 file_get_contents("/etc/hostname");   // false

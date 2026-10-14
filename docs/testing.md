@@ -371,13 +371,13 @@ go install .                                    # the matrix runs the installed 
 phpscript test --matrix tests/fixtures/...
 ```
 
-`go install .` first. `phpscript test` runs the binary on `PATH` and not the tree, so an edited runtime that has not been installed is tested in the state it was installed in, and the fixtures pass or fail on code the tree does not hold. `go test ./tests` has no such gap: it compiles the tree in process. `GOBIN` is also shared between checkouts, so a second clone of this repository installing over the same path produces the same symptom.
+`go install .` first. `phpscript test` runs the binary on `PATH` and not the tree, so an edited runtime nobody installs is tested in the state of its last install, and the fixtures pass or fail on code the tree does not hold. `go test ./tests` has no such gap: it compiles the tree in process. `GOBIN` is also shared between checkouts, so a second clone of this repository installing over the same path produces the same symptom.
 
 A change to language or runtime behavior is not finished until it has a fixture, and a fixture covering PHP's own behavior is not finished until it passes the php column of the matrix.
 
 ## Issue reproductions
 
-[`tests/fixtures/github`](../tests/fixtures/github) holds one file per GitHub issue, in the `.phpt` format under a `.yml` extension. Nothing there runs: the fixture runner discovers `.phpt` only, and the extension is what keeps a file written against *expected* behaviour out of the passing suite. The files stay after their issue closes, as the log of what was reported.
+[`tests/fixtures/github`](../tests/fixtures/github) holds one file per GitHub issue, in the `.phpt` format under a `.yml` extension. Nothing there runs: the fixture runner discovers `.phpt` only, and the extension is what keeps a file written against *expected* behaviour out of the passing suite. The files stay after their issue closes, as the record of the report.
 
 An issue whose behaviour a fixture can reach closes by renaming its file to `.phpt` and moving it to the area it belongs to. It joins the matrix from there.
 

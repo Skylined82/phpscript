@@ -181,7 +181,7 @@ Counters => 3
 Size => 0.06 MiB
 ```
 
-`Cached Size` is the heap a precompile pass measured itself adding, and is absent when no pass ran: a cache filled request by request was never measured, and printing zero over it would read as a measurement. A section with nothing to report is left out, not printed as a heading over nothing, so a run with no store bound shows no `SharedMemory` block. The `opcache_*` functions are not implemented and will not be; see [Won't implement](design.md#wont-implement).
+`Cached Size` is the heap a precompile pass measured itself adding, and is absent when no pass runs: nothing measures a cache filled request by request, and printing zero over it would read as a measurement. A section with nothing to report is left out, not printed as a heading over nothing, so a run with no store bound shows no `SharedMemory` block. The `opcache_*` functions are not implemented and will not be; see [Won't implement](design.md#wont-implement).
 
 `time_limit` and `concurrency_limit` are **accepted but not enforced**. The keys parse and are carried through to the runtime so a configuration written today keeps working when enforcement lands.
 
@@ -227,7 +227,7 @@ Set `flatstack.enabled` to `true` to select the experimental flat-stack bytecode
 | `modules`  |    `[]` | Load only the platform modules named here. An empty list loads all. |
 | `pid_file` |    `""` | File the server records its process id in. Empty writes none.       |
 
-`pid_file` is what makes a running server reachable. [`phpscript -s reload`](cli/server.md#reloading) reads the pid back out of it, and so does `kill -HUP $(cat ...)`. The file holds the decimal pid and a newline, and is removed on a clean shutdown, so one left behind means the process did not get one. The path resolves against the working directory, so `-s reload` needs the same `-w` the server was started with; an absolute path is what a service unit wants.
+`pid_file` is what makes a running server reachable. [`phpscript -s reload`](cli/server.md#reloading) reads the pid back out of it, and so does `kill -HUP $(cat ...)`. The file holds the decimal pid and a newline, and is removed on a clean shutdown, so one left behind means the process did not get one. The path resolves against the working directory, so `-s reload` needs the same `-w` as the running server; an absolute path is what a service unit wants.
 
 Every key here is read once, when the process starts. A reload re-reads the file and cannot apply any of them, and says which it skipped; see [Reloading](cli/server.md#reloading).
 
@@ -309,7 +309,7 @@ $reporting = new Database("reporting");
 
 The list is passed to the database connection registry; it does not add the entries to the process environment or PHP variables. Actual process environment variables named `PLATFORM_DB_*` are also registered when phpscript starts.
 
-Under a virtual host, a relative sqlite path resolves against the site's application root, so `sqlite://data/app.db` in a site's `phpscript.yml` names the `data/` directory of that site whatever directory the server was started in. Absolute paths, memory databases and `file:` URIs are used as written. Outside virtual hosts, a CLI run or a single application root, a relative path resolves against the process working directory.
+Under a virtual host, a relative sqlite path resolves against the site's application root, so `sqlite://data/app.db` in a site's `phpscript.yml` names the `data/` directory of that site whatever directory the server runs in. Absolute paths, memory databases and `file:` URIs are used as written. Outside virtual hosts, a CLI run or a single application root, a relative path resolves against the process working directory.
 
 ## Mail servers
 
@@ -366,7 +366,7 @@ A script names a server. It cannot spell one, and it cannot read one back:
 - The constructor takes a name. No binding accepts a host or a password.
 - The object it returns carries no properties. `$mail->password`, `get_object_vars($mail)`, `var_dump`, `print_r` and `json_encode` all find nothing.
 - There is no listing call. `Mail` has no counterpart to [`Database::connections()`](#database-connections), because naming what exists is itself a disclosure.
-- The block is configuration, not `env`, so `getenv()` was never in reach of it.
+- The block is configuration and no part of `env`, so `getenv()` cannot reach it.
 
 This is why the settings are not accepted as a constructor argument. A script that passes them is refused:
 
@@ -472,11 +472,11 @@ A site writing that has `marketing` and no `default`, even though the operator c
 
 `mail:` with nothing under it means no servers at all, the inherited ones included. It is the way a site says it sends no mail.
 
-This replacing is why the block is a map. It was a single unnamed server, and a struct merges field by field: a site setting only `host` and `from` kept the operator's `username` and `password` and went on authenticating as the operator.
+This replacing is why the block is a map. A single unnamed server is a struct, and a struct merges field by field: a site setting only `host` and `from` would keep the operator's `username` and `password` and go on authenticating as the operator.
 
 ### The environment per site
 
-`env` is also what the site's scripts read with `getenv()`, and it is all they read: a site reads the environment it declared and not the process environment, so `getenv()` cannot report what the operator, or another site, was started with.
+`env` is also what the site's scripts read with `getenv()`, and it is all they read: a site reads the environment it declared and not the process environment, so `getenv()` cannot report what the operator, or another site, declares.
 
 Variables named `PLATFORM_*` are the exception in the other direction. They configure phpscript and the platform it runs on, connection strings included, so they are never visible to a script even when the site declared them itself. A site that lists `PLATFORM_DB_SHOP` gets the connection and reads nothing from `getenv("PLATFORM_DB_SHOP")`.
 
@@ -527,7 +527,7 @@ The flag wins over the file. A configuration describes a tree and a flag is what
 
 `include` and the hook files resolve against the directory holding the file, which is also the application root the fixtures below it run under. Their own folder still answers first, so a fixture's relative includes keep meaning what they always meant and the suite root answers for what the folder does not hold.
 
-`--include` is the operator's, and speaks from the directory the command was invoked in, not from a suite. It replaces what any suite named.
+`--include` is the operator's, and speaks from the directory holding the command and never from a suite. It replaces what any suite named.
 
 ### Run keys
 
@@ -563,7 +563,7 @@ $db = new Database("scaffold");
 $db->insert("catalogue", array("name" => "Ada"));
 ```
 
-A failing `setup` fails the run before a fixture executes. The fixtures below it assert against state that was not laid down, so running them reports the same missing table once per file and names the cause in none of them.
+A failing `setup` fails the run before a fixture executes. The fixtures below it assert against state nothing laid down, so running them reports the same missing table once per file and names the cause in none of them.
 
 `teardown` runs whether the fixtures passed or failed, and its failure is reported without displacing theirs. Where several suites are in one run, the setups run outermost first and the teardowns in reverse.
 
