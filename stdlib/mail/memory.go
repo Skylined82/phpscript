@@ -79,7 +79,7 @@ func (m *Memory) Messages() []Message {
 	return append([]Message{}, m.messages...)
 }
 
-// Next pops the oldest queued message, reporting whether one was queued.
+// Next pops the oldest queued message, reporting whether the queue holds one.
 func (m *Memory) Next() (Message, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

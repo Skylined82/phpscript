@@ -8,7 +8,7 @@ import (
 
 // registerUploads installs the pair of functions a script needs after $_FILES
 // arrives. An uploaded part is written outside the root by the request runtime,
-// so a script reaches it by the absolute tmp_name it was handed; both functions
+// so a script reaches it by the absolute tmp_name in $_FILES; both functions
 // refuse a path this request did not produce, as PHP does.
 func registerUploads(rt *runner.Runtime, r root) {
 	isUpload := func(filename string) bool {

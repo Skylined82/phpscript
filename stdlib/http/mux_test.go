@@ -240,7 +240,7 @@ define("MUX", $mux);
 }
 
 // TestMuxSkipsADeadConnection keeps the work off a request nobody is waiting
-// for: the client was already gone, so the handler never ran.
+// for: the client is already gone, so the handler never runs.
 func TestMuxSkipsADeadConnection(t *testing.T) {
 	var out strings.Builder
 	rt := runner.New(&out, runner.Options{})
@@ -346,9 +346,10 @@ func formRequest(target, body string) *nethttp.Request {
 	return request
 }
 
-// TestTwoMuxesShareOneRuntimeSafely is the defect the per-Mux mutex had: the
-// lock was a field of Mux, so handlers on two muxes interpreted on one Runtime
-// at the same time and took the process down with a concurrent map write.
+// TestTwoMuxesShareOneRuntimeSafely is the defect a per-Mux mutex carries: a
+// lock held as a field of Mux lets handlers on two muxes interpret on one
+// Runtime at the same time and takes the process down with a concurrent map
+// write.
 func TestTwoMuxesShareOneRuntimeSafely(t *testing.T) {
 	var out strings.Builder
 	rt := runner.New(&out, runner.Options{})
@@ -416,9 +417,9 @@ define("B", $b);
 }
 
 // TestScriptDoesNotRaceItsOwnHandlers is the other half: listen() returns and
-// the script keeps interpreting, so the script's goroutine and net/http's were
-// both running PHP on one runtime. wait() parks the runtime; everything before
-// it holds it.
+// the script keeps interpreting, so the script's goroutine and net/http's both
+// run PHP on one runtime. wait() parks the runtime; everything before it holds
+// it.
 func TestScriptDoesNotRaceItsOwnHandlers(t *testing.T) {
 	var out strings.Builder
 	rt := runner.New(&out, runner.Options{})

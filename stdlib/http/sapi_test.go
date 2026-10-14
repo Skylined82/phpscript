@@ -43,7 +43,7 @@ func runRequestSAPI(t *testing.T, request runner.Context, sapi, src string) stri
 
 // TestGetAllHeadersReadsTheRequest covers the three spellings of one function.
 // Ported code reaches for getallheaders, get_all_headers or
-// apache_request_headers depending on which server it was written against, so
+// apache_request_headers depending on its target server, so
 // all three answer the same array.
 func TestGetAllHeadersReadsTheRequest(t *testing.T) {
 	request := runner.NewContext()

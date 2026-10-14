@@ -20,7 +20,7 @@ func Mount(rt *runner.Runtime, profile Profile, bindings ...func(*runner.Runtime
 	}
 
 	// How to do this again, for a runtime forked off this one. A binding is a
-	// closure over the runtime it was registered on, so a fork has to install
+	// closure over its registering runtime, so a fork has to install
 	// its own and inherits none of these, under the same profile.
 	rt.SetPreparer(func(child *runner.Runtime) { Mount(child, profile, bindings...) })
 }

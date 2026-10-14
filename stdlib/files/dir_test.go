@@ -91,9 +91,9 @@ var_dump(opendir("missing"));`)
 
 // TestClosedirExhaustsTheHandle states what a closed handle answers. There is
 // no descriptor to invalidate, so closedir drops the listing and a further read
-// reports the end of it; php throws a TypeError there. A value readdir was
-// never issued answers the same way, which keeps a foreign one from
-// walking anything.
+// reports the end of it; php throws a TypeError there. A value readdir never
+// issued answers the same way, which keeps a foreign one from walking
+// anything.
 func TestClosedirExhaustsTheHandle(t *testing.T) {
 	opts := runner.Options{RootFS: sourceTree()}
 	got := runFSOptions(t, t.TempDir(), nil, opts, `<?php

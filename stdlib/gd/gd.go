@@ -150,7 +150,7 @@ func (r root) resolve(p string) string {
 
 // resolveWrite is resolve for a path about to be written. A path outside
 // writable_paths is an error, not a false return, matching stdlib/files: a
-// refused write is a configuration the script was never allowed to escape.
+// refused write is a configuration no script may escape.
 func (r root) resolveWrite(fn, p string) (string, error) {
 	name := r.resolve(p)
 	if len(r.writable) == 0 {

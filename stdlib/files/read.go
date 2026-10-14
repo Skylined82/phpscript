@@ -105,7 +105,7 @@ func registerReads(rt *runner.Runtime, r root) {
 	})
 }
 
-// sourceFS is the read-only filesystem the script itself was loaded from. A
+// sourceFS is the read-only filesystem the script itself loads from. A
 // host that runs a script straight off disk leaves it unset, so every read
 // through it has to tolerate its absence.
 func (r root) sourceFS() iofs.FS {

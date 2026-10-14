@@ -16,7 +16,7 @@ type Exception struct {
 	Class   string `json:"class"`
 }
 
-// ThrowableClass returns the PHP class the exception was constructed as,
+// ThrowableClass returns the PHP class the exception declares,
 // implementing runner.Throwable.
 func (e *Exception) ThrowableClass() string {
 	if e.Class == "" {

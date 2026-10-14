@@ -15,8 +15,7 @@ import (
 // wrong.
 //
 // The context it holds is the one the work runs under: a logger is handed to a
-// library for the length of one call, so it lives as long as the context it was
-// built with.
+// library for the length of one call, so it lives as long as that context.
 type Logger struct {
 	ctx  context.Context
 	log  *slog.Logger
@@ -56,10 +55,10 @@ func (l *Logger) Info(msg string, args ...any) {
 	l.slog().InfoContext(l.ctx, l.label(msg), args...)
 }
 
-// Error logs a message at error level and records it on the span the logger was
-// built in, which fails that span and the trace with it. The error is the first
-// one among the values when the caller passed one, so the span keeps what went
-// wrong and not only what it was called. The span is not ended: it belongs to
+// Error logs a message at error level and records it on the logger's own span,
+// which fails that span and the trace with it. The error is the first one among
+// the values where the caller passes one, so the span keeps the failure itself
+// and never only its message. The span is not ended: it belongs to
 // whoever opened it, and the work it measures is still theirs to finish.
 func (l *Logger) Error(msg string, args ...any) {
 	if l == nil {
@@ -70,7 +69,7 @@ func (l *Logger) Error(msg string, args ...any) {
 	telemetry.SpanFromContext(l.ctx).RecordError(cause(msg, args))
 }
 
-// slog is where the message is written. A logger that was given none writes to
+// slog is where the message is written. A logger holding none writes to
 // the default logger, and reads it per call and not at construction, so a
 // process that configures logging after the fact still gets the output.
 func (l *Logger) slog() *slog.Logger {
@@ -92,8 +91,8 @@ func (l *Logger) label(msg string) string {
 }
 
 // cause returns the error to fail a span with: the first error among the
-// values, kept under the message it was reported with, and the message alone
-// when the caller passed none.
+// values, kept under the message beside it, and the message alone where the
+// caller passes none.
 func cause(msg string, args []any) error {
 	for _, arg := range args {
 		if err, ok := arg.(error); ok {

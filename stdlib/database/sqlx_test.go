@@ -7,7 +7,7 @@ import (
 
 // TestNewDB covers the handle every binding of this package queries through:
 // it carries the driver name the bind variable form is picked from, it keeps
-// the pool it was built on, and a query runs on it.
+// its pool, and a query runs on it.
 func TestNewDB(t *testing.T) {
 	pool, err := sql.Open("sqlite", ":memory:")
 	if err != nil {

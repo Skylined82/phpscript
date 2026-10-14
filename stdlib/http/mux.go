@@ -94,7 +94,7 @@ func (m *Mux) answer(callable *runner.Callable, w nethttp.ResponseWriter, r *net
 	})
 
 	if !ran {
-		// The client left while the run was queued or in flight. Nothing written
+		// The client left with the run queued or in flight. Nothing written
 		// now would reach it.
 		//
 		// The tracker is not put back. A run already started is left

@@ -14,7 +14,7 @@ import (
 
 // DatabaseMigrate loads and runs SQL migrations against a platform database.
 //
-// The project is the connection name the binding was constructed with, and is
+// The project is the binding's own connection name, and is
 // what mig records applied files under.
 type DatabaseMigrate struct {
 	database *DB
@@ -76,7 +76,7 @@ func (m *DatabaseMigrate) Run(ctx context.Context) error {
 	// Recorded before the run is reported, because recording an error on a
 	// span is last write wins and what Apply returns is the driver error on
 	// its own. Reporting after it leaves the span with the message that
-	// names the file the statement was in.
+	// names the file holding the statement.
 	span.RecordError(err)
 	m.observe(ctx, span, applied, err)
 	return err
@@ -92,12 +92,12 @@ func (m *DatabaseMigrate) Run(ctx context.Context) error {
 // startup is looked at on the trace before anyone opens the log. Only the file
 // the run stopped at goes there: mig applies in filename order and returns on
 // the first failure, and one attribute per file would bury it under the files
-// that were fine.
+// that pass.
 //
 // runErr is what decides a file failed, and not the status on its record.
 // The slice mig reports holds a row per file plus the rows of files that are no
 // longer there, and one of those can carry the error of a run that failed
-// before the file was deleted; a run that returned nil applied everything it
+// from before the file's removal; a run answering nil applied everything it
 // found, whatever those rows say.
 func (m *DatabaseMigrate) observe(ctx context.Context, span *telemetry.Span, applied []migrate.Migration, runErr error) {
 	log := logger.New(ctx, "migrate")

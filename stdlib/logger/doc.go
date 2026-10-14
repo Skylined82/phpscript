@@ -2,7 +2,7 @@
 // that line reports an error.
 //
 // It is for the steps a host runs on behalf of a script and does not want in
-// the script's output. Migrations are the case it was written for: a migration
+// the script's output. Migrations are the case it covers: a migration
 // set runs at startup, where the script's output is an HTTP body or a rendered
 // page, so a per-file status line written there lands in what the script is
 // producing.
@@ -15,7 +15,7 @@
 // The method set is Info and Error, spelled and behaving the way slog spells
 // them, which is also the shape a library taking a logger declares.
 // Output goes to slog.Default, read per call so a process that configures
-// logging after a logger was built still reaches it, or to the logger passed to
+// logging past a logger's construction still reaches it, or to the logger passed to
 // WithLogger.
 //
 // The trace is no second log. Nothing is recorded on it per message, and no

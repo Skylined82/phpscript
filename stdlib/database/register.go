@@ -33,8 +33,8 @@ func Register(rt *runner.Runtime) {
 // RegisterConnections installs the statics that let a script see and extend
 // the set of connections it can open.
 //
-// Connection names normally come from the environment the host was started
-// with, which is right when the operator owns the list. An application that
+// Connection names normally come from the host's environment, which is right
+// when the operator owns the list. An application that
 // keeps its connections in a table owns the list itself, and has nowhere to
 // put them: the provider is built once, before the first request, and putenv
 // writes to the script environment, which the provider never reads.

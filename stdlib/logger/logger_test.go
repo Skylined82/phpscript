@@ -18,7 +18,7 @@ func discard(l *Logger) *Logger {
 
 // TestLoggerFailsSpanOnError covers what the logger has to do with the trace and
 // the extent of it: an error fails the span the work runs in, and nothing else
-// that was logged is recorded anywhere near it.
+// the logger writes is recorded anywhere near it.
 func TestLoggerFailsSpanOnError(t *testing.T) {
 	traceOptions := telemetry.NewOptions("phpscript")
 	// oida records only when it is asked to; a test that reads its

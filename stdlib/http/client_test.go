@@ -289,7 +289,7 @@ func TestClientParallel(t *testing.T) {
 	}
 
 	// Concurrent, not sequential: three 30ms requests one after another take
-	// 90ms, and the handler records how many were in flight at once.
+	// 90ms, and the handler records the peak in flight at once.
 	if got := peak.Load(); got < 2 {
 		t.Errorf("peak concurrent requests = %d, want at least 2", got)
 	}

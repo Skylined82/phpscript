@@ -54,7 +54,7 @@ func NewDatabaseProvider(open Connector) *DatabaseProvider {
 
 // New returns a provider holding only the connections named in
 // environment, in PLATFORM_DB_<NAME>=<dsn> form, plus the built-in
-// default. A provider built this way sees what it was given alone, which
+// default. A provider built this way sees that list alone, which
 // keeps one virtual host out of another's databases.
 func New(environment []string) *DatabaseProvider {
 	provider := NewDatabaseProvider(Open)
@@ -108,7 +108,7 @@ func (r *DatabaseProvider) List() []string {
 // like the pool cache beside it.
 //
 // Re-registering a name with the same configuration is free. Re-registering it
-// with a different one drops the pool that was opened for the old credentials:
+// with a different one drops the pool of the old credentials:
 // the cache is keyed by name, and a name that now means a different database
 // must not keep answering with the old one.
 func (r *DatabaseProvider) Register(name string, config string) {
@@ -166,8 +166,8 @@ func (r *DatabaseProvider) Open(_ context.Context, names ...string) (*DB, error)
 // be in the one the next script queries.
 //
 // Reading the cache before the credential has the mirror image of that problem:
-// "app:migrate" registered after "app" was opened would answer with the pool of
-// "app" and run the migrations under the credential it was registered to avoid.
+// "app:migrate" registered behind an open "app" would answer with the pool of
+// "app" and run the migrations under the credential it exists to avoid.
 func (r *DatabaseProvider) cached(connector Connector, names ...string) (*DB, error) {
 	name, value, ok := r.resolve(names)
 	if !ok {

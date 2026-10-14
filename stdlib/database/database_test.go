@@ -40,7 +40,7 @@ func TestDatabaseObserverRecordsQuerySpan(t *testing.T) {
 		t.Fatalf("database span attributes = %+v", span.Attributes)
 	}
 
-	// The values bound to the placeholders are what says which row was read.
+	// The values bound to the placeholders are what names the row.
 	args, ok := span.Attributes["args"].([]any)
 	if !ok || len(args) != 1 || args[0] != int64(42) {
 		t.Fatalf("bound arguments = %#v", span.Attributes["args"])
@@ -95,7 +95,7 @@ func TestDatabaseObserverIgnoresSentinelErrors(t *testing.T) {
 }
 
 // A statement is classified by the keyword it starts with, and the tag it
-// carries is recorded beside it: a trace groups by what a query was for, which
+// carries is recorded beside it: a trace groups by a query's purpose, which
 // the statement text alone does not answer.
 func TestDatabaseObserverRecordsQueryTypeAndComment(t *testing.T) {
 	span, observe := newObservedSpan(t)
@@ -271,7 +271,7 @@ func TestDatabaseRowsAreReadableAsPHPArrays(t *testing.T) {
 }
 
 // TestDatabase_SetID covers the name a constructed client is recorded under.
-// The runtime passes the PHP variable the value was assigned to, and every
+// The runtime passes the receiving PHP variable, and every
 // span the client opens carries it, so two clients in one request are told
 // apart on the trace.
 func TestDatabase_SetID(t *testing.T) {

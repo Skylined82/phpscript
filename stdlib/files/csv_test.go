@@ -8,7 +8,7 @@ import (
 
 // TestFPutCSVOutputStream pins the php://output handle: it writes through the
 // runtime's output seam, so a buffer ob_start() pushes captures it even when
-// the handle was opened first, and fclose() leaves the stream usable.
+// the handle opens first, and fclose() leaves the stream usable.
 func TestFPutCSVOutputStream(t *testing.T) {
 	out := runFS(t, t.TempDir(), nil, `<?php
 $h = fopen("php://output", "w");

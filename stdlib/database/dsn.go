@@ -8,7 +8,7 @@ import (
 
 // resolveSQLiteDSN anchors a relative sqlite file path to root, so a DSN
 // written in a site's own configuration names a file under that site's tree
-// and not under whatever directory the server process was started in.
+// and never under the directory the server process runs in.
 // Memory databases, absolute paths and file: URIs carry no such intent and
 // pass through unchanged, as does everything when there is no root to anchor
 // to, as a CLI run has.

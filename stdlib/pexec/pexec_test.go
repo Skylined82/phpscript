@@ -69,7 +69,7 @@ func TestRegister(t *testing.T) {
 // TestRegisterRoot covers the directory a command starts in when a host bound
 // one: a server serving scripts out of a project directory binds that, so
 // `pwd` inside a script answers the same thing getcwd() does. It replaces
-// whatever root was installed before it, so a host calls it after Register.
+// whatever root stands before it, so a host calls it after Register.
 func TestRegisterRoot(t *testing.T) {
 	dir := t.TempDir()
 	resolved, err := filepath.EvalSymlinks(dir)

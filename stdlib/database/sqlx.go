@@ -9,8 +9,8 @@ import (
 // DB is one connection pool, as every caller of this package holds it.
 //
 // It is sqlx's handle and not a type of this package's own: the named
-// parameters and the struct scanning are what the dependency was taken on for,
-// and a type that hid them would have to declare them again under other names.
+// parameters and the struct scanning are the whole reason for the dependency,
+// and a type that hid them would declare them again under other names.
 type DB = sqlx.DB
 
 // Conn is one session held out of a pool. A PRAGMA or a transaction runs on

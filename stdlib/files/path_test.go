@@ -80,7 +80,7 @@ func TestChdirCannotLeaveTheRoot(t *testing.T) {
 
 // TestChdirRefusesWhatIsNotADirectory pins the false return. PHP warns and
 // answers false; there is no warning channel here, so the return value carries all
-// report and the working directory has to be left where it was.
+// report and the working directory has to stay put.
 func TestChdirRefusesWhatIsNotADirectory(t *testing.T) {
 	for _, test := range []struct {
 		name string
@@ -118,8 +118,8 @@ echo file_get_contents("/note.txt");`)
 
 // TestIncludeCacheIsKeyedByTheResolvedFile is the bug a mutable working
 // directory would otherwise introduce. The cache is shared across runtimes by
-// the server and the fixture harness, so a key that was the spelling rather
-// than the file would hand one request the file another request loaded.
+// the server and the fixture harness, so a key holding the spelling in place
+// of the file would hand one request the file another request loaded.
 func TestIncludeCacheIsKeyedByTheResolvedFile(t *testing.T) {
 	got := runWorkdir(t, `<?php
 chdir("app");

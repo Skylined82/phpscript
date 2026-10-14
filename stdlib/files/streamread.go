@@ -9,8 +9,8 @@ import (
 
 // registerStreamReads installs the read half of the handle API. fopen() already
 // returns the handle these take, and fwrite() and stream_get_contents() already
-// take one, so what was missing was every way of reading a handle short of all
-// of it at once.
+// take one, so these cover every way of reading a handle short of all of it at
+// once.
 //
 // None of them buffers. A buffered reader would read further than the script
 // named, which fseek() and ftell() would then disagree with, so fgets()

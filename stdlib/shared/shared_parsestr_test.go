@@ -10,8 +10,8 @@ import (
 	"github.com/titpetric/phpscript/stdlib/shared"
 )
 
-// TestParseStr pins the decoder against php's own output: every want was read
-// off `parse_str($in, $o); var_export($o);` under php 8, then flattened.
+// TestParseStr pins the decoder against php's own output: every want comes off
+// `parse_str($in, $o); var_export($o);` under php 8, then flattened.
 func TestParseStr(t *testing.T) {
 	tests := []struct {
 		name string

@@ -38,7 +38,7 @@ if (rename("missing.txt", "d.txt")) { echo "|moved-nothing"; } else { echo "|no-
 }
 
 // TestCopyKeepsSource pins the difference between copy() and rename(): a copy
-// leaves the original where it was.
+// leaves the original in place.
 func TestCopyKeepsSource(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "a.txt"), []byte("content"), 0o644); err != nil {

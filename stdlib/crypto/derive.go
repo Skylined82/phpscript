@@ -35,7 +35,7 @@ func bcryptVerify(password, hash string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(goForm(hash)), []byte(password)) == nil
 }
 
-// bcryptCost is the cost a stored hash was written at, and an error for a
+// bcryptCost is the cost a stored hash carries, and an error for a
 // string the library cannot read.
 func bcryptCost(hash string) (int, error) {
 	return bcrypt.Cost([]byte(goForm(hash)))

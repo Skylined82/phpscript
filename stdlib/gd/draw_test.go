@@ -157,7 +157,7 @@ echo grid($im, 2, 2);
 
 // TestDrawCopyResampled covers the resize every ported thumbnail path runs. A
 // uniform source scales to a uniform destination, and a degenerate rectangle
-// copies nothing and still reports success: the handles were valid and there is
+// copies nothing and still reports success: the handles are valid and there is
 // no area.
 func TestDrawCopyResampled(t *testing.T) {
 	_, out := runScript(t, gridHelper+`

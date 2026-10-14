@@ -32,7 +32,7 @@ func traceStorage(storage Storage) Storage {
 	return &tracedStorage{storage: storage}
 }
 
-// Load reads session data, recording whether the session was there.
+// Load reads session data, recording whether the session exists.
 func (s *tracedStorage) Load(ctx context.Context, id string) ([]byte, error) {
 	span := telemetry.StartSpan(ctx, "session load", telemetry.KindCache)
 	defer span.End()
@@ -69,7 +69,7 @@ func (s *tracedStorage) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-// missing reports whether an error means the session was not there. An expired
+// missing reports whether an error means the session does not exist. An expired
 // or never-created session is what a logged out visitor looks like, so it is a
 // miss on the span and no failure on the trace.
 func missing(err error) bool {

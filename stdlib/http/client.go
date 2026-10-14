@@ -149,8 +149,8 @@ func (c *Client) Post(ctx context.Context, url string, body ...string) (*Respons
 //
 // One request failing does not fail the others and does not throw: that
 // response reports $response->ok() as false and $response->err() as the reason,
-// so a script sees every outcome. A throw means the argument was not an array
-// of requests.
+// so a script sees every outcome. A throw means the argument is no array of
+// requests.
 func (c *Client) Parallel(ctx context.Context, requests any) (map[string]*Response, error) {
 	pending, err := toRequestMap(requests)
 	if err != nil {

@@ -65,7 +65,7 @@ func copyResampled(dst, src *Image, dstX, dstY, srcX, srcY, dstW, dstH, srcW, sr
 		return false
 	}
 	// A degenerate rectangle copies nothing and answers true, as GD does. The
-	// handles were valid and the call is not an error; there is no area.
+	// handles are valid and the call is not an error; there is no area.
 	if dstW <= 0 || dstH <= 0 || srcW <= 0 || srcH <= 0 {
 		return true
 	}

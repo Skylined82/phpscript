@@ -46,7 +46,7 @@ var ErrReadOnly = errors.New("database is read-only")
 // readOnlyError is a refusal by a read-only client. It names the statement it
 // refused, and matches ErrReadOnly without wrapping it: the flat backend
 // unwraps a caught error to its root cause, and the caught message has to say
-// which statement was lost, and not only that the client cannot write.
+// which statement it drops, and never only that the client cannot write.
 type readOnlyError struct {
 	refusal string
 }
@@ -225,7 +225,7 @@ func (b *Database) RowsAffected(ctx context.Context) (any, error) {
 // safe, so an uninstrumented run takes the same path.
 //
 // The bound values are recorded, not just their count: a placeholder query
-// says nothing about which row was read, and reading that back is the reason
+// names no row, and reading the values back is the reason
 // to open the trace at all. They are as sensitive as the columns they filter
 // on, so the front end belongs behind something that authenticates.
 func (b *Database) observe(ctx context.Context, entry QueryLogEntry) {
@@ -292,8 +292,8 @@ func (b *Database) refuseWrite(ctx context.Context, statement string) error {
 // refuseQuery reports the error a read-only client returns for a statement that
 // is not a read, classifying it by the keyword it starts with.
 //
-// A refused statement never reaches the query log, so what it was is recorded
-// here: a boundary nobody can see being enforced is a boundary nobody can
+// A refused statement never reaches the query log, so its text is recorded
+// here: a boundary nobody can see enforced is a boundary nobody can
 // debug when it refuses the wrong statement.
 func (b *Database) refuseQuery(ctx context.Context, query string) error {
 	if !b.IsReadonly {

@@ -79,7 +79,7 @@ func TestResponseStatusAndOK(t *testing.T) {
 // TestResponseBodyAndErr covers the two fields a failed request is read
 // through. Only parallel() produces a failed response, so Err() is empty on
 // everything send() returns, and the body is a string the script can print
-// whatever the status was.
+// whatever the status.
 func TestResponseBodyAndErr(t *testing.T) {
 	arrived := &Response{status: 404, header: nethttp.Header{}, body: "not found"}
 	if got := arrived.Body(); got != "not found" {

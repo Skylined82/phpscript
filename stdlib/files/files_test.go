@@ -133,7 +133,7 @@ func TestRegister(t *testing.T) {
 }
 
 // TestRegisterRoot covers what a host binds a project directory with: it
-// replaces whatever root was installed before it, so a path a script writes
+// replaces whatever root stands before it, so a path a script writes
 // resolves under the directory named last and never under the first.
 func TestRegisterRoot(t *testing.T) {
 	first, second := t.TempDir(), t.TempDir()

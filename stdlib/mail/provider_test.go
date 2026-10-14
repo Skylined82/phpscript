@@ -114,8 +114,8 @@ func TestProvider(t *testing.T) {
 // TestProvider_Configured covers the verdict the constructor reads, so `new
 // Mail("marketing")` fails where the delivery would. An empty name is the
 // "default" server, as `new Mail` and mail() both resolve. A name nobody
-// configured is reported by the name that was passed, and the error says
-// nothing about what was configured.
+// configured is reported by the name the call passes, and the error says
+// nothing about the configuration.
 func TestProvider_Configured(t *testing.T) {
 	provider := mailstdlib.NewProvider(map[string]mailstdlib.Config{
 		"default":   {Host: "smtp.example.com", From: "root@example.com"},

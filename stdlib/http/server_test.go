@@ -113,7 +113,7 @@ func TestServer_Listen(t *testing.T) {
 
 // TestServer_Addr covers the address a script reads back. It is empty before
 // listen() and empty again once the server has stopped, so the field answers
-// where requests are being taken and never where they once were.
+// where requests arrive and never a stale address.
 func TestServer_Addr(t *testing.T) {
 	_, server := newServer(t, context.Background())
 

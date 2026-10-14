@@ -7,7 +7,7 @@ import (
 )
 
 // TestURLDecode covers urldecode(): the form encoding a browser posts. Every
-// want was read off `var_export(urldecode($in), true)` under php 8. The decoder
+// want comes off `var_export(urldecode($in), true)` under php 8. The decoder
 // is lenient because php is: `%zz` and a truncated `%4` decode to themselves,
 // where net/url refuses the input and drops the whole pair, losing a field the
 // browser did send.

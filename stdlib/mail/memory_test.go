@@ -35,7 +35,7 @@ func TestMemory_Configured(t *testing.T) {
 }
 
 // TestMemory_Send covers queueing in place of delivering. A queued message
-// carries the name of the server it was addressed to, so a test reads back
+// carries its target server's name, so a test reads back
 // which server a script selected. A name this provider does not hold is
 // refused the way a real delivery refuses it, so a test still exercises the
 // error a script reads.

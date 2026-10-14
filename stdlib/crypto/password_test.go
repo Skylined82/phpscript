@@ -14,7 +14,7 @@ import (
 
 // benchPassword is the input every derivation below runs on. Its length
 // matters to neither algorithm: both consume a fixed-size block of key
-// material whatever they were handed.
+// material whatever the call passes.
 const benchPassword = "correct horse battery staple"
 
 // TestParamsFrom covers the ($algo, $options) tail both hashing functions
@@ -163,7 +163,7 @@ func BenchmarkPasswordHash(b *testing.B) {
 // BenchmarkPasswordVerify prices password_verify() against a stored hash. The
 // derivation is the one password_hash runs, at the work factors the hash
 // records, so a login costs what the registration cost. Lowering the cost
-// leaves every hash already stored at the cost it was written at.
+// leaves every stored hash at the cost it carries.
 func BenchmarkPasswordVerify(b *testing.B) {
 	stored := []params{
 		{algo: algoBcrypt, cost: 10},
@@ -211,16 +211,16 @@ var refusedHashes = []struct{ name, hash string }{
 }
 
 // TestPasswordVerifyRefusesWithoutDeriving bounds the time a refusal takes.
-// Every return value below was already false.
+// Every return value below is false.
 //
-// password_verify("x", "") ran a bcrypt cost-12 derivation first: 214 ms of one
-// core, where php returns in 31 ns. 4000 refusals measure 804 us. One
-// derivation at cost 4, the cheapest bcrypt accepts, is 898 us, so a 200 ms
-// ceiling fails on a decoy at any cost and leaves two orders of magnitude of
-// headroom over the measurement.
+// A decoy derivation ahead of the refusal costs 214 ms of one core for
+// password_verify("x", ""), where php returns in 31 ns. 4000 refusals measure
+// 804 us. One derivation at cost 4, the cheapest bcrypt accepts, is 898 us, so
+// a 200 ms ceiling fails on a decoy at any cost and leaves two orders of
+// magnitude of headroom over the measurement.
 //
-// It runs through the registered function, not passwordVerify, because the decoy
-// lived in the registration.
+// It runs through the registered function and never passwordVerify, because
+// the registration is where a decoy would sit.
 func TestPasswordVerifyRefusesWithoutDeriving(t *testing.T) {
 	rt := runner.New(io.Discard, runner.Options{})
 	Register(rt)

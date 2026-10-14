@@ -125,7 +125,7 @@ func TestStorageMemoryHonorsACanceledContext(t *testing.T) {
 		}
 	}
 
-	// Nothing was removed while the context was cancelled.
+	// A cancelled context removes nothing.
 	if _, err := storage.Load(context.Background(), "abc"); err != nil {
 		t.Errorf("Load = %v, want the session a cancelled Delete left alone", err)
 	}

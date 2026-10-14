@@ -50,7 +50,7 @@ func registerDirs(rt *runner.Runtime, r root) {
 		return name
 	})
 
-	// closedir drops the listing $dir_handle was holding and answers nothing,
+	// closedir drops the listing $dir_handle holds and answers nothing,
 	// as php's does; a handle it closed reads as exhausted and not raising,
 	// where php throws.
 	rt.RegisterFunc("closedir", func(dirHandle any) {

@@ -31,8 +31,8 @@ func Register(rt *runner.Runtime) {
 }
 
 // RegisterRoot installs the process bindings with commands rooted at dir, the
-// directory the filesystem shims are bound to. It replaces whatever root was
-// installed before it, so a host calls it after stdlib.Register, the way
+// directory the filesystem shims are bound to. It replaces whatever root
+// stands before it, so a host calls it after stdlib.Register, the way
 // stdlib.RegisterFS does for the filesystem.
 //
 // An empty dir leaves a command in the process working directory, where a host

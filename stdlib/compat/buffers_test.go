@@ -71,7 +71,7 @@ func TestBuffersDiscardOnClean(t *testing.T) {
 
 // TestBuffersReportAbsence covers the result PHP distinguishes with ===: with
 // no level open, contents and pop report false and never an empty string, so a
-// script can tell "the buffer was empty" from "there was no buffer".
+// script can tell an empty buffer from no buffer at all.
 func TestBuffersReportAbsence(t *testing.T) {
 	b := newBuffers(runner.New(&strings.Builder{}, runner.Options{}))
 

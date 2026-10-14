@@ -11,7 +11,7 @@
 //
 // The second is not a corner case. minitpl's compiler pairs a template tag with
 // its closing tag using `\1`, so a pattern RE2 cannot compile appears in the
-// first library phpscript was built to run, and reporting "no match" for it
+// first library this runtime targets, and reporting "no match" for it
 // compiled every `{block}` and `{inline}` definition into garbage.
 //
 // RE2 stays the default: it is the faster of the two and cannot backtrack
@@ -58,7 +58,7 @@ func registerRegex(rt *runner.Runtime) {
 	registerRegexConstants(rt)
 
 	// preg_match_all fills $matches with every match of $pattern in $subject
-	// and returns how many there were, in PREG_PATTERN_ORDER unless $flags
+	// and returns the count, in PREG_PATTERN_ORDER unless $flags
 	// selects PREG_SET_ORDER, optionally starting at byte $offset; a pattern
 	// that does not compile returns false and leaves $matches alone.
 	rt.RegisterFunc("preg_match_all", cache.phpPregMatchAll)
@@ -221,7 +221,7 @@ func (c *regexpCache) phpPregMatch(pattern, subject string, matches func(any), f
 // matchOffset resolves preg_match's $offset argument to a byte offset into
 // subject. A negative offset counts from the end. An offset outside the
 // subject is a failed call: PHP returns false, so the second result reports
-// whether the offset was usable at all.
+// whether the offset is usable at all.
 func matchOffset(subject string, offset any) (int, bool) {
 	if offset == nil {
 		return 0, true
@@ -297,7 +297,7 @@ func (c *regexpCache) phpPregReplaceCallback(pattern string, callback func(...an
 // negative value splits nothing, which is PHP's behaviour and not a reading of
 // it. Only a piece that reaches the result counts against the limit, which is
 // what makes PREG_SPLIT_NO_EMPTY and $limit compose the way PHP's do: an empty
-// piece that NO_EMPTY drops leaves the limit where it was.
+// piece that NO_EMPTY drops leaves the limit alone.
 func (c *regexpCache) phpPregSplit(pattern, subject string, limit any, flags any) any {
 	re, err := c.compilePCRE(pattern)
 	if err != nil {
@@ -362,7 +362,7 @@ func (s *splitPieces) add(subject string, start, end int) bool {
 }
 
 // result returns the pieces in the shape the script sees. An empty result is
-// an empty array and never null, as PHP returns when every piece was dropped.
+// an empty array and never null, as PHP returns where every piece drops.
 func (s *splitPieces) result() any {
 	if s.flags&pregSplitOffsetCapture != 0 {
 		if s.pairs == nil {

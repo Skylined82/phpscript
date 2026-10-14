@@ -1,6 +1,6 @@
 package mail
 
-// Message is a queued email, with the name of the server it was addressed to.
+// Message is a queued email, with the name of its target server.
 type Message struct {
 	Server    string
 	Recipient string

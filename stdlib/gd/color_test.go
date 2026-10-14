@@ -73,7 +73,7 @@ echo " " . imagecolorat($im, 0, 0);
 
 // TestColorAtOutsideTheImage covers a coordinate the image does not hold.
 // GD answers false, so a script that walks past an edge sees a value it can
-// test and never a colour that was never there.
+// test and never a colour the image does not hold.
 func TestColorAtOutsideTheImage(t *testing.T) {
 	_, out := runScript(t, `<?php
 $im = imagecreatetruecolor(2, 2);

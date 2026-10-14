@@ -9,7 +9,7 @@ import (
 
 // TestToString covers how an option reaches a header value. PHP is dynamically
 // typed and an option arrives as whatever the script wrote, so a number written
-// where a string was wanted is rendered the way PHP renders it in a string
+// where the header takes a string is rendered the way PHP renders it in a string
 // context, and null is the empty string.
 func TestToString(t *testing.T) {
 	for _, test := range []struct {
@@ -170,7 +170,7 @@ func TestToHeaders(t *testing.T) {
 		})
 	}
 
-	// A scalar where an array was wanted is a typo the script sees reported.
+	// A scalar where the option takes an array is a typo the script sees reported.
 	for _, value := range []any{"Authorization: Bearer token", int64(1), true} {
 		if _, err := toHeaders(value); err == nil {
 			t.Errorf("toHeaders(%#v) accepted a value that is no array", value)

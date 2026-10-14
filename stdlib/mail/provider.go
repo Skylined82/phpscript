@@ -94,7 +94,7 @@ func (p *Provider) Send(_ context.Context, name, recipient, subject, body string
 
 // resolve returns the credential for name, defaulting an empty name. A name
 // nobody configured is reported the way an unconfigured database connection
-// is: the name named, and nothing about what was configured.
+// is: the name the caller passes, and nothing about the configuration.
 func (p *Provider) resolve(name string) (Config, error) {
 	if name == "" {
 		name = DefaultName

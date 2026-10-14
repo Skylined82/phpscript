@@ -5,7 +5,7 @@
 // the host chooses, and prunes by modification time.
 //
 // A manager wraps whichever storage it is given for tracing, so a request's
-// trace shows which backend it paid for and whether the session was there. The
+// trace shows which backend it paid for and whether the session exists. The
 // session ID is never recorded: it is the credential in the cookie.
 //
 // It is wired in by importing it; stdlib/imports.go does that.

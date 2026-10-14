@@ -133,7 +133,7 @@ func TestMailClass(t *testing.T) {
 
 // TestMailUnknownServer pins the fail-fast: a name nobody configured is
 // reported at construction, before a script has written a message, and the
-// error names the server that was named, and no other.
+// error names the server the script selects, and no other.
 func TestMailUnknownServer(t *testing.T) {
 	queue := mailstdlib.NewMemory("default")
 	got := run(t, queue, `
@@ -149,9 +149,9 @@ func TestMailUnknownServer(t *testing.T) {
 	}
 }
 
-// TestMailTakesAName pins the removal of the options-array constructor. It was
-// the one way to put a password into the runtime scope, so the removal is a
-// stated behaviour and no omission.
+// TestMailTakesAName pins the absence of an options-array constructor. One
+// would be the single way to put a password into the runtime scope, so its
+// absence is a stated behaviour and no omission.
 func TestMailTakesAName(t *testing.T) {
 	got := run(t, mailstdlib.NewMemory(), `
 		try {

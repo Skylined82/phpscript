@@ -7,7 +7,7 @@ import (
 
 // TestDerive covers both derivations through the one entry point
 // password_hash() uses: a bcrypt hash carries php's revision marker and the
-// cost it was written at, an argon2 hash carries the PHC string form, and each
+// cost it derives at, an argon2 hash carries the PHC string form, and each
 // one verifies.
 func TestDerive(t *testing.T) {
 	for _, tc := range []struct {

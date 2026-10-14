@@ -40,8 +40,8 @@ const (
 // phpPrefix is what PHP's crypt() writes and x/crypto refuses; goPrefix is
 // what x/crypto writes and PHP accepts.
 //
-// The two are the same algorithm. The `y` revision was PHP's marker for the
-// 2011 fix to the sign-extension bug, which Go's implementation never had, and
+// The two are the same algorithm. The `y` revision is PHP's marker for the
+// 2011 fix to the sign-extension bug, which Go's implementation never carried, and
 // x/crypto rejects any minor version outside the set it reads. Rewriting the
 // prefix on the way in and out makes a hash written here verify under php, and
 // a hash written by php verify here.
@@ -50,9 +50,9 @@ const (
 	goPrefix  = "$2a$"
 )
 
-// params is the algorithm and the work factors one hash was written at. One
-// type covers both algorithms because password_hash takes the options of
-// whichever algorithm it was handed; only the fields that algorithm reads are
+// params is the algorithm and the work factors of one hash. One type covers
+// both algorithms because password_hash takes the options of whichever
+// algorithm the call names; only the fields that algorithm reads are
 // set, and validate() is what decides which those are.
 type params struct {
 	algo   string
@@ -189,8 +189,8 @@ func Register(rt *runner.Runtime) {
 }
 
 // passwordVerify answers password_verify. The stored hash names the algorithm
-// and the work factors, so a login costs whatever the hash was written at and
-// nothing here can lower that.
+// and the work factors, so a login costs whatever the hash carries and nothing
+// here can lower that.
 //
 // What it can do is not pay a derivation for a value no derivation could match.
 // A string that is neither argon2 nor long enough to be bcrypt is false in the
@@ -218,7 +218,7 @@ func algoName(algo string) string {
 	return algo
 }
 
-// paramsOf reads back the parameters a stored hash was written at.
+// paramsOf reads back the parameters a stored hash carries.
 // password_get_info and password_needs_rehash both answer from it.
 func paramsOf(hash string) (params, bool) {
 	if isArgon2(hash) {
@@ -286,7 +286,7 @@ func paramsFrom(opts []any) (params, error) {
 }
 
 // algoFrom picks the algorithm out of the tail. A bare number is PHP 7's
-// spelling of the identifiers, where 1 was bcrypt, 2 argon2i and 3 argon2id;
+// spelling of the identifiers: 1 is bcrypt, 2 argon2i and 3 argon2id.
 // PHP 8 refuses an integer outright, and accepting it is what keeps a script
 // written against the older constants from silently storing the wrong
 // algorithm.
@@ -319,7 +319,7 @@ func algoFrom(opts []any) (string, error) {
 }
 
 // legacyAlgo maps PHP 7's integer identifiers. Anything else is bcrypt, which
-// is what PASSWORD_DEFAULT was in that version.
+// is what PASSWORD_DEFAULT names in that version.
 func legacyAlgo(value int64) string {
 	switch value {
 	case 2:

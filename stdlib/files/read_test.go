@@ -11,8 +11,8 @@ import (
 )
 
 // sourceTree is the read-only application an embedded or in-memory host ships.
-// It is not on disk, so a read that answers from it proves the fs.FS was
-// consulted and not the host filesystem underneath.
+// It is not on disk, so a read that answers from it proves the read goes
+// through the fs.FS and never the host filesystem underneath.
 func sourceTree() fstest.MapFS {
 	return fstest.MapFS{
 		"one.txt":          {Data: []byte("one"), ModTime: sourceModTime},
@@ -28,7 +28,7 @@ func sourceTree() fstest.MapFS {
 var sourceModTime = time.Unix(1756600000, 0)
 
 // TestGlobListsTheSourceFilesystem pins the ordinary case: patterns resolve
-// inside the bound fs.FS and answer in the spelling they were written in.
+// inside the bound fs.FS and answer in the pattern's own spelling.
 func TestGlobListsTheSourceFilesystem(t *testing.T) {
 	opts := runner.Options{RootFS: sourceTree()}
 	for _, test := range []struct {
@@ -52,7 +52,7 @@ func TestGlobListsTheSourceFilesystem(t *testing.T) {
 
 // TestGlobIsJailedToTheSourceFilesystem pins where "/" points. It is the source
 // filesystem's root and never the host's, so an absolute pattern names something
-// inside the tree the script was served from and there is no spelling that
+// inside the tree serving the script and there is no spelling that
 // reaches past it; php would list whatever the host holds at that path, and
 // that divergence is the point. A pattern that climbs is cleaned against the
 // root, the rule every path a script passes this package follows.

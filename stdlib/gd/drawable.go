@@ -11,7 +11,7 @@ import (
 // and a decoder that produced something else is copied into one by wrap.
 type Drawable = draw.Image
 
-// fillRect paints r in one colour, replacing what was under it.
+// fillRect paints r in one colour, replacing what lies under it.
 func fillRect(dst Drawable, r image.Rectangle, c color.Color) {
 	draw.Draw(dst, r, &image.Uniform{c}, image.Point{}, draw.Src)
 }

@@ -187,7 +187,7 @@ func TestDatabaseProviderCachesUnderResolvedName(t *testing.T) {
 }
 
 // TestNewIsolatesProviders is the property virtual hosting rests on: a
-// provider only resolves the connections it was built with, and two
+// provider only resolves its own connections, and two
 // providers do not share the databases they open.
 func TestNewIsolatesProviders(t *testing.T) {
 	shop := New([]string{"PLATFORM_DB_SHOP=sqlite://:memory:"})

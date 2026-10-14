@@ -64,7 +64,7 @@ func TestExceptionSemantics(t *testing.T) {
 		},
 		{
 			name: "reference semantics across a call",
-			// The helper was called rename(), which php refuses: the name
+			// The helper avoids the name rename(), which php refuses: the name
 			// is taken by a built-in, and declaring over one is a fatal
 			// error there and a RedeclareError here.
 			php: `<?php

@@ -123,7 +123,7 @@ func TestOutputBufferingIsWiredByImport(t *testing.T) {
 }
 
 // TestBuffersAreScopedToOneRuntime pins what lets concurrent requests buffer at
-// the same time: the stack belongs to the runtime the bindings were installed
+// the same time: the stack belongs to the runtime holding the bindings
 // on, not to the package.
 func TestBuffersAreScopedToOneRuntime(t *testing.T) {
 	program, err := parser.Parse(`<?php ob_start(); echo "captured"; $text = ob_get_clean(); echo "[" . $text . "]" . ob_get_level();`)

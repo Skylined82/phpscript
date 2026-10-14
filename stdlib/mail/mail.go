@@ -90,7 +90,7 @@ func serverName(names []any) (string, error) {
 // a delivery that is certain to be private, and a size answers the question a
 // trace is opened to answer.
 //
-// The server is recorded by the name it was configured under and never by
+// The server is recorded by its configured name and never by
 // its hostname. The name is what an operator reads the trace against, and it
 // is all this side of the provider holds, because the interface exposes
 // no part of a credential, hostname included.

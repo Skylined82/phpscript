@@ -32,7 +32,7 @@ func Register(rt *runner.Runtime) {
 }
 
 // RegisterRoot installs the filesystem shims rooted at dir, replacing whatever
-// root was installed before it, so a host calls it after stdlib.Register
+// root stands before it, so a host calls it after stdlib.Register
 // (stdlib.RegisterFS does exactly that).
 //
 // The boundary every path resolves against, and what writable_paths adds to it,
@@ -85,7 +85,7 @@ func (r root) resolve(p string) string {
 // interchangeable: resolve answers with a host path joined onto r.dir, while an
 // fs.FS takes a slash path relative to its own root and rejects anything else,
 // r.dir included. Passing resolve's answer to an fs.FS is how a read silently
-// stopped going through it whenever r.dir was not ".".
+// stops going through it for any r.dir but ".".
 //
 // The runtime states the rule, in resolveFSPath, because an include is held to
 // the same one: a path written from "/" names the root, anything else is
@@ -134,7 +134,7 @@ func (r root) unresolve(names []string) []string {
 	return out
 }
 
-// globSpelling rewrites matches into the shape the pattern was written in. PHP
+// globSpelling rewrites matches into the pattern's own shape. PHP
 // echoes a pattern's own shape back: a pattern written from the root answers
 // from the root, and one written relative to the working directory answers
 // relative to it. Answering resolved paths would make every match unusable as
