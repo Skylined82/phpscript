@@ -9,7 +9,7 @@ import (
 
 // TestWriteJSONReport covers the machine-readable report a run writes. The
 // total is counted off the results, so a reader has the count without walking
-// the list, and every TestResult field keeps the json name it was tagged with.
+// the list, and every TestResult field keeps its json tag name.
 func TestWriteJSONReport(t *testing.T) {
 	var out strings.Builder
 	results := []*TestResult{

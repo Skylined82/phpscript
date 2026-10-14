@@ -76,7 +76,7 @@ func TestFlatstackCompilesClosures(t *testing.T) {
 		{
 			// A closure created inside a try is jumped over without leaving the
 			// handler the try armed, and one that throws is caught by the try
-			// the call was made from.
+			// holding the call.
 			name:   "created and throwing inside a try",
 			source: `<?php try { $f = function () { throw new Exception("boom"); }; echo implode(",", array_map($f, array(1))); } catch (Exception $e) { echo "caught:", $e->getMessage(); }`,
 			want:   "caught:boom",
@@ -90,8 +90,8 @@ func TestFlatstackCompilesClosures(t *testing.T) {
 			want:   "121,2,3",
 		},
 		{
-			// preg_match writes an output parameter through the frame the call
-			// was made from, which for this one is the closure's own.
+			// preg_match writes an output parameter through the frame holding
+			// the call, which for this one is the closure's own.
 			name:   "an output parameter inside a closure body",
 			source: `<?php $keep = "kept"; $hits = array_map(function ($s) { preg_match('/([0-9])/', $s, $m); return $m[1]; }, array("a1", "b2")); echo implode(",", $hits), $keep;`,
 			want:   "1,2kept",

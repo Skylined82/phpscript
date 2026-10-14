@@ -461,8 +461,8 @@ func TestBindingCollectionsAreWritableInPlace(t *testing.T) {
 }
 
 // TestBindingKeyedMapReads covers reading a map whose key is not a string.
-// The index arrives as an int64 and the map is keyed by int, which panicked the
-// host before the key was coerced.
+// The index arrives as an int64 and the map is keyed by int, so the host panics
+// without the coercion.
 func TestBindingKeyedMapReads(t *testing.T) {
 	cases := []struct {
 		name string
@@ -592,11 +592,10 @@ $caser = new Caser;
 // whether the binding declared the uniform func(...any) (any, error) shape or
 // its own.
 //
-// Both columns were unreachable for part of the table. coerceArgOn accepted a
-// *Callable only against the uniform type, so a binding declaring
-// func(string) string was told a Closure is not a callable, and the uniform type
-// itself was only ever filled from a *Callable, so the four spellings that are
-// not one could not fill it either.
+// Both columns need every cell: accepting a *Callable against the uniform type
+// alone leaves a binding declaring func(string) string reporting that a Closure
+// is not a callable, and filling the uniform type from a *Callable alone leaves
+// the four spellings that are not one unable to fill it either.
 func TestBindingTakesEveryCallableSpelling(t *testing.T) {
 	spellings := []struct {
 		name string
@@ -1046,10 +1045,10 @@ func BenchmarkScriptPregMatch(b *testing.B) {
 // ---------------------------------------------------------------------------
 
 // These two run the same script against runtimes with different function-table
-// sizes. They differed by a wide margin while the expression
-// environment was rebuilt on every Eval with one closure per registered
-// function, and that rebuild was most of a script's allocations. Pooled
-// environments with on-demand function installation removed it, and
+// sizes. A rebuild of the expression environment on every Eval, with one
+// closure per registered function, separates them by a wide margin and
+// accounts for most of a script's allocations. Pooled environments with
+// on-demand function installation close the gap, and
 // docs/allocation-performance.md records the result.
 //
 // So the pair measures no cost. It measures the absence of one: the

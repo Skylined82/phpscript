@@ -488,7 +488,7 @@ func TestRegisterFuncBetweenRuns(t *testing.T) {
 	}
 
 	out.Reset()
-	// Replace one function and add another after the environment was built.
+	// Replace one function and add another past the environment's build.
 	rt.RegisterFunc("greet", func(s string) string { return "hi " + s })
 	rt.RegisterFunc("shout", strings.ToUpper)
 	if err := rt.Run(second); err != nil {

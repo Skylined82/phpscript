@@ -6,8 +6,8 @@ import (
 )
 
 // TestWithWorker covers how a fixture run finds its caches. Go has no
-// goroutine-local storage, so the worker id rides the context the run was
-// started with, already threaded from the command down.
+// goroutine-local storage, so the worker id rides the run's own context,
+// already threaded from the command down.
 //
 // A context nothing marked answers worker zero, which is a worker like any
 // other, so a single-threaded run and a Go test calling RunFixture directly

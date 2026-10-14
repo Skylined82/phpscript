@@ -11,7 +11,7 @@ func names(o *model.Object) string {
 	return strings.Join(o.Names(), ",")
 }
 
-// A property reads back where it was added, as PHP does and as
+// A property reads back in the slot it arrives in, as PHP does and as
 // json_encode, print_r, var_dump, get_object_vars, the (array) cast and foreach
 // all show a script.
 func TestObjectKeepsInsertionOrder(t *testing.T) {
@@ -37,7 +37,7 @@ func TestObjectKeepsInsertionOrder(t *testing.T) {
 }
 
 // A declared field holds the slot its declaration gave it: it comes first
-// whatever order the properties were assigned in, and returns to that slot
+// whatever order the properties arrive in, and returns to that slot
 // after an unset. A dynamic property has no slot and moves to the end.
 func TestObjectOrdersDeclaredFieldsFirst(t *testing.T) {
 	class := &model.Class{Name: "Row", Fields: []model.Field{{Name: "id"}, {Name: "name"}}}
@@ -90,7 +90,7 @@ func TestObjectReportsUnrecordedProperties(t *testing.T) {
 	}
 }
 
-// Deleting a property that was never set leaves the object alone, and Range
+// Deleting a property nothing set leaves the object alone, and Range
 // stops when its callback says to.
 func TestObjectDeleteMissingAndRangeStop(t *testing.T) {
 	o := model.NewStdClass()

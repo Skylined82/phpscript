@@ -248,7 +248,7 @@ func (f *Fixture) SetRootFS(root fs.FS) {
 // It keeps the fixture's whole path and not its base, because the parser
 // compiles __DIR__ from the name a file is read under: served at the area root
 // the name has no directory, and a fixture reading __DIR__ would see "/"
-// where the folder it was written in belongs.
+// where its own folder belongs.
 func (f *Fixture) sourceName() string {
 	name := fsName(filepath.ToSlash(f.Path))
 	// A .php fixture is already a file the runtime can open, under a name it
@@ -343,7 +343,7 @@ func (f *Fixture) caches(ctx context.Context) (*runner.IncludeCache, *runner.Exp
 	// The fixture is passed and not its trees, because this runs per
 	// execution: building them means building the fixture's whole options
 	// struct, and a method value handed over as a thunk allocates a closure
-	// every time for a cache that was filled on the first run.
+	// every time for a cache the first run fills.
 	return w.includeFor(f.cacheRoot(), f, w.expr), w.expr
 }
 
@@ -374,8 +374,8 @@ func (f *Fixture) flatCaches(ctx context.Context) (*flatstack.IncludeCache, *fla
 	return w.flatIncludeFor(f.cacheRoot()), w.flatExpr
 }
 
-// acquireRuntime answers the runtime this run executes on, and whether it was
-// just built and still needs its bindings.
+// acquireRuntime answers the runtime this run executes on, and whether it is
+// fresh and still needs its bindings.
 //
 // Worker scope returns the worker's own runtime, Reset for this run and never
 // rebuilt: a reset runtime keeps the maps and buckets it grew, so the next
@@ -427,7 +427,7 @@ func (f *Fixture) acquireRuntime(ctx context.Context, out io.Writer) (*runner.Ru
 	return rt, true
 }
 
-// runtimeKey names what a runtime was built for. A worker reuses its runtime
+// runtimeKey names what a runtime serves. A worker reuses its runtime
 // when the next fixture answers the same key and builds another when it does
 // not: RootFS is fixed at construction and stdlib.RegisterFS binds the file
 // bindings to a directory, so neither survives a move. Fixtures arrive grouped
@@ -453,7 +453,7 @@ type worker struct {
 	expr        *runner.ExprCache
 	flatExpr    *flatstack.ExprCache
 
-	// The runtime this worker reuses, and the key it was built for. One
+	// The runtime this worker reuses, and the key it serves. One
 	// runtime per worker, and not one per fixture, is what bounds what a
 	// run holds by --parallel and not by the number of fixtures.
 	interp    *runner.Runtime
@@ -511,8 +511,8 @@ var (
 )
 
 // currentWorker answers the caches for the worker ctx names. Go has no
-// goroutine-local storage, so the id rides the context the run was started
-// with - which is already threaded from the command down to here.
+// goroutine-local storage, so the id rides the run's own context, already
+// threaded from the command down to here.
 func currentWorker(ctx context.Context) *worker {
 	id := 0
 	if got, ok := ctx.Value(workerKey).(int); ok {
@@ -565,7 +565,7 @@ func absPath(p string) string {
 func (f *Fixture) cleanState() bool { return f.cacheScope == CacheOff }
 
 // SetAppRoot points the fixture at the application root it runs under: the
-// directory the test command was invoked in, or the suite root of the
+// directory the test command runs in, or the suite root of the
 // phpscript.yml governing the fixture. The autoload folder convention and the
 // prelude includes resolve there, while the fixture's own relative includes
 // keep resolving against its directory: runnerOptions layers the two, fixture
@@ -711,7 +711,7 @@ func (f *Fixture) runnerOptions() runner.Options {
 // the runtimes execute, and the output they are held to beside it.
 //
 // The body is an ordinary file and no section of a document, so php runs it
-// where it lies and __FILE__ and __DIR__ read back the path it was written at.
+// where it lies and __FILE__ and __DIR__ read back its own path.
 // It also means the body can be run by hand, which a .phpt cannot. The form
 // carries no frontmatter: a fixture needing one declares a .phpt.
 const (
@@ -977,8 +977,8 @@ type programLoader interface {
 }
 
 // load answers the fixture's program, reading its body through the runtime the
-// first time so the parse and the compile land in the caches the tree was
-// precompiled into. The program is held because it is the same one on a repeat:
+// first time so the parse and the compile land in the caches a precompile pass
+// fills. The program is held because it is the same one on a repeat:
 // --count re-runs the body, it does not re-read it.
 func (f *Fixture) load(rt programLoader) (*model.Program, error) {
 	if f.prog != nil {
@@ -1030,8 +1030,8 @@ func executeFixturePHP(ctx context.Context, f *Fixture) (string, runner.Context,
 		rt.FreezeStdlib()
 	}
 	// The fixture names itself before the load, because the first name a
-	// runtime is given wins: a fixture reading __DIR__ reads the directory it
-	// was written in, and not the file its body is served from. An empty __DIR__
+	// runtime is given wins: a fixture reading __DIR__ reads its own directory,
+	// never the file its body is served from. An empty __DIR__
 	// silently turns __DIR__ . "/x" into "/x", which is then rejected as
 	// escaping the root: a confusing two-step failure a long way from its cause.
 	rt.UpdateFilename(f.Path)
@@ -1127,8 +1127,8 @@ func executeFlatstack(ctx context.Context, f *Fixture) (string, runner.Context, 
 // acquireFlatRuntime is acquireRuntime for the bytecode runtime: worker scope
 // returns the worker's flat runtime, Reset for this run and rebuilt once
 // per folder and not once per fixture. Building a runtime is a full
-// stdlib registration, which single-shot runs were paying per fixture on
-// this engine while the interpreter amortised it per folder.
+// stdlib registration, which a single-shot run pays per fixture on this
+// engine while the interpreter amortises it per folder.
 func (f *Fixture) acquireFlatRuntime(ctx context.Context, out io.Writer) (*flatstack.Runtime, *flatstack.ExprCache, bool) {
 	include, expr := f.flatCaches(ctx)
 

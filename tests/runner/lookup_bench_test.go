@@ -261,7 +261,7 @@ function helper_b() { return 2; }
 }
 
 // lookupHandlerTree is one PHP handler answering through the net/http values it
-// was handed, so the shapes below differ by what the host does around it.
+// holds, so the shapes below differ by what the host does around it.
 var lookupHandlerTree = fstest.MapFS{"h.php": {Data: []byte(`<?php
 namespace App;
 function index($w, $r) {

@@ -361,7 +361,7 @@ type probeError string
 
 func (e probeError) Error() string { return string(e) }
 
-// A thrown Exception reports the code it was constructed with, and never the
+// A thrown Exception reports its own code, and never the
 // zero the Throwable fallback supplies for a bare Go error. This needs the
 // standard library, where the Exception class is registered.
 func TestThrownExceptionKeepsItsCode(t *testing.T) {

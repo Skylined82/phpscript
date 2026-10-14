@@ -507,9 +507,9 @@ try { $host = new PanicHost; } catch (Exception $e) { echo "caught: " . $e; }
 
 // TestFlatstackPrecompiledAllocationBudget fails when a precompiled program's
 // per-run allocations regress past the measured budget plus one of headroom.
-// The budgets were measured after the frame-handle host bridge and the pooled
-// exec state landed; a regression here is a pooling or bridge leak, not noise,
-// because AllocsPerRun is exact.
+// The budgets measure the tree with the frame-handle host bridge and the
+// pooled exec state in place; a regression here is a pooling or bridge leak
+// and never noise, because AllocsPerRun is exact.
 func TestFlatstackPrecompiledAllocationBudget(t *testing.T) {
 	tests := []struct {
 		name   string

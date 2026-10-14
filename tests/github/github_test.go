@@ -4,7 +4,7 @@
 // A fixture runs a script. An issue about route registration, a server flag or
 // a host binding needs the machinery around the script, so it is covered here
 // instead, named Test_IssueNNN after the issue it closes.
-// tests/fixtures/github/NNN.yml keeps the transcript that was reported.
+// tests/fixtures/github/NNN.yml keeps the reported transcript.
 package github_test
 
 import (

@@ -205,7 +205,7 @@ func (s *Suite) RunHook(ctx context.Context, file string, out io.Writer) error {
 }
 
 // RunSetup runs the setup hooks of every suite, outermost first, and stops at
-// the first failure. A suite whose state was not laid down has nothing for its
+// the first failure. A suite nothing lays state down for has nothing for its
 // fixtures to assert against, so the run fails before one executes and not
 // reporting the same missing table once per fixture.
 func RunSetup(ctx context.Context, suites []*Suite, out io.Writer) error {

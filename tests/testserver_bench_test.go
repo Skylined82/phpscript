@@ -196,7 +196,7 @@ type benchServerBody struct {
 
 func (b *benchServerBody) Close() error { return nil }
 
-// benchServerWriter discards the response and records that there was one. A
+// benchServerWriter discards the response and records the write. A
 // httptest.ResponseRecorder would grow a buffer per iteration and put its own
 // allocations in the number.
 type benchServerWriter struct {

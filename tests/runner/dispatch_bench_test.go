@@ -56,8 +56,8 @@ func BenchmarkDispatchBaseline(b *testing.B) {
 // It exists because the shape of a binding's return is not a local decision.
 // Adding an error return is a correctness change that reads as one line, and
 // it decides the dispatch path for every call to that
-// name afterwards; no benchmark in the tree covered sprintf, so the move was
-// free to happen unmeasured.
+// name afterwards. This benchmark is what prices sprintf, so the move lands
+// measured.
 func BenchmarkDispatchSprintf(b *testing.B) {
 	benchCalls(b, `sprintf("%s-%d", "a", 3);`)
 }

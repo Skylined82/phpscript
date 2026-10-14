@@ -17,8 +17,8 @@ func TestMain(m *testing.M) {
 }
 
 func setTestEnv() {
-	// The process environment comes first, as it did when the connections
-	// were set up by the platform package; the test DSNs override it.
+	// The process environment comes first, as it does where the platform
+	// package sets up the connections; the test DSNs override it.
 	env := append(append([]string{}, os.Environ()...),
 		"PLATFORM_DB_SQLITE_TEST=sqlite://file:phpscript-test?mode=memory&cache=shared",
 		"PLATFORM_DB_POSTGRES_TEST=postgres://postgres:test@localhost:15432/postgres?sslmode=disable",

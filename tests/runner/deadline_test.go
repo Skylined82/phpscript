@@ -269,8 +269,8 @@ func TestTimeLimitEndsAnEmptyLoop(t *testing.T) {
 
 // TestTimeLimitHoldsPastAnAbortBeingIgnored is the contract SetIgnoreUserAbort
 // documents: ignoring the client is not permission to run forever. The limit
-// is unreachable once the host context has been cancelled without this, because the
-// cause was read off that context.
+// is unreachable once the host context has been cancelled without this, because
+// the cause reads off that context.
 func TestTimeLimitHoldsPastAnAbortBeingIgnored(t *testing.T) {
 	t.Parallel()
 	ctx, abort := context.WithCancel(context.Background())
@@ -339,8 +339,8 @@ func TestTimeLimitDoesNotOutliveItsProgram(t *testing.T) {
 }
 
 // TestDeadlineStillHoldsAfterAShutdownPass covers the other half of reuse: the
-// shutdown pass turns the clock off so its callbacks can run, and used to leave
-// it off, so every later program on that runtime was unbounded.
+// shutdown pass turns the clock off so its callbacks can run, and turns it
+// back on, so a later program on that runtime stays bounded.
 func TestDeadlineStillHoldsAfterAShutdownPass(t *testing.T) {
 	t.Parallel()
 	var out strings.Builder
@@ -419,9 +419,9 @@ echo "finished";
 }
 
 // TestIgnoreUserAbortReadsWithoutClearing covers the idiomatic guard. The
-// binding took a required bool, so the no-argument spelling was zero-padded to
-// false and turned off the thing it was asking about: the loop below would then
-// be stopped by the disconnect the line above it had just said to ignore.
+// binding takes an optional bool: a required one zero-pads the no-argument
+// spelling to false and turns off the thing the call reads, which stops the
+// loop below on the disconnect the line above it names as ignored.
 func TestIgnoreUserAbortReadsWithoutClearing(t *testing.T) {
 	t.Parallel()
 	ctx, abort := context.WithCancel(context.Background())

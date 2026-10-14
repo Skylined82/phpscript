@@ -34,7 +34,7 @@ func runScript(t *testing.T, src, entry string) (string, error) {
 
 // A first-class callable resolves the same names a call resolves, so a host
 // static registered under its whole spelling answers, `self::` resolves against
-// the method it was written in, and a bound method keeps its receiver.
+// its enclosing method, and a bound method keeps its receiver.
 func TestFirstClassCallableResolution(t *testing.T) {
 	tests := []struct {
 		name  string
