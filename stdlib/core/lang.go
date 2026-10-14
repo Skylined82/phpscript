@@ -98,7 +98,7 @@ func registerLang(rt *runner.Runtime) {
 	// loop, a worker reusing its runtime - and each of those brings its own
 	// stdin. Reading through the runtime means STDIN is whatever the current
 	// session's is, the way php://output writes wherever output goes at the
-	// time, and not where it went when the handle was made.
+	// time, and never where it went at the moment of the handle.
 	rt.SetConst("STDIN", stdinStream{rt: rt})
 	// spl_autoload_register registers $callback as an autoloader, or the
 	// default spl_autoload when $callback is null or omitted; $prepend puts

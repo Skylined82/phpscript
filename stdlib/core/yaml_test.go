@@ -7,8 +7,7 @@ import (
 
 // TestYAMLDecode covers the shapes a document arrives in, which are the ones
 // json_decode answers with: a mapping is an array keyed by its field names and
-// a sequence is a list, so a settings file reads the same either way it was
-// written.
+// a sequence is a list, so a settings file reads the same in either spelling.
 func TestYAMLDecode(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(yaml_decode("a: 1\nb: two\nc:\n  - 1\n  - 2\n"));`)
@@ -23,7 +22,7 @@ var_dump(yaml_decode("a: 1\nb: two\nc:\n  - 1\n  - 2\n"));`)
 	}
 }
 
-// TestYAMLDecodeKeysAreSorted covers a decision rather than a php behaviour.
+// TestYAMLDecodeKeysAreSorted covers a decision of this runtime's own.
 // The decoder answers a Go map and a Go map has no order, so reading one
 // document twice would build two differently ordered arrays. A settings file is
 // read by name, so sorting costs nothing and the same input decodes the same
@@ -73,7 +72,7 @@ try {
 }
 
 // TestYAMLEncode covers what is written back: an array that is a list becomes a
-// sequence, any other array a mapping in the order its keys were set, and a
+// sequence, any other array a mapping in key order, and a
 // scalar its own plain spelling.
 func TestYAMLEncode(t *testing.T) {
 	got := runPHP(t, `<?php
@@ -89,7 +88,7 @@ echo yaml_encode("plain");`)
 	}
 }
 
-// TestYAMLRoundTrip covers the pair together, which is what a script storing a
+// TestYAMLRoundTrip covers the pair together, the path a script storing a
 // value and reading it back does. The encoder keeps no JSON conversion of its
 // own: json_encode builds an ordered object that only the JSON marshaller
 // knows how to write, and handing one to the YAML marshaller produced an empty

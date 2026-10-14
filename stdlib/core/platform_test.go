@@ -8,9 +8,9 @@ import (
 // TestStrtr covers both spellings of strtr. Three arguments replace bytes
 // positionally and stop at the shorter of the two tables, so a $to shorter
 // than $from leaves the uncovered bytes alone. Two arguments replace
-// substrings, longest key first, which is what makes the result independent of
-// the order the pairs were written in and keeps a replacement from rewriting
-// its own output: ["a" => "b", "b" => "c"] over "abc" is "bcc" and never "ccc".
+// substrings, longest key first, so the result is independent of the order the
+// pairs appear in and a replacement never rewrites its own output:
+// ["a" => "b", "b" => "c"] over "abc" is "bcc" and never "ccc".
 func TestStrtr(t *testing.T) {
 	got := runPHP(t, `<?php
 echo strtr("hello", "el", "ip"), "\n";
@@ -28,7 +28,7 @@ echo strtr("hello", "abc", "x"), "\n";`)
 // TestStrrpos covers the offset argument, which means two different things by
 // its sign. A positive offset skips that many leading bytes, so the search
 // runs over the rest. A negative one caps where the match may start, counted
-// back from the end, and the answer is still a position in the whole string:
+// back from the end, and the result is still a position in the whole string:
 // -5 over "hello world" finds the "o" at 4 and not the one at 7.
 //
 // A needle that does not occur is false and never -1, because a caller
@@ -46,8 +46,8 @@ var_dump(strrpos("hello world", "o"), strrpos("hello world", "o", 5), strrpos("h
 // TestFilterVar covers the three validators this runtime implements, which
 // each answer the typed value or false and never the input: "42" validates to
 // the int 42, so a caller can use the result directly. The value is trimmed
-// first, and a float spelling fails the integer validator rather than
-// truncating.
+// first, and a float spelling fails the integer validator and truncates
+// nothing.
 //
 // An unknown filter passes the value through, as FILTER_DEFAULT does.
 func TestFilterVar(t *testing.T) {
@@ -70,9 +70,9 @@ var_dump(filter_var("passed through"));`)
 }
 
 // TestDefineDefinedConstant covers the three functions a script defines its own
-// constants through. define answers true, defined answers for a name it was
-// never given, and constant reads one back by name, which is how a script
-// reaches a constant whose name it computed.
+// constants through. define answers true, defined answers for a name nothing
+// defines, and constant reads one back by name, so a script reaches a constant
+// whose name it computed.
 func TestDefineDefinedConstant(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(define("GREETING", "hello"));
@@ -87,8 +87,8 @@ var_dump(constant("GREETING"));`)
 
 // TestPlatformIntegerConstants covers the constants a library branches on
 // before it does anything else. The integer limits are the 64-bit ones because
-// that is the only width this runtime has, and E_ALL is 30719 rather than
-// every bit set, since php 8 dropped E_STRICT from it.
+// that is the only width this runtime has, and E_ALL is 30719, which leaves
+// E_STRICT out as php 8 does.
 func TestPlatformIntegerConstants(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(PHP_INT_MAX, PHP_INT_MIN, PHP_INT_SIZE, PHP_FLOAT_DIG, PHP_EOL);
@@ -107,8 +107,8 @@ var_dump(E_ALL, E_ERROR, E_WARNING, E_NOTICE, E_DEPRECATED);`)
 // which language features it may use. The three spellings have to agree,
 // because a library gates on whichever one it learned.
 //
-// It is deliberately not the version of the php binary the fixture matrix runs
-// beside, so this test states the value rather than settling it by running php.
+// The php binary the fixture matrix runs beside carries its own version, so
+// this test states the value and settles nothing by running php.
 func TestPlatformVersion(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(PHP_VERSION, PHP_MAJOR_VERSION, PHP_MINOR_VERSION, PHP_RELEASE_VERSION, PHP_EXTRA_VERSION, PHP_VERSION_ID);

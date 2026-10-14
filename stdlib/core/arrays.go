@@ -101,7 +101,7 @@ func registerArrays(rt *runner.Runtime) {
 	// string keys alone; a value that is not a script array is an error.
 	rt.RegisterFunc("array_unshift", phpArrayUnshift)
 	// array_pop removes the last element of $array and returns it, leaving
-	// the remaining keys as they were; an empty array returns null and a
+	// the remaining keys alone; an empty array returns null and a
 	// value that is not a script array is an error.
 	rt.RegisterFunc("array_pop", phpArrayPop)
 	// array_push appends the given values to $array at the next integer keys
@@ -729,7 +729,7 @@ func arrayEntries(a *model.Array) []arrayEntry {
 // arrayReplay appends entries to a, which the caller has cleared. With
 // renumber set it applies PHP's re-keying rule for array_shift and
 // array_unshift: integer keys are handed out again from zero through Append,
-// string keys keep their name. Without it every key is restored as it was,
+// string keys keep their name. Without it every key comes back unchanged,
 // and array_pop needs that.
 func arrayReplay(a *model.Array, entries []arrayEntry, renumber bool) {
 	for _, e := range entries {

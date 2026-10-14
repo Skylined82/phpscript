@@ -62,7 +62,7 @@ echo intval("0x1A", 16), "|", intval("0x1A", 0), "|", intval("  -0x10", 0), "|",
 
 // TestIntvalSaturates covers the int64 bounds. The magnitude accumulates
 // unsigned so that -9223372036854775808 still reads exactly, and one digit past
-// the bound saturates the way strtol does instead of wrapping.
+// the bound saturates the way strtol does.
 func TestIntvalSaturates(t *testing.T) {
 	got := runPHP(t, `<?php
 echo intval("9223372036854775807", 10), "|", intval("9223372036854775808", 10), "|",
@@ -117,7 +117,7 @@ echo gettype($arr), "|", gettype($obj), "|", gettype($obj->name), "|", $obj->nam
 	}
 }
 
-// holder is a host-backed class: a Go value a constructor hands over, which a
+// holder is a host-backed class: a Go value a constructor returns, which a
 // script reads properties off the way it reads an interpreted object's.
 type holder struct {
 	Name string

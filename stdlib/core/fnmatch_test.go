@@ -4,8 +4,8 @@ import (
 	"testing"
 )
 
-// TestFnmatch pins the matcher against php. Every expectation here was produced
-// by running the same pattern, subject and flags through php's fnmatch, not
+// TestFnmatch pins the matcher against php. Every expectation here comes from
+// running the same pattern, subject and flags through php's fnmatch, never
 // through this implementation; the flag columns are the reason the table is
 // this long, since each one changes a different decision in the loop.
 func TestFnmatch(t *testing.T) {

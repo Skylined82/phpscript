@@ -30,8 +30,7 @@ func registerYAML(rt *runner.Runtime) {
 	// back sorted, and invalid input raises an error where php answers null.
 	rt.RegisterFunc("yaml_decode", phpYAMLDecode)
 	// yaml_encode returns $value as YAML, writing an array that is a list as
-	// a sequence and any other array as a mapping in the order its keys were
-	// set.
+	// a sequence and any other array as a mapping in key order.
 	rt.RegisterFunc("yaml_encode", phpYAMLEncode)
 }
 

@@ -38,7 +38,7 @@ func TestTokenizerConstants(t *testing.T) {
 	}
 }
 
-// TestTokenName covers reading an id back as the name it was registered under,
+// TestTokenName covers reading an id back as its registered name,
 // so a token_get_all() result prints as something a reader recognises. An id
 // the tokenizer never emits answers "UNKNOWN", php's own wording for one.
 func TestTokenName(t *testing.T) {

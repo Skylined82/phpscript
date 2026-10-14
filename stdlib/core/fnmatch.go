@@ -134,7 +134,7 @@ func fnmatchBytes(pattern, str string, mode int64) bool {
 		}
 		if period && starStart && next == starPos && str[next] == '.' {
 			// Nor does it swallow a leading period under
-			// FNM_PERIOD. Matching nothing was already tried.
+			// FNM_PERIOD. The branch above already matches nothing.
 			return false
 		}
 		next++
@@ -153,7 +153,7 @@ func fnmatchBytes(pattern, str string, mode int64) bool {
 
 // fnmatchClass matches one bracket expression starting at pattern[open], which
 // is the '['. It reports the offset just past the closing ']', whether b is in
-// the set, and whether the expression was closed at all.
+// the set, and whether the expression closes at all.
 //
 // PHP accepts both [!...] and [^...] for a negated class, so both are read
 // here. A ']' in the first position is a literal, as POSIX has it.

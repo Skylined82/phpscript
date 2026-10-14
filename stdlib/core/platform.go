@@ -240,7 +240,7 @@ func registerPlatformFuncs(rt *runner.Runtime) {
 		return lastIndexOrFalse(strings.LastIndex(haystack[:end], needle))
 	})
 
-	// spl_autoload_unregister removes autoloader $callback and reports whether it was registered.
+	// spl_autoload_unregister removes autoloader $callback and reports whether it holds a registration.
 	rt.RegisterFunc("spl_autoload_unregister", func(callback any) bool {
 		return rt.UnregisterAutoloader(callback)
 	})

@@ -235,7 +235,7 @@ func filterByKey(array any, others []any, keep bool) *model.Array {
 
 // edgeKey answers the first or last key. There is no internal pointer in this
 // runtime, and array_key_first and array_key_last are for that: they read
-// an edge without one, where PHP's older spelling was reset() plus key().
+// an edge without one, where PHP's older spelling is reset() plus key().
 func edgeKey(array any, first bool) any {
 	var found any
 	has := false

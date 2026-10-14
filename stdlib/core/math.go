@@ -192,8 +192,8 @@ func phpLog(num, base float64) float64 {
 
 // phpMinMax backs min and max. Either one collection or a list of values is
 // accepted, every candidate is ordered with phpval.Compare, and the winning
-// element is returned as it was given, so max(1, "2", 3) is int(3) and not
-// a number the comparison produced. want is 1 for max and -1 for min.
+// element comes back unchanged, so max(1, "2", 3) is int(3) and never
+// a number the comparison built. want is 1 for max and -1 for min.
 //
 // Equal values are broken the way PHP breaks them, which is not the same way
 // for both: min keeps the last of several equal values and max keeps the first,

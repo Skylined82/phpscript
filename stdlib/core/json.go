@@ -76,7 +76,7 @@ func phpJSONDecode(text string, opts ...any) (any, error) {
 //
 // It reads tokens and decodes into no map, because a Go map has no
 // order and the decoder would return the document's keys in a different
-// order on every run. PHP preserves the order the object was written in, so a
+// order on every run. PHP preserves the document's own order, so a
 // decoded object encoded again reads the way it arrived.
 func jsonDecodeStream(dec *json.Decoder) (any, error) {
 	token, err := dec.Token()
@@ -189,10 +189,10 @@ func jsonEncodeValue(v any) any {
 	}
 }
 
-// jsonObject is a JSON object that keeps the order its entries were added in.
+// jsonObject is a JSON object that keeps the order its entries arrive in.
 //
 // encoding/json sorts the keys of a Go map and PHP does not: json_encode writes
-// an array in the order it was built, so a row encoded for a client reads back
+// an array in build order, so a row encoded for a client reads back
 // in the order the script assembled it. A map cannot carry that order, which is
 // why this type exists in place of a map[string]any.
 type jsonObject struct {

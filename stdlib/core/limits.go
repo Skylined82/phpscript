@@ -48,8 +48,8 @@ func registerLimits(rt *runner.Runtime) {
 		// Variadic so that the read-only spelling php has, ignore_user_abort()
 		// with no argument, leaves the setting alone. A plain bool parameter is
 		// zero-padded when the argument is missing, so `if
-		// (ignore_user_abort())` would have turned off the thing it was asking
-		// about. It still answers nothing; docs/README.md records that.
+		// (ignore_user_abort())` would turn off the thing it reads. It still
+		// answers nothing; docs/README.md records that.
 		if len(enable) == 0 {
 			return
 		}

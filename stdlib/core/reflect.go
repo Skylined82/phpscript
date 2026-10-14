@@ -105,7 +105,7 @@ func classNameOf(value any) string {
 	if object, ok := value.(*model.Object); ok && object.Class != nil {
 		return object.Class.Name
 	}
-	// A throwable knows the class it was constructed as, and several of them
+	// A throwable records its own class, and several of them
 	// share one Go type, so the Go type name would answer "Exception" for an
 	// InvalidArgumentException.
 	if throwable, ok := value.(runner.Throwable); ok {

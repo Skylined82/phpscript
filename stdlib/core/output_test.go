@@ -5,7 +5,7 @@ import (
 )
 
 // TestVarExport covers the source var_export writes, which has to read back as
-// the value it was given. The single-quoted string escapes the quote and the
+// the value behind it. The single-quoted string escapes the quote and the
 // backslash and nothing else, and a whole float keeps its ".0", because
 // var_export(1.0) writing "1" would read back as an int.
 //
@@ -35,7 +35,7 @@ echo "\n";`)
 }
 
 // TestVarExportReturn covers the second argument: with $return true the source
-// is answered and nothing is written, which is how a caller nests one export
+// is answered and nothing is written, so a caller nests one export
 // inside another string.
 func TestVarExportReturn(t *testing.T) {
 	got := runPHP(t, `<?php
@@ -50,8 +50,8 @@ echo "[", $source, "]";`)
 
 // TestVarDump covers the annotation var_dump carries: the type, the element
 // count of a composite, and the length of a string in bytes. A two-byte é
-// makes string(6) out of five characters, which is how a script sees the
-// encoding it actually holds.
+// makes string(6) out of five characters, so a script sees the encoding it
+// actually holds.
 func TestVarDump(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump("héllo");
@@ -89,7 +89,7 @@ var_dump(new Point());`)
 // line php leaves after a nested array.
 //
 // A bare scalar has no lines of its own, and the float carries precision=14
-// digits rather than var_dump's round-tripping ones, so 0.1+0.2 prints 0.3
+// digits where var_dump passes the round-tripping ones, so 0.1+0.2 prints 0.3
 // here and 0.30000000000000004 there.
 func TestPrintR(t *testing.T) {
 	got := runPHP(t, `<?php
@@ -109,7 +109,7 @@ echo print_r(0.1 + 0.2, true), "\n";`)
 
 // TestPrintRScalars covers what print_r makes of the three values that have no
 // text: true is "1", and false and null are both the empty string, so a
-// template printing one of them writes nothing rather than "false".
+// template printing one of them writes nothing, and never "false".
 func TestPrintRScalars(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(print_r(true, true), print_r(false, true), print_r(null, true));`)

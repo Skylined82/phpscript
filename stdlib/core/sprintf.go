@@ -68,7 +68,7 @@ func phpSprintf(format string, args ...any) (string, error) {
 		}
 		i = next
 		// php reads the argument before it looks at the specifier, so a format
-		// that names an argument it was not given reports the count first.
+		// that names an argument the call omits reports the count first.
 		arg, err := formatArg(spec, args, &taken)
 		if err != nil {
 			return "", err

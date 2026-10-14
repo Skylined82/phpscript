@@ -69,8 +69,7 @@ func TestJSONEncodeIgnoresFlags(t *testing.T) {
 }
 
 // A JSON_* name is not defined, so it raises before json_encode is called.
-// phpscript lint reports it first: the argument was never going to do
-// anything.
+// phpscript lint reports it first: the argument changes nothing.
 func TestJSONFlagConstantThrows(t *testing.T) {
 	got := runPHP(t, `<?php try { echo json_encode(array(1), JSON_PRETTY_PRINT); } catch (Exception $e) { echo $e->getMessage(); }`)
 	if want := `Undefined constant "JSON_PRETTY_PRINT"`; got != want {
@@ -118,8 +117,8 @@ func TestJSONEncoder(t *testing.T) {
 
 // TestJSONEncoder_Encode covers the key order a PHP array keeps through the
 // stream. encoding/json sorts a Go map's keys; an array is written in the order
-// the script set them, so a row encoded for a client reads back the way it was
-// assembled. Every value ends with a newline, separating one from the next.
+// the script set them, so a row encoded for a client reads back in assembly
+// order. Every value ends with a newline, separating one from the next.
 func TestJSONEncoder_Encode(t *testing.T) {
 	var out bytes.Buffer
 	enc, err := core.NewJSONEncoder(&out)

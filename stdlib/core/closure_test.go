@@ -39,7 +39,7 @@ func TestClosureFromCallable(t *testing.T) {
 
 // TestClosureBind covers the one scope change this runtime can make, which is
 // none. No property visibility is enforced here, so a scope argument has
-// nothing to alter and the closure comes back as it was. Rebinding $this would
+// nothing to alter and the closure comes back unchanged. Rebinding $this would
 // change what the body reads, so it is refused and never ignored in silence.
 func TestClosureBind(t *testing.T) {
 	got := runPHP(t, `<?php

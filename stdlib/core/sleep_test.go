@@ -45,7 +45,7 @@ func TestWait(t *testing.T) {
 }
 
 // TestWaitRunsTheClockDown covers the other half: with neither context
-// cancelled the wait lasts the duration it was given.
+// cancelled the wait lasts its full duration.
 func TestWaitRunsTheClockDown(t *testing.T) {
 	const d = 20 * time.Millisecond
 

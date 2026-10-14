@@ -19,7 +19,7 @@ func RegisterDefer(rt *runner.Runtime) {
 	rt.RegisterFunc("defer", func(ctx context.Context, callback any) error {
 		// The runtime's own verdict and no reflect.Kind check: a PHP
 		// closure is a value carrying its declaration, not a bare func, and
-		// every other spelling of a callable was never a func either.
+		// no other spelling of a callable is a func either.
 		if _, ok := rt.Callable(callback); !ok {
 			return fmt.Errorf("defer: argument must be callable")
 		}

@@ -19,7 +19,7 @@ var_dump(mb_strlen("héllo"), strlen("héllo"), mb_strlen(""), mb_strlen("abc"))
 
 // TestMultibyteSubstr covers the offsets, which are in characters: a negative
 // start counts back from the end, a missing length runs to it, and a start past
-// the end is the empty string rather than an error.
+// the end is the empty string and no error.
 func TestMultibyteSubstr(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(mb_substr("héllo", 1, 3), mb_substr("héllo", -2), mb_substr("héllo", 1), mb_substr("héllo", 10));
@@ -64,7 +64,7 @@ var_dump(mb_str_split("abc", 1));`)
 // TestMultibyteStrPad covers the padding, measured in characters, and the three
 // directions. Padding to a width the string already exceeds leaves it alone,
 // and a pad string longer than the gap is cut to fit, so the result is exactly
-// the width asked for.
+// the width the call names.
 func TestMultibyteStrPad(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(mb_str_pad("hé", 5, "-"), mb_str_pad("hé", 5, "-", STR_PAD_LEFT), mb_str_pad("hé", 5, "ab", STR_PAD_BOTH));

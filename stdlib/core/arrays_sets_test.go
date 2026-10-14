@@ -133,8 +133,8 @@ func TestWanted(t *testing.T) {
 }
 
 // TestEdgeKey covers array_key_first and array_key_last, which read an edge
-// without an internal pointer. PHP's older spelling was reset() plus key(),
-// which moved the pointer the read was taken from; this runtime has none, so an
+// without an internal pointer. PHP's older spelling is reset() plus key(),
+// which moves the pointer the read comes off; this runtime has none, so an
 // empty array answers null.
 func TestEdgeKey(t *testing.T) {
 	sparse := setArray(int64(7), "a", "name", "b", int64(2), "c")

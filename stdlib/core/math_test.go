@@ -6,7 +6,7 @@ import (
 
 // TestHexdec covers the reading hexdec() makes: hex digits until the first
 // character that is not one, with the 0x prefix accepted and a string holding
-// no hex digit at all answering 0 rather than raising.
+// no hex digit at all answering 0 and raising nothing.
 func TestHexdec(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(hexdec("1A"), hexdec("0x1A"), hexdec("ff"), hexdec("zz"), hexdec(""), hexdec("10"));`)
@@ -89,7 +89,7 @@ var_dump(number_format(1000000), number_format(-0.5), number_format(0.5), number
 
 // TestMinMax covers the two spellings php accepts: several arguments, or one
 // array holding them. The comparison is php's, so a mixed list is compared the
-// way php compares those values and the answer keeps its own type.
+// way php compares those values, and the winner keeps its own type.
 func TestMinMax(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(min(3, 1, 2), max(3, 1, 2));
@@ -103,8 +103,8 @@ var_dump(min("a", "b"), max(1, "2", 3.5));`)
 }
 
 // TestLog covers the base argument. With none the base is e, so log(M_E) is 1;
-// with one the result is the logarithm in that base, which is what a caller
-// computing log(8, 2) wants rather than a ratio it has to divide itself.
+// with one the result is the logarithm in that base, so log(8, 2) is 3 and the
+// caller divides nothing.
 func TestLog(t *testing.T) {
 	got := runPHP(t, `<?php
 var_dump(log(M_E), log(8, 2), log(100, 10), log(1));`)

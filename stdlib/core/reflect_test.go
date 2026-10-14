@@ -9,7 +9,7 @@ import (
 )
 
 // TestGetClass covers the name get_class answers with. An interpreted object
-// reports the class it was declared as, and a missing or null argument is
+// reports its declared class, and a missing or null argument is
 // false, which is php's answer for the call that names nothing.
 func TestGetClass(t *testing.T) {
 	got := runPHP(t, `<?php
@@ -24,8 +24,8 @@ var_dump(get_class($s), get_class(null));`)
 }
 
 // TestGetClassOfAHostValue pins a divergence the field doc states: a value a Go
-// constructor handed over reports its Go type name, and not the name the
-// constructor was registered under. The two are usually the same word; where a
+// constructor returns reports its Go type name, never the constructor's
+// registered name. The two are usually the same word; where a
 // host registers "Storage" for a Go type called storage they are not, and a
 // script comparing get_class($x) === "Storage" reads false.
 func TestGetClassOfAHostValue(t *testing.T) {
