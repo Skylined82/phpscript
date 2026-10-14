@@ -72,7 +72,7 @@ func TestReturnType(t *testing.T) {
 }
 
 // TestReflect covers what a shipped binary can answer about itself. The Go
-// source it was built from is not on disk, so there are no doc comments and no
+// source behind it is not on disk, so there are no doc comments and no
 // PHP-spelled parameter names; the names, types and returns are the same ones
 // the committed reference is rendered from, and the placeholder parameter
 // names come from the types.

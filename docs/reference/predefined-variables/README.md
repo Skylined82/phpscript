@@ -46,14 +46,14 @@ if ($file["error"] === 0) {
 }
 ```
 
-| Key         | Value                                                            |
-|-------------|------------------------------------------------------------------|
-| `name`      | Client-supplied file name, with any directory part stripped.     |
-| `full_path` | Client-supplied file name as sent, directory part included.      |
-| `type`      | Client-supplied content type. It is not verified.                |
-| `tmp_name`  | Absolute path of the server-side temporary copy.                 |
-| `error`     | `UPLOAD_ERR_OK` (0), or 1, 4, 6, 7 when the part was not stored. |
-| `size`      | Bytes written to `tmp_name`.                                     |
+| Key         | Value                                                         |
+|-------------|---------------------------------------------------------------|
+| `name`      | Client-supplied file name, with any directory part stripped.  |
+| `full_path` | Client-supplied file name as sent, directory part included.   |
+| `type`      | Client-supplied content type. It is not verified.             |
+| `tmp_name`  | Absolute path of the server-side temporary copy.              |
+| `error`     | `UPLOAD_ERR_OK` (0), or 1, 4, 6, 7 for a part nothing stored. |
+| `size`      | Bytes written to `tmp_name`.                                  |
 
 A field named `files[]` collects every file sent under it, and its entry holds one array per key, not one value: `$_FILES["files"]["name"][0]`. Any other field takes the last file sent under it, the way a repeated form value assigns over the one before it.
 
@@ -65,7 +65,7 @@ A stored upload is given the `upload_file_mode` of the runner, `0644` by default
 
 `upload_max_filesize` and `post_max_size` are configuration keys of the runner, written and defaulted as php.ini writes them; see [Configuration](../../configuration.md#sizes). A file part over `upload_max_filesize` is not stored and its entry carries `UPLOAD_ERR_INI_SIZE`, so the rest of the form still reaches the script. A body over `post_max_size` is not parsed at all, so both `$_POST` and `$_FILES` are empty.
 
-An entry for a part that was not stored, for any of the error codes, describes only what the client sent: `name` and `full_path` are filled, `type` and `tmp_name` are empty and `size` is `0`.
+An entry for a part nothing stored, for any of the error codes, describes only what the client sent: `name` and `full_path` are filled, `type` and `tmp_name` are empty and `size` is `0`.
 
 Neither is catchable: they happen before the script runs. The Go host is told why through `Runtime.RecordError`; see [Errors a script cannot catch](../errors/README.md#errors-a-script-cannot-catch).
 
@@ -86,7 +86,7 @@ Contains the part of PHP's server array that an HTTP request answers for on its 
 | `REMOTE_ADDR`, `REMOTE_PORT`                    | The peer address and port, split as PHP splits them.              |
 | `REQUEST_SCHEME`, `HTTPS`                       | `http` or `https`. `HTTPS` is `on` over TLS and absent otherwise. |
 | `CONTENT_TYPE`, `CONTENT_LENGTH`                | Present when the request announced them, as in PHP.               |
-| `REQUEST_TIME`, `REQUEST_TIME_FLOAT`            | When the request was received. An integer and a float.            |
+| `REQUEST_TIME`, `REQUEST_TIME_FLOAT`            | The arrival time of the request. An integer and a float.          |
 | `HTTP_*`                                        | One key per request header, upper-cased with `-` as `_`.          |
 
 `phpscript server` adds the keys that depend on where the site lives, which the request alone does not say:
@@ -122,7 +122,7 @@ $id = $_REQUEST["id"];
 
 The path values are the one divergence from PHP, whose `$_REQUEST` carries no route parameters: a path parameter is request input here, and it arrives under PHP's own name. A request field spelled like a path parameter is overwritten by it, so `/users/42?id=abc` answers `"42"`.
 
-`$_REQUEST` is its own array, as it is in PHP: writing to it changes none of the arrays it was merged from, and their writes do not appear in it.
+`$_REQUEST` is its own array, as it is in PHP: writing to it changes none of the arrays merged into it, and their writes do not appear in it.
 
 The path values arrive in `$_REQUEST`. There is no `$_PATH`.
 

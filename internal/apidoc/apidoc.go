@@ -74,7 +74,7 @@ func Generate(rt *runner.Runtime, srcRoot string) (string, error) {
 
 // Reflect is Generate's first half without the source scan: what the runtime
 // registers, with the signature reflection can recover on its own. It is what a
-// shipped binary can answer, since the Go source it was built from is not there
+// shipped binary can answer, since its own Go source is not there
 // to read doc comments and PHP-spelled parameter names out of. Those are the
 // only things missing from the result; the names, types and returns are the
 // same ones the generated reference is rendered from.
@@ -212,7 +212,7 @@ func primaryClassName(names []string, src *sources) string {
 // Two constructors may build the same type, as Regexp\Compile and
 // Regexp\CompilePOSIX both build a *regexp.Regexp. The first name wins, so a
 // method returning that type is documented under one class and not under
-// whichever registration was read last.
+// whichever registration the scan reads last.
 func registeredClassTypes(rt *runner.Runtime, src *sources) map[reflect.Type]string {
 	classTypes := map[reflect.Type]string{}
 	for _, group := range constructorGroups(rt) {

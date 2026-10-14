@@ -66,8 +66,8 @@ func NewContext() Context { return runner.NewContext() }
 // FromRequest returns the request context of r, decoded as a script reads it.
 func FromRequest(r *http.Request) Context { return runner.FromRequest(r) }
 
-// ScopeFromContext answers the PHP scope a binding was called from, when one is
-// on ctx.
+// ScopeFromContext answers the calling PHP scope of a binding, when one is on
+// ctx.
 func ScopeFromContext(ctx context.Context) (*Scope, bool) {
 	return runner.ScopeFromContext(ctx)
 }

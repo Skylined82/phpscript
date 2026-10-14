@@ -123,8 +123,8 @@ func start() error {
 	return app.RunWithArgs(args)
 }
 
-// testConfig is phpscript -t, with args holding an application root when one
-// was named.
+// testConfig is phpscript -t, with args holding an application root when the
+// command line names one.
 func testConfig(globals *flags.Options, args []string) error {
 	var root string
 	if len(args) > 0 {
@@ -221,7 +221,7 @@ func writeHelp(f *os.File, commands []registration) error {
 		// then the shared names are dropped: what is left is what the command
 		// adds, the one part worth repeating per section.
 		// No configuration and no typed flags: the help lists what a command
-		// takes, the same set whatever this run was pointed at.
+		// takes, the same set whatever this run targets.
 		both := helpdocs.NewFlagSet(command.name)
 		if bind := command.new(nil, &flags.Options{}).Bind; bind != nil {
 			bind(both)

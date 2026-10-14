@@ -17,7 +17,7 @@ type refTestHost struct {
 	locals map[string]any
 	echoed []any
 	// calls names what each call does, keyed by function name: it either
-	// writes the by-reference setter it was handed, or writes a local through
+	// writes the by-reference setter it holds, or writes a local through
 	// the snapshot the way a host binding that touches the scope does.
 	calls map[string]func(h *refTestHost, args []any)
 }
@@ -79,9 +79,9 @@ func runRefProgram(t *testing.T, source string, calls map[string]func(*refTestHo
 	return host.echoed
 }
 
-// The locals snapshot the host was handed predates the call, so it still holds
-// the value the out parameter replaced. Writing it back would undo the write,
-// so a reused $m kept the first call's matches.
+// The locals snapshot the host holds predates the call, so it still carries
+// the value the out parameter replaces. Writing it back would undo the write
+// and leave a reused $m holding the first call's matches.
 func TestVMRefSetterSurvivesLocalsWriteBack(t *testing.T) {
 	echoed := runRefProgram(t, `<?php
 		preg_match_all("/a/", "aa", $m);
@@ -264,7 +264,7 @@ func (h *memoryTestHost) CheckMemory() error {
 // memory. The interval is read once per run and decides how often CheckMemory
 // is called; the walker is registered for the length of the run and removed
 // on the way out, so the pooled state it closes over is never enumerated
-// after it was released. The walk reaches the frame's initialised locals,
+// past its release. The walk reaches the frame's initialised locals,
 // where a script's values are.
 func TestMemoryHost(t *testing.T) {
 	host := &memoryTestHost{interval: 8}

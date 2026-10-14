@@ -285,7 +285,7 @@ func TestFromRequest(t *testing.T) {
 }
 
 // TestScopeFromContext covers what a registered Go callable reads off the
-// context it is handed: the PHP frame it was called from. The runtime attaches
+// context it is handed: the calling PHP frame. The runtime attaches
 // it per call, so a binding reaches the caller's variables without the script
 // passing them.
 func TestScopeFromContext(t *testing.T) {

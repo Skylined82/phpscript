@@ -9,7 +9,7 @@ import (
 
 // TestRedeclareIsFatal covers the severity: PHP refuses a file declaring one
 // name twice and so does this runtime, so the finding fails the lint run. The
-// message names the line the first declaration was on, which is the half a
+// message names the first declaration's line, which is the half a
 // reader needs to find the pair.
 func TestRedeclareIsFatal(t *testing.T) {
 	found, err := lint.File("index.php", `<?php

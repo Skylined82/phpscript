@@ -19,9 +19,9 @@ func scriptArray(values ...any) *model.Array {
 
 // TestString pins each value against what php prints for `(string)$v`.
 //
-// The oracle was once a second Go implementation rendering a float and an
-// unknown type with fmt's %v, so the shortest round-tripping float
-// form and Go's struct dump became the expected answers. A php name is a
+// A second Go implementation makes a poor oracle: rendering a float and an
+// unknown type with fmt's %v turns the shortest round-tripping float form and
+// Go's struct dump into the expected answers. A php name is a
 // behaviour claim settled by php, so the want column is php's output for the
 // same list, pasted.
 func TestString(t *testing.T) {
@@ -159,9 +159,9 @@ func TestBytes(t *testing.T) {
 	}
 }
 
-// TestInt pins Int against PHP's own integer cast. Every expectation here was
-// read from `php -r 'var_dump((int)$s);'`, and not from what the previous
-// implementation happened to return.
+// TestInt pins Int against PHP's own integer cast. Every expectation here
+// comes off `php -r 'var_dump((int)$s);'`, and never off this package's own
+// answer.
 func TestInt(t *testing.T) {
 	tests := []struct {
 		in   string

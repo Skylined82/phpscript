@@ -20,7 +20,7 @@ try {
 }
 ```
 
-The catch variable receives the object that was thrown, so `getMessage()` and `getCode()` report what it was constructed with, and `get_class()` reports the class the `throw` named.
+The catch variable receives the thrown object, so `getMessage()` and `getCode()` report its constructor arguments, and `get_class()` reports the class the `throw` named.
 
 ## Which clause takes it
 

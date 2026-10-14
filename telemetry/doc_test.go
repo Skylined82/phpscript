@@ -7,7 +7,7 @@ import (
 )
 
 // TestInstrumentationUnderADisabledTracer covers the nil safety this package
-// claims. A tracer that was never enabled starts no trace, so Start, StartSpan
+// claims. A tracer nothing enables starts no trace, so Start, StartSpan
 // and Do all run against a context holding none: the span is nil, every method
 // on it does nothing, and Do still calls fn and returns its error unchanged.
 // A binding therefore instruments without testing whether telemetry is on.

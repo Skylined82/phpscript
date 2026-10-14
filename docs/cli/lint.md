@@ -39,7 +39,7 @@ phpscript lint -o docs/lint.md tests/fixtures/...
 
 Use `--flatstack` to also report whether the flat bytecode engine can run each file, which adds a failing row per file it cannot compile. See [Flat stack](../flatstack.md).
 
-Use `--include FILE` to run a file against the name registry before checking, so the checks see the whole application and not one file of it. Without it every check runs against the standard library alone: a class composer autoloads, and a helper the application's bootstrap registers, are both unknown, so most findings are false and a true one cannot be told from them. The class check autoloads only when an include was given, because composer's autoloader declares nothing until a name reaches it.
+Use `--include FILE` to run a file against the name registry before checking, so the checks see the whole application and not one file of it. Without it every check runs against the standard library alone: a class composer autoloads, and a helper the application's bootstrap registers, are both unknown, so most findings are false and a true one cannot be told from them. The class check autoloads only under an include, because composer's autoloader declares nothing until a name reaches it.
 
 ```bash
 phpscript lint --include vendor/autoload.php ./src/...

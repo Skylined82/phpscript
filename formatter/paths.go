@@ -23,7 +23,7 @@ func NeedFormatting(paths []string) ([]Result, error) {
 	return walk(paths, false)
 }
 
-// Changed returns the paths of the files that were rewritten.
+// Changed returns the paths of the rewritten files.
 func Changed(results []Result) []string {
 	var out []string
 	for _, r := range results {

@@ -34,7 +34,7 @@ Compilation happens once per pattern per runtime and is cached, so the choice of
 
 Which engine ran is not observable from PHP. The same `$matches` shape comes back either way, and a group that did not participate in the match is the empty string in both.
 
-The behaviour this replaced was worse than a missing feature: a pattern RE2 could not compile silently reported "no match", so a template compiler that pairs `{block foo}` with `{/block}` through `\1` produced *wrong output* where an error was due.
+Without this, the gap is worse than a missing feature: a pattern RE2 cannot compile silently reported "no match", so a template compiler that pairs `{block foo}` with `{/block}` through `\1` produces *wrong output* where an error belongs.
 
 ## What still differs from PCRE
 

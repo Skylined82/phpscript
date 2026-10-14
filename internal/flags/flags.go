@@ -1,7 +1,7 @@
 // Package flags holds the command line options every phpscript subcommand
 // accepts, and the work they imply.
 //
-// The set exists because the same idea was spelled once per command:
+// The set exists so no command spells the same idea again:
 // --include in test and in lint with two help texts and two implementations
 // and not in server at all, --cpuprofile only in test, -v defined twice, -f
 // hand-parsed out of argv and printed by no help output. One Options is bound
@@ -305,7 +305,7 @@ func (o *Options) Validate() error {
 	return nil
 }
 
-// Covering reports whether coverage was named.
+// Covering reports whether the flags name coverage.
 func (o *Options) Covering() bool { return o.Cover != "" }
 
 // Report reports whether the coverage mode prints a per-symbol report on top

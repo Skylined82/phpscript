@@ -24,7 +24,7 @@ type scriptExit interface {
 // former vmScratch buffers, the error handlers, the call frames and the pc
 // live here so the run loop's helpers are methods and not closures: a
 // closure capturing a loop variable by reference forces that variable onto
-// the heap on every Run, and there were five of them.
+// the heap on every Run, and this loop holds five of them.
 type execState struct {
 	program *Program
 	host    Host
@@ -46,8 +46,8 @@ type execState struct {
 	// spareLocals/spareInits hold cleared frame arrays returned by popped
 	// user-function frames, so a call loop reuses two slabs and does not
 	// allocating them per call. Safe because nothing outlives the frame that
-	// borrowed them: an opRef setter is consumed within the host call it was
-	// pushed for, and closures copy their seeds at creation.
+	// borrowed them: an opRef setter is consumed within the host call that
+	// pushed it, and closures copy their seeds at creation.
 	spareLocals [][]any
 	spareInits  [][]bool
 
@@ -1048,7 +1048,7 @@ func run(program *Program, host Host, entryPC int, seeds []localSeed, globals ma
 				continue
 			}
 		case opRef:
-			// The setter writes the frame the call was made from; a user
+			// The setter writes the frame holding the call; a user
 			// function called in between installs its own st.locals, and this one
 			// keeps pointing at the caller's.
 			if st.refWrites == nil {
@@ -1492,9 +1492,9 @@ func loadLocal(host Host, program *Program, locals []any, initialized []bool, ex
 // shape Runtime.Callable reduces every PHP callable to, so a binding invokes a
 // bytecode closure exactly as it invokes an interpreted one.
 //
-// captured is the snapshot taken where the closure value was created. Each call
-// gets a fresh frame seeded with it, so one call cannot see another's writes,
-// and the closure keeps working after the frame it was written in is gone.
+// captured is the snapshot taken at the closure value's construction. Each
+// call gets a fresh frame seeded with it, so one call cannot see another's
+// writes, and the closure keeps working once its defining frame is gone.
 func closureValue(program *Program, host Host, def closureDef, captured []localSeed) func(...any) (any, error) {
 	return func(args ...any) (any, error) {
 		seeds := make([]localSeed, 0, len(captured)+len(def.paramSlots))

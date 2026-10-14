@@ -106,9 +106,9 @@ Each worker holds a runtime of its own, forked from the one running the script. 
 
 A handler starts on a clean stack holding `$w` and `$r` and nothing else. No superglobals are decoded, nothing carries over from the last request, and two requests answered at the same moment cannot see each other.
 
-What a handler carries with it is what it captured: a closure's `use (...)` values and the `$this` it binds, or the receiver a bound method was read off. Those are shared by every request answering through that handler, because each request runs on a runtime of its own and the capture is not copied. Read them. Writing to one from a handler is two requests writing to one value, and the engine cannot make that safe without copying the object, which is not what a shared receiver is for.
+What a handler carries with it is what it captured: a closure's `use (...)` values and the `$this` it binds, or a bound method's receiver. Those are shared by every request answering through that handler, because each request runs on a runtime of its own and the capture is not copied. Read them. Writing to one from a handler is two requests writing to one value, and the engine cannot make that safe without copying the object, which is not what a shared receiver is for.
 
-Autoloaders come along too, so a class no request had named yet is loaded on the worker that first names it, once per worker. What does not come along is anything the script wrote: globals, `static $x`, constants the script defined, the list of included files, the output it produced. A handler reaches what it captured, what its receiver holds, and what was declared before `listen()`.
+Autoloaders come along too, so a class no request had named yet is loaded on the worker that first names it, once per worker. What does not come along is anything the script wrote: globals, `static $x`, constants the script defined, the list of included files, the output it produced. A handler reaches its captures, what its receiver holds, and every declaration ahead of `listen()`.
 
 ## Re-entry: calling back into PHP
 
@@ -164,7 +164,7 @@ register_shutdown_function(function () use ($http) {
 });
 ```
 
-`phpscript run` ends the script on SIGINT and SIGTERM, and reloads it on SIGHUP: the generation running is ended by cancelling the context it was given, its shutdown callbacks run, and the file is read again.
+`phpscript run` ends the script on SIGINT and SIGTERM, and reloads it on SIGHUP: the geancelling its context ends the running generation, its shutdown callbacks run, and the file is read again.
 
 ## Limits
 

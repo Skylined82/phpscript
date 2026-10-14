@@ -215,7 +215,7 @@ func TestRouteWithoutErrorPagesReportsOnlyTheStatus(t *testing.T) {
 
 // TestRouteErrorPageDeclinesLeavesTheStatus pins that a host page which does
 // not render, the ordinary case of a request no page is meant for, leaves the
-// endpoint's own response as it was.
+// endpoint's own response unchanged.
 func TestRouteErrorPageDeclinesLeavesTheStatus(t *testing.T) {
 	mux := newTestMux(t, annotations.WithErrorPages(
 		func(http.ResponseWriter, *http.Request, int, string) bool { return false },

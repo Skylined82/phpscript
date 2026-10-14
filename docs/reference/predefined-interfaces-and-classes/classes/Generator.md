@@ -54,4 +54,4 @@ public function __wakeup(): void
 
 - phpscript will not implement this class. `yield`, generators and Fibers are a decision: there is no coroutine model, and none is planned. See [Design decisions](../../../design.md).
 - The name is not declared and `yield` is not a keyword here.
-- Build the sequence into an array and return it. Where the point was to avoid holding the whole sequence, read it in batches with an explicit offset.
+- Build the sequence into an array and return it. To avoid holding the whole sequence, read it in batches with an explicit offset.

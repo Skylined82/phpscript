@@ -9,7 +9,7 @@
 | `&$x` anywhere else   | parsed, then discarded | a reference          | **no**                        |
 | Binding outputs       | compile-time setter    | a reference          | same effect, different means  |
 
-Assignment in phpscript binds a name to the value it was given. It never copies the value, because there is no copy step anywhere in the runtime: a PHP variable is a name in a flat per-frame table (`runner.Scope`) mapping to a Go value, and assignment writes that map.
+Assignment in phpscript binds a name to the value on the right. It never copies the value, because there is no copy step anywhere in the runtime: a PHP variable is a name in a flat per-frame table (`runner.Scope`) mapping to a Go value, and assignment writes that map.
 
 For scalars this is indistinguishable from PHP: you cannot mutate an `int` in either language, only rebind the name. For objects it is also PHP's behaviour, since a PHP object variable holds a handle. Arrays are where the two diverge.
 

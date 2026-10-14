@@ -302,8 +302,8 @@ type Host interface {
 	// UnsetIndex removes key from container, PHP's unset($a[$k]). Removing a
 	// key that is not there is not an error.
 	//
-	// It answers the container to store back, or nil when the removal was in
-	// place. A native slice cannot hold a hole and cannot shrink through the
+	// It answers the container to store back, or nil for a removal in place.
+	// A native slice cannot hold a hole and cannot shrink through the
 	// interface value holding it, so removing from one answers a shorter
 	// slice for the caller to assign.
 	UnsetIndex(container, key any) (replacement any, err error)
@@ -314,7 +314,7 @@ type Host interface {
 	MatchCatch(declaredType string, err error) bool
 	// Throw turns a thrown value into the error it travels as. A built-in
 	// throwable is an error already; an instance of a declared class is
-	// wrapped so a clause can filter on the class it was declared as, and a
+	// wrapped so a clause can filter on its declared class, and a
 	// catch binding it gets the object back.
 	Throw(value any) error
 	// CatchValue returns what a catch clause binds for err: the object
@@ -351,7 +351,7 @@ type invokeHost interface {
 // globalHost holds variables of its own, which a host seeded before the run. Run
 // writes them into the top-level frame, where the language puts a
 // global: answering them from Lookup would expose them to every function
-// and every closure, which no frame below the first one was given them in.
+// and every closure, where no frame below the first one declares them.
 type globalHost interface {
 	Globals() map[string]any
 }

@@ -44,7 +44,7 @@ func TestSetInclude(t *testing.T) {
 
 // TestSetIncludeIsQuietWhenItFails covers the refusal to fail a lint run over
 // a bootstrap: a file that is not there, and one that cannot be parsed, each
-// leave the registry as it was and report nothing. An application whose
+// leave the registry alone and report nothing. An application whose
 // bootstrap cannot run outside a request still gets the findings the standard
 // library alone produces.
 func TestSetIncludeIsQuietWhenItFails(t *testing.T) {

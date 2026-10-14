@@ -122,11 +122,11 @@ The summary statement names the path and the route, because a reader cannot othe
 
 The table states the path in its caption and carries the Go floor as a row, so the remaining gap is a subtraction the reader can do. Microseconds, not the contract's milliseconds: every route here answers in a fraction of one, and a millisecond column to one decimal is a column of zeroes.
 
-| Route          | p50 us | p99 us | req/s |
-|----------------|-------:|-------:|------:|
-| `/hello` (go)  |        |        |       |
+| Route             | p50 us | p99 us | req/s |
+|-------------------|-------:|-------:|------:|
+| `/hello` (go)     |        |        |       |
 | `/hello` (before) |        |        |       |
-| `/hello` (now) |        |        |       |
+| `/hello` (now)    |        |        |       |
 
 The allocation table is the second one, in the shape [../allocation-performance.md](../allocation-performance.md) owns, and it carries no Go floor: `testdata/testserver.go` is `//go:build ignore` and its handlers cannot be imported, so the floor lives in the latency table only.
 

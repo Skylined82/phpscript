@@ -57,7 +57,7 @@ func TestTrace(t *testing.T) {
 
 // TestDo covers a call wrapped in a span. Do records what fn returned on the
 // span and ends it, and returns the error unchanged, so the error handling of
-// an instrumented caller reads the same as before it was instrumented. The
+// an instrumented caller reads the same as an uninstrumented one. The
 // context fn runs under carries the span, so work below it nests.
 func TestDo(t *testing.T) {
 	tracer := newRecordingTracer(t)
@@ -160,7 +160,7 @@ func TestSpanFromContext(t *testing.T) {
 
 // TestTraceID covers the correlation key a log line carries. It is the value of
 // the Request-Id header on an HTTP trace, so one string matches a log line with
-// the trace it was written under, and it is empty where nothing is traced.
+// its own trace, and it is empty where nothing is traced.
 func TestTraceID(t *testing.T) {
 	if got := TraceID(context.Background()); got != "" {
 		t.Errorf("TraceID() = %q on a bare context, want an empty string", got)

@@ -7,7 +7,7 @@ package formatter
 type Result struct {
 	Path    string
 	Changed bool
-	// Skipped is the reason the file was left as it is, and nil when the file
-	// was formatted.
+	// Skipped is the reason the file stays untouched, and nil for a formatted
+	// file.
 	Skipped error
 }

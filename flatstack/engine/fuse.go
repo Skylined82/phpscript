@@ -37,8 +37,8 @@ func fuseProgram(p *Program) {
 		newPC[i] = len(fused)
 		inst, width := fuseAt(p, protected, i)
 		// Every consumed instruction maps to the fused head, which only
-		// matters for opTryPush.b when the try body's last instruction was
-		// consumed: the range bound lands on the run that absorbed it.
+		// matters for opTryPush.b where a fusion consumes the try body's last
+		// instruction: the range bound lands on the run absorbing it.
 		for j := 1; j < width; j++ {
 			newPC[i+j] = len(fused)
 		}

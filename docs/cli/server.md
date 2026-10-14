@@ -97,13 +97,13 @@ It binds no socket, runs no `@startup` job, opens no connection and creates no t
 phpscript -f config.yml -s reload
 ```
 
-It reads `server.pid_file` from the same configuration the server was started with and sends that process a `SIGHUP`, so it needs the same `-f` and `-w`. `kill -HUP $(cat /run/phpscript.pid)` does the same thing. Nothing is printed on success; what the reload did is in the server's log.
+It reads `server.pid_file` from the server's own configuration and sends that process a `SIGHUP`, so it needs the same `-f` and `-w`. `kill -HUP $(cat /run/phpscript.pid)` does the same thing. Nothing is printed on success; what the reload did is in the server's log.
 
 The socket is held across the reload, so the address survives and connections queued on it are served by whichever generation takes them. Everything above it is rebuilt from the file as it is on disk now: the virtual host list, each site's `phpscript.yml`, the routes, and the `@startup` jobs, which run again.
 
 That rebuild includes the caches, so a reload is also how an edited `.php` file is picked up under [`runner.precompile`](../configuration.md#precompilation). Nothing reads a modification time; the new generation walks each site's tree and the old one's parsed programs go with it.
 
-A configuration the server cannot use is refused before anything is torn down, and the server goes on serving what it already was:
+A configuration the server cannot use is refused before anything is torn down, and the server goes on serving the sites it already holds:
 
 ```text
 ERROR reload refused, still serving error="reload refused: virtualhost \"c.example.com\": root: stat /srv/c: no such file or directory"

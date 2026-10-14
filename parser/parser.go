@@ -27,7 +27,7 @@ import (
 //
 // __FILE__, __DIR__ and __LINE__ are left as names for the runtime to answer,
 // because a caller with no file cannot say what they are. The formatter and the
-// linter read this, and both have to print back what was written.
+// linter read this, and both have to print the source back.
 func Parse(src string) (*model.Program, error) {
 	return parse(src, "")
 }
@@ -102,7 +102,7 @@ type parser struct {
 	// per file so that a name depends only on the source it came from: the
 	// include cache returns the same parsed program to every include of a file,
 	// and a counter shared across files would make the name depend on which
-	// files had been parsed first.
+	// files the parse reaches first.
 	anonSeq     int
 	anonClasses []*model.ClassDecl
 
@@ -211,7 +211,7 @@ func (p *parser) parseStmts(top bool) ([]model.Stmt, error) {
 
 // pushStmt appends s to the statement being collected, as the one or more
 // statements it lowers to. Every statement list passes through it so that a
-// lowering applies wherever the statement was written.
+// lowering applies wherever the statement sits.
 func (p *parser) pushStmt(s model.Stmt) {
 	if split := p.lowerChainedAlloc(s); split != nil {
 		for _, one := range split {
@@ -742,7 +742,7 @@ func (p *parser) parseForeach() (model.Stmt, error) {
 	return node, nil
 }
 
-// parseForeachTarget parses one `as` target and reports whether it was written
+// parseForeachTarget parses one `as` target and reports whether it spells
 // `&$v`, which binds the element itself and never a copy of it.
 func (p *parser) parseForeachTarget() (model.Expr, bool, error) {
 	byRef := false

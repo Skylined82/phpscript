@@ -98,8 +98,7 @@ func TestScratchTakesExactlySized(t *testing.T) {
 
 // TestScratchIsReentrant covers nesting, the state a call argument holding an
 // array literal parses in: the inner list pushes and pops above the outer
-// mark, so the outer elements stay contiguous and come back in the order they
-// were pushed.
+// mark, so the outer elements stay contiguous and come back in push order.
 func TestScratchIsReentrant(t *testing.T) {
 	var stack scratch[model.Expr]
 

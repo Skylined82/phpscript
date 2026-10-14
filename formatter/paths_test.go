@@ -18,7 +18,7 @@ func write(t *testing.T, name, src string) string {
 	return path
 }
 
-// TestFile covers the rewrite and what it reports: a file that was not
+// TestFile covers the rewrite and what it reports: a file nothing
 // formatted is written back and reported as changed, and a file already
 // formatted is reported unchanged and left alone. A caller running this over a
 // tree counts the second result to decide whether anything moved.
@@ -57,7 +57,7 @@ func TestFile(t *testing.T) {
 }
 
 // TestFileSkipsWhatItCannotParse covers the refusal: formatting rewrites a
-// file in place, so a file the parser cannot read is left exactly as it was
+// file in place, so a file the parser cannot read is left byte for byte alone
 // and reported as a *SkipError naming it. A directory of PHP holds valid code
 // this parser does not support, and one such file does not stop the rest.
 func TestFileSkipsWhatItCannotParse(t *testing.T) {

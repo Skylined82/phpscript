@@ -6,7 +6,7 @@ import (
 )
 
 // TestResult covers the two outcomes the formatter reports per file. Skipped
-// carries the reason and is nil for a file that was formatted, so a caller
+// carries the reason and is nil for a formatted file, so a caller
 // reads one field to tell a rewrite from a refusal.
 func TestResult(t *testing.T) {
 	formatted := Result{Path: "a.php", Changed: true}

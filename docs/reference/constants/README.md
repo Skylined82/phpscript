@@ -59,7 +59,7 @@ The table is php's own list, in the order the [language reference](https://www.p
 | Name            | Status          | Answers                                                                                                                         |
 |-----------------|-----------------|---------------------------------------------------------------------------------------------------------------------------------|
 | `__LINE__`      | Compatibility   | The line it is written on.                                                                                                      |
-| `__FILE__`      | Divergence      | The path the file was read under, which is the source filesystem's spelling.                                                    |
+| `__FILE__`      | Divergence      | The path the file reads under, which is the source filesystem's spelling.                                                       |
 | `__DIR__`       | Divergence      | The directory of that path, by the same rule.                                                                                   |
 | `__FUNCTION__`  | Compatibility   | The enclosing function, namespace-qualified; a method's bare name inside one.                                                   |
 | `__CLASS__`     | Compatibility   | The enclosing class, namespace-qualified. Empty outside one.                                                                    |
@@ -80,13 +80,13 @@ echo __LINE__;                  // the line this is written on
 var_dump(defined("__FILE__"));  // false, in php too
 ```
 
-The name and the string are separate. `define("__FILE__", "x")` declares an ordinary constant that `defined()` and `constant()` answer, and the bare `__FILE__` still compiles to the path, because the token was resolved before that line ran. php behaves the same way.
+The name and the string are separate. `define("__FILE__", "x")` declares an ordinary constant that `defined()` and `constant()` answer, and the bare `__FILE__` still compiles to the path, because the token resolves ahead of that line. php behaves the same way.
 
 ### Where the path constants differ
 
-`__FILE__` and `__DIR__` name the path the file was read under, which is the source filesystem's spelling and not the host's: `/public/index.php` where php says `/srv/site/public/index.php`. See [Known divergences](../../README.md).
+`__FILE__` and `__DIR__` name the path the file reads under, which is the source filesystem's spelling and not the host's: `/public/index.php` where php says `/srv/site/public/index.php`. See [Known divergences](../../README.md).
 
-Source passed to the runtime as a string, with no file behind it, has no path to compile. There `__FILE__` and `__DIR__` fall back to the entrypoint the runtime was given. The other magic constants never fall back, because a line, a function and a class are known either way.
+Source passed to the runtime as a string, with no file behind it, has no path to compile. There `__FILE__` and `__DIR__` fall back to the runtime's own entrypoint. The other magic constants never fall back, because a line, a function and a class are known either way.
 
 ### Scope
 

@@ -512,9 +512,9 @@ func TestVirtualHostMailIsTheSitesOwn(t *testing.T) {
 				}
 			}
 
-			// The assertion the old test was missing: whatever the site
-			// declared, no part of the operator's credential may survive into
-			// a server the site did not inherit wholesale.
+			// The assertion that matters: whatever the site declares, no part
+			// of the operator's credential may survive into a server the site
+			// does not inherit wholesale.
 			if test.want["default"] != operator["default"] {
 				for server, config := range result.Mail {
 					if config.Password == "operator-secret" {

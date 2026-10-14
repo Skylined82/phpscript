@@ -112,7 +112,7 @@ try {
 }
 ```
 
-The `exit()` ends the request there. A runtime where a catch clause could swallow it would carry on into the error branch and render a page under a `Location` header that was already staged. `finally` does not run either, for the same reason it does not in PHP.
+The `exit()` ends the request there. A runtime where a catch clause could swallow it would carry on into the error branch and render a page under a `Location` header already staged. `finally` does not run either, for the same reason it does not in PHP.
 
 A response that failed carries the status and nothing else. What went wrong is in the server log and on the request trace, both addressed by the request id the response carries, and not in a body the client reads back.
 
@@ -163,11 +163,11 @@ An `include` resolves against the application root and not the document root, so
 | `REDIRECT_QUERY_STRING` | Its query string                                     |
 | `REDIRECT_ERROR_NOTES`  | What went wrong, when the request failed on a script |
 
-`$_GET`, `$_COOKIE` and the rest of `$_SERVER` are the failed request's. A page may answer with a status of its own, and the one it was called for is only the default. A page that fails itself is logged, and the request falls back to the plain status, dispatching no second page behind it.
+`$_GET`, `$_COOKIE` and the rest of `$_SERVER` are the failed request's. A page may answer with a status of its own, and the status of the call is only the default. A page that fails itself is logged, and the request falls back to the plain status, dispatching no second page behind it.
 
 Whether the page also gets `$_POST`, `$_FILES` and `php://input` depends on which of the two things went wrong, and the rule is not a policy:
 
-- **The request matched nothing.** No file answered for it and no script ran, so nothing read the body and the page gets it whole. This is what lets `404.php` dispatch a site's own routes: a form posting to a URL no file backs arrives the way the endpoint it was meant for would have seen it, and the page answers `http_response_code(200)` and includes what it routes to.
+- **The request matched nothing.** No file answered for it and no script ran, so nothing read the body and the page gets it whole. This is what lets `404.php` dispatch a site's own routes: a form posting to a URL no file backs arrives the way its target endpoint would see it, and the page answers `http_response_code(200)` and includes what it routes to.
 - **A script failed.** It had already read the body by the time it threw, so there is nothing left to hand on. `$_POST` and `$_FILES` are empty and `php://input` reads nothing.
 
 ```php

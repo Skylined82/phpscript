@@ -152,7 +152,7 @@ func TestRenderParam(t *testing.T) {
 // page: functions grouped under the Go package that registered them, classes
 // as PHP class stubs, a one-line doc comment as a line comment and a longer
 // one as a docblock. The aliases line names the extra class names one
-// constructor was registered under.
+// constructor's registered name.
 func TestRenderWritesOneStubPerRegistration(t *testing.T) {
 	funcs := []Func{
 		{Name: "strlen", Package: "stdlib/core", Area: "strings", Returns: "int",

@@ -44,7 +44,7 @@ func SetInclude(path string) {
 func knownRuntime() *runner.Runtime {
 	registryOnce.Do(func() {
 		// The working directory is the source root, because an --include is
-		// named relative to where the command was invoked and the file it
+		// named relative to the invocation directory and the file it
 		// names includes its own siblings relative to itself.
 		rt := runner.New(io.Discard, runner.Options{SAPI: "cli", RootFS: os.DirFS(".")})
 		stdlib.Register(rt)

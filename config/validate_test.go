@@ -22,7 +22,7 @@ func TestConfig_Validate(t *testing.T) {
 
 	t.Run("an empty root is the working directory", func(t *testing.T) {
 		// Validate falls back to ".", so a server started with no root
-		// validates the tree it was invoked in. This package directory holds
+		// validates the tree it runs in. This package directory holds
 		// no public, so the document root check is what reports it, against a
 		// path relative to the working directory.
 		err := config.New().Validate("config.yml", "")

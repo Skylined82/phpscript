@@ -169,7 +169,7 @@ func TestValue(t *testing.T) {
 		t.Errorf("Value(&held) = %+v, want %+v", got, held)
 	}
 
-	// The value is a copy, so a command that edits what it was handed does
+	// The value is a copy, so a command that edits what it holds does
 	// not reach the configuration the caller still holds.
 	got.DocumentRoot = "htdocs"
 	if held.DocumentRoot == "htdocs" {

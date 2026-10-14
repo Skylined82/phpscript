@@ -40,16 +40,16 @@ public function Stringable::__toString(): string
 
 ## Methods
 
-| Method                                  | Description                                        |
-|-----------------------------------------|----------------------------------------------------|
-| `Throwable::getMessage(): string`       | Gets the message                                   |
-| `Throwable::getCode(): int`             | Gets the exception code                            |
-| `Throwable::getFile(): string`          | Gets the file in which the object was created      |
-| `Throwable::getLine(): int`             | Gets the line on which the object was instantiated |
-| `Throwable::getTrace(): array`          | Gets the stack trace                               |
-| `Throwable::getTraceAsString(): string` | Gets the stack trace as a string                   |
-| `Throwable::getPrevious(): ?Throwable`  | Returns the previous Throwable                     |
-| `Throwable::__toString(): string`       | Gets a string representation of the thrown object  |
+| Method                                  | Description                                       |
+|-----------------------------------------|---------------------------------------------------|
+| `Throwable::getMessage(): string`       | Gets the message                                  |
+| `Throwable::getCode(): int`             | Gets the exception code                           |
+| `Throwable::getFile(): string`          | Gets the file holding the object's construction   |
+| `Throwable::getLine(): int`             | Gets the line holding the object's construction   |
+| `Throwable::getTrace(): array`          | Gets the stack trace                              |
+| `Throwable::getTraceAsString(): string` | Gets the stack trace as a string                  |
+| `Throwable::getPrevious(): ?Throwable`  | Returns the previous Throwable                    |
+| `Throwable::__toString(): string`       | Gets a string representation of the thrown object |
 
 ## Status
 

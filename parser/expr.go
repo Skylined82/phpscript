@@ -746,7 +746,7 @@ func (p *parser) parseAnonClass() (model.Expr, error) {
 }
 
 // parseCallArgs consumes an argument list that may be PHP 8.1's first-class
-// callable syntax, `(...)`, and reports which it was. Every spelling that builds
+// callable syntax, `(...)`, and reports which one. Every spelling that builds
 // a Call, MethodCall, StaticCall or Invoke reads its arguments here; the three
 // `new` sites keep parseArgs, which refuses the ellipsis as php does.
 func (p *parser) parseCallArgs() ([]model.Expr, bool, error) {

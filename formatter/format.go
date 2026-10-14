@@ -219,12 +219,12 @@ type printer struct {
 	// last thing written, so a blank line the author left
 	// from one the printer would be inventing.
 	// imports maps a fully-qualified name to the alias the file's use
-	// statements gave it, so a reference prints the way it was written.
+	// statements gave it, so a reference prints in its own spelling.
 	imports     map[string]string
 	comments    []Comment
 	nextComment int
 	lastLine    int
-	// afterComment records that a comment was the last thing written, so a
+	// afterComment records a comment as the last thing written, so a
 	// declaration can follow its documentation without a blank line between.
 	afterComment bool
 }
@@ -674,7 +674,7 @@ func (p *printer) printClass(n *model.ClassDecl) {
 			p.printFunc(m, true)
 		}})
 	}
-	// Properties keep the order they were declared in; the parser collects
+	// Properties keep their declaration order; the parser collects
 	// static ones separately because they are different storage.
 	sort.SliceStable(members, func(i, j int) bool {
 		if members[i].group != members[j].group {
@@ -971,7 +971,7 @@ func (p *printer) expr(e model.Expr) string {
 		}
 		return p.expr(n.Base) + "->" + n.Method + "(" + p.callArgs(n.FirstClass, n.Args) + ")"
 	case *model.New:
-		// The name an anonymous class carries was synthesized by the parser and
+		// The name an anonymous class carries comes from the parser and
 		// is not the source spelling; printing it would rewrite a working file
 		// into one that does not parse. Refusing the file leaves it untouched,
 		// and the unsupported list is for that.
@@ -1189,7 +1189,7 @@ func (p *printer) lit(v any) string {
 }
 
 // phpQuote spells s as a PHP string literal. It is the fallback for literals
-// that were built and never parsed, so it has no source spelling to follow:
+// a caller builds without parsing, so it has no source spelling to follow:
 // single quotes are used when they avoid escaping, because a double-quoted
 // literal would also have to escape `$` to keep PHP from interpolating it.
 func phpQuote(s string) string {
@@ -1280,7 +1280,7 @@ func (p *printer) typeName(name string) string {
 	// use statement while parsing, so by here the reference carries the full
 	// name and the alias is only recoverable from the imports - without this,
 	// formatting rewrites every `Config::get()` in the body to
-	// `\Common\Config::get()` and the import it was written against goes dead.
+	// `\Common\Config::get()` and its import goes dead.
 	if alias, ok := p.imports[strings.ToLower(name)]; ok {
 		return alias
 	}

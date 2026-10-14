@@ -26,7 +26,7 @@ import (
 // no string form for a date to copy: `echo $dateTime` is a fatal Error. The
 // rule comes from where PHP writes one itself. The `date` field of var_dump,
 // print_r and json_encode is Y-m-d H:i:s, and PDO returns a DATETIME column
-// as the text it was stored as. Anything else that can spell itself does, so a
+// as the stored text. Anything else that can spell itself does, so a
 // Duration is "1h30m0s" and a Month is "August".
 func GoString(v any) (string, bool) {
 	switch x := v.(type) {
@@ -40,7 +40,7 @@ func GoString(v any) (string, bool) {
 	return "", false
 }
 
-// Bytes answers the string a []byte carries, and whether v was one.
+// Bytes answers the string a []byte carries, and whether v holds one.
 //
 // A PHP string is a byte string, so a binding's []byte is one of those rather
 // than a list of integers: regexp.Regexp.Find returns the text it matched, not
@@ -125,7 +125,7 @@ func (e *ConversionError) Error() string {
 // ThrowableClass names the PHP class, implementing runner.Throwable.
 func (e *ConversionError) ThrowableClass() string { return "Error" }
 
-// classNameOf answers the class an object was declared as, for the conversion
+// classNameOf answers the class an object declares, for the conversion
 // error's message.
 func classNameOf(v any) string {
 	object, ok := v.(*model.Object)
@@ -235,7 +235,7 @@ func Float(v any) float64 {
 // prevent. The prefix is the one runner.numericPrefix reads for a cast, so
 // (int)"1e3" and phpval.Int("1e3") agree as well.
 //
-// isInt reports that the prefix was written without a fraction or an exponent,
+// isInt reports a prefix carrying no fraction and no exponent,
 // the case Number returns an int64 for.
 func leadingFloat(s string) (prefix string, isInt bool) {
 	i := 0
@@ -311,7 +311,7 @@ func parseFloat(prefix string) float64 {
 
 // Number returns v in PHP's numeric domain: an int64 for what PHP treats as an
 // integer, a float64 for what it treats as a float. It is what lets abs(),
-// min(), max() and array_sum() return the type they were given, so that
+// min(), max() and array_sum() return the type of the argument, so that
 // abs(-1) is int(1) and abs(-1.5) is float(1.5). A string is read through the
 // same numeric prefix Int and Float read, so the three never disagree: "12abc"
 // is int64(12), "-3.5" is float64(-3.5) and "abc" is int64(0).

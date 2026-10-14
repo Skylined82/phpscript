@@ -10,7 +10,7 @@ import (
 	"github.com/titpetric/phpscript/annotations"
 )
 
-// recordingRegistrar is a router that records what was registered on it. A
+// recordingRegistrar is a router that records every registration. A
 // Registrar is all Route needs to publish its endpoints, so this stands for a
 // host router without implementing one.
 type recordingRegistrar struct {

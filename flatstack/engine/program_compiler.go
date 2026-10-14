@@ -827,7 +827,7 @@ func (c *compiler) foreachStmt(node *model.Foreach, path string) error {
 	c.program.code[next].target = closePC
 	if writeBack != nil {
 		// Patch the jump the break write-back ends with. Without one, breakPC
-		// already is closePC and nothing was emitted.
+		// already is closePC and the compiler emits nothing.
 		c.program.code[closePC-1].target = closePC
 	}
 	loop := &c.loops[len(c.loops)-1]

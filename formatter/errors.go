@@ -10,7 +10,7 @@ type SkipError struct {
 	Reason error
 }
 
-// Error names the file and what was wrong with it.
+// Error names the file and the fault in it.
 func (e *SkipError) Error() string { return e.Path + ": " + e.Reason.Error() }
 
 // Unwrap answers the reason, so a caller matches on the parse error itself.

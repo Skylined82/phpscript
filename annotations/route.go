@@ -47,7 +47,7 @@ func (r *Route) RegisterMux(mux *http.ServeMux) error {
 }
 
 // Register walks the source tree and passes every @route annotation it finds to
-// registrar, backed by a handler that executes the file it was declared in.
+// registrar, backed by a handler that executes its declaring file.
 func (r *Route) Register(registrar Registrar) error {
 	if registrar == nil {
 		return fmt.Errorf("annotations: nil registrar")

@@ -13,10 +13,9 @@ import (
 
 // TestCommandsBindWithGlobals binds every command the way decorate does: the
 // global flags first, then the command's own. pflag panics on a name declared
-// twice on one set, so a command that reuses a global's name fails here
-// instead of panicking in every run of that command. A command package
-// binding on a flag set of its own never meets the globals and cannot see the
-// clash.
+// twice on one set, so a command that reuses a global's name fails here and
+// never in a run of that command. A command package binding on a flag set of
+// its own never meets the globals and cannot see the clash.
 func TestCommandsBindWithGlobals(t *testing.T) {
 	for _, command := range commands() {
 		t.Run(command.name, func(t *testing.T) {
@@ -26,10 +25,11 @@ func TestCommandsBindWithGlobals(t *testing.T) {
 	}
 }
 
-// TestWantsHelp covers which spellings main answers itself. The whole document
-// is main's to print; a help flag written after a command name belongs to that
-// command, and the library prints its usage instead. The split is positional,
-// so the first argument that is not a flag ends main's claim on the line.
+// TestWantsHelp covers which spellings main answers itself. main prints the
+// whole document; a help flag written after a command name belongs to that
+// command, and the library prints that command's usage. The split is
+// positional, so the first argument that is not a flag ends main's claim on
+// the line.
 func TestWantsHelp(t *testing.T) {
 	document := [][]string{
 		{"-h"},
@@ -61,8 +61,7 @@ func TestWantsHelp(t *testing.T) {
 
 // TestWriteHelp covers the long help: the shared flags printed once, then every
 // registered command with the flags it adds of its own. A command's section
-// repeats no shared flag, because the whole point of the shared set is that it
-// is stated once.
+// repeats no shared flag, because the shared set is stated once.
 func TestWriteHelp(t *testing.T) {
 	file, err := os.CreateTemp(t.TempDir(), "help")
 	if err != nil {

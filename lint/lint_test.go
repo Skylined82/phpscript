@@ -214,8 +214,8 @@ function compute($v) { return $v; }
 	}
 }
 
-// A violated interface contract is a lint finding on the line the class was
-// declared on, so a file is told what it is missing before it is run.
+// A violated interface contract is a lint finding on the class's own line, so
+// a file is told what it is missing before it runs.
 func TestFileReportsInterfaceContract(t *testing.T) {
 	src := "<?php\ninterface Reader {\n\tfunction get($key);\n\tfunction has($key);\n}\n\nclass Store implements Reader {\n\tfunction get($key) {\n\t\treturn $key;\n\t}\n}\n"
 	diags, err := lint.File("store.php", src)

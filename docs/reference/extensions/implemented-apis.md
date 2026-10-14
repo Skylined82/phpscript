@@ -94,7 +94,7 @@ function preg_match(string $pattern, string $subject, &$matches, mixed $flags, m
 ```php
 /**
  * preg_match_all fills $matches with every match of $pattern in $subject
- * and returns how many there were, in PREG_PATTERN_ORDER unless $flags
+ * and returns the count, in PREG_PATTERN_ORDER unless $flags
  * selects PREG_SET_ORDER, optionally starting at byte $offset; a pattern
  * that does not compile returns false and leaves $matches alone.
  */
@@ -364,7 +364,7 @@ function array_merge(mixed ...$arrs): mixed
 ```php
 /**
  * array_pop removes the last element of $array and returns it, leaving
- * the remaining keys as they were; an empty array returns null and a
+ * the remaining keys alone; an empty array returns null and a
  * value that is not a script array is an error.
  */
 function array_pop(mixed $array): mixed
@@ -1240,7 +1240,7 @@ function set_error_handler(callable ...$callback): mixed
 ```
 
 ```php
-// spl_autoload_unregister removes autoloader $callback and reports whether it was registered.
+// spl_autoload_unregister removes autoloader $callback and reports whether it holds a registration.
 function spl_autoload_unregister(callable $callback): bool
 ```
 
@@ -1685,8 +1685,7 @@ function yaml_decode(string $text): mixed
 ```php
 /**
  * yaml_encode returns $value as YAML, writing an array that is a list as
- * a sequence and any other array as a mapping in the order its keys were
- * set.
+ * a sequence and any other array as a mapping in key order.
  */
 function yaml_encode(mixed $value): mixed
 ```
@@ -1882,7 +1881,7 @@ function fputcsv(resource $stream, mixed $fields, mixed ...$opts): mixed
 
 ```php
 /**
- * closedir drops the listing $dir_handle was holding and answers nothing,
+ * closedir drops the listing $dir_handle holds and answers nothing,
  * as php's does; a handle it closed reads as exhausted and not raising,
  * where php throws.
  */
@@ -2780,7 +2779,7 @@ class Error
     public function get_message(): string {}
 
     /**
-     * throwable_class returns the PHP class the exception was constructed as,
+     * throwable_class returns the PHP class the exception declares,
      * implementing runner.Throwable.
      */
     public function throwable_class(): string {}
@@ -2810,7 +2809,7 @@ class Exception
     public function get_message(): string {}
 
     /**
-     * throwable_class returns the PHP class the exception was constructed as,
+     * throwable_class returns the PHP class the exception declares,
      * implementing runner.Throwable.
      */
     public function throwable_class(): string {}
@@ -2842,8 +2841,8 @@ class HTTP\Client
      * 
      * One request failing does not fail the others and does not throw: that
      * response reports $response->ok() as false and $response->err() as the reason,
-     * so a script sees every outcome. A throw means the argument was not an array
-     * of requests.
+     * so a script sees every outcome. A throw means the argument is no array of
+     * requests.
      */
     public function parallel(mixed $requests): array {}
 
@@ -2980,7 +2979,7 @@ class HTTP\Server
     public function addr(): string {}
 
     /**
-     * close stops the server at once, dropping whatever was in flight. shutdown()
+     * close stops the server at once, dropping everything in flight. shutdown()
      * is the one to reach for; this is for a script that answers no
      * longer matter.
      */

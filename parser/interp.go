@@ -36,7 +36,7 @@ const (
 //
 // Raw and Line describe the part's source. The parser reads the decoded fields
 // and the tokenizer reads Raw, because token_get_all reports a literal the way
-// it was written: an escape inside a text run stays an escape there, exactly as
+// the source spells it: an escape inside a text run stays an escape there, exactly as
 // it does in the T_CONSTANT_ENCAPSED_STRING of a literal that embeds nothing.
 type interpPart struct {
 	Kind  interpKind
@@ -120,7 +120,7 @@ func scanInterp(src string, start int, line int) (parts []interpPart, end int, i
 			i++
 		}
 		// A literal may span lines, and both a text run and a {$...} may carry
-		// the newlines. Counting over what was just consumed keeps the reported
+		// the newlines. Counting over the consumed span keeps the reported
 		// line right whichever branch consumed it.
 		line += strings.Count(src[prev:i], "\n")
 	}

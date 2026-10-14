@@ -38,4 +38,4 @@ cd tests && atkins test
 ```
 
 The suite leaves the database as it found it: each case that adds a bookmark
-extracts the id it was given and deletes it again, so it can be run repeatedly.
+extracts the new id and deletes it again, so it can be run repeatedly.

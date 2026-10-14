@@ -7,8 +7,9 @@ import (
 // Allocation strategy for the AST.
 //
 // Parsing a 10 KB PHP file builds a few thousand AST nodes and a few hundred
-// child slices. Both were allocated one object at a time; this file replaces
-// that with two chunked structures, mirroring parser/tokenizer.go's emitArr.
+// child slices. One object at a time costs an allocation each; this file
+// carves both out of two chunked structures, mirroring
+// parser/tokenizer.go's emitArr.
 // See docs/allocation-performance.md rules 6 and 7.
 //
 //   - nodeChunk carves nodes of one concrete type out of a backing array.
@@ -113,7 +114,7 @@ func (p *parser) newLit(v any) *model.Lit {
 }
 
 // newStringLit allocates a string literal, keeping the source spelling so the
-// formatter can print the literal exactly as it was written.
+// formatter can print the literal in its own spelling.
 func (p *parser) newStringLit(v, raw string) *model.Lit {
 	n := p.litNodes.new()
 	n.Value, n.Raw = v, raw

@@ -190,9 +190,9 @@ if err != nil {
 result, err := callable.Invoke(worker, w, r)
 ```
 
-It is the narrower of the two, because it needs a declaration to carry. The two array spellings are refused by decision: a handler is a function of its arguments, and wrapping one in an array to name a method is a spelling this API leaves out. They stay callable everywhere else. A Go func is refused for a different reason, that it is not a declaration and a host holding one already holds the call. The error names which it was and what the alternative is.
+It is the narrower of the two, because it needs a declaration to carry. The two array spellings are refused by decision: a handler is a function of its arguments, and wrapping one in an array to name a method is a spelling this API leaves out. They stay callable everywhere else. A Go func is refused for a different reason, that it is not a declaration and a host holding one already holds the call. The error names which one and what the alternative is.
 
-`Callable.Captures` reports whether the value took anything from where it was written: a closure's `use (...)` list, the `$this` one written in a method binds, or the receiver a bound method was read off. What it captured is shared by every runtime running it, and is read-only. A declared function and a static method capture nothing and run anywhere.
+`Callable.Captures` reports whether the value holds anything from its defining scope: a closure's `use (...)` list, the `$this` one written in a method binds, or a bound method's receiver. Its captures are shared by every runtime running it, and are read-only. A declared function and a static method capture nothing and run anywhere.
 
 ## Output parameters
 

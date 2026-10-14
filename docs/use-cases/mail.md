@@ -120,7 +120,7 @@ mail:
 
 A site that declares no `mail` block inherits the operator's servers, and `mail:` with nothing under it means no servers at all, so a site says it sends none.
 
-The map replaces wholesale. When this was a single unnamed block, a site setting only `host` and `from` kept the operator's `username` and `password` and authenticated as the operator.
+The map replaces wholesale. Under a single unnamed block, a site setting only `host` and `from` kept the operator's `username` and `password` and authenticated as the operator.
 
 ## Sending by something other than SMTP
 

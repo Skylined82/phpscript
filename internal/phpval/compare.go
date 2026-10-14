@@ -135,14 +135,14 @@ func compareBools(x, y bool) int {
 }
 
 // phpNum is a value in PHP's numeric domain: an int64 when it is an integer
-// that fits one, a float64 otherwise. text is the numeric string it was read
-// from, kept for the precision fallback in compareNumbers.
+// that fits one, a float64 otherwise. text is the numeric string behind it,
+// kept for the precision fallback in compareNumbers.
 type phpNum struct {
 	i       int64
 	f       float64
 	isInt   bool
-	text    string // source text, when the value was read from a string
-	intText bool   // that text was written as a plain integer
+	text    string // source text, for a value read out of a string
+	intText bool   // that text spells a plain integer
 }
 
 func (n phpNum) float() float64 {

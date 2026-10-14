@@ -45,7 +45,7 @@ Database::register("reports", "postgres://user:pass@host/reports?sslmode=disable
 $db = new Database("reports");
 ```
 
-The name is lowercased, as it is when it comes from `PLATFORM_DB_REPORTS`. Registering a name that already means the same thing does nothing; registering it with a different DSN closes the pool that was opened for the old one, so an edited connection takes effect on the next request, with no restart.
+The name is lowercased, as it is when it comes from `PLATFORM_DB_REPORTS`. Registering a name that already means the same thing does nothing; registering it with a different DSN closes the pool of the old one, so an edited connection takes effect on the next request, with no restart.
 
 A virtual host registers into its own provider, so one site cannot reach another's databases by naming them.
 
@@ -190,7 +190,7 @@ $db->query("create table if not exists users (id integer primary key, name text)
 $db->query("delete from users where id = ?", 10);
 ```
 
-A `?` is the placeholder whatever the driver is. A statement that is given arguments is rebound to the style the driver reads, so the same PHP runs on sqlite, mysql and postgres, which numbers its placeholders `$1`, `$2`. A statement with no arguments is passed through as it was written: rebinding scans and does not parse, so a `?` inside a string literal is not a placeholder.
+A `?` is the placeholder whatever the driver is. A statement that is given arguments is rebound to the style the driver reads, so the same PHP runs on sqlite, mysql and postgres, which numbers its placeholders `$1`, `$2`. A statement with no arguments is passed through unchanged: rebinding scans and does not parse, so a `?` inside a string literal is not a placeholder.
 
 **One value that is an array is bound by name, not by position.** A single argument that is an array or a map is taken as a set of named parameters for a `:name` query. `insert()` and friends are built on that. A statement that binds exactly one value, and that value is an array, therefore becomes a named query and fails somewhere else:
 
@@ -272,10 +272,10 @@ Measured against the drivers this runtime ships, writing `2026-08-26T14:48:00Z` 
 | postgres | `DATE`                 | `2026-08-26`                    | `Time` at midnight UTC             |    |
 | mysql    | `TIMESTAMP`            | `2026-08-26 16:48:00`, in `loc` | `Time`, in `loc` (the DSN's)       | ✅ |
 | mysql    | `DATETIME`             | as above                        | as above                           | ⚠️  |
-| sqlite   | `TIMESTAMP`/`DATETIME` | whatever text was written       | `Time`, offset read from that text | ✅ |
+| sqlite   | `TIMESTAMP`/`DATETIME` | the stored text                 | `Time`, offset read from that text | ✅ |
 | any      | `TEXT`/`VARCHAR`       | see below                       | a plain string                     | ❌ |
 
-A `TIMESTAMPTZ` and a mysql `TIMESTAMP` both store an instant and both round trip one. The rows marked ⚠️ store a wall clock instead: they round trip correctly only while every writer and reader agrees on one zone, and they have no way to say which zone that was. The rows marked ❌ are not date columns at all; the driver has no reason to parse them, so a script gets the text back.
+A `TIMESTAMPTZ` and a mysql `TIMESTAMP` both store an instant and both round trip one. The rows marked ⚠️ store a wall clock instead: they round trip correctly only while every writer and reader agrees on one zone, and they have no way to name that zone. The rows marked ❌ are not date columns at all; the driver has no reason to parse them, so a script gets the text back.
 
 sqlite has no date type. What makes a column a date there is its **declared** type: a `TIMESTAMP` or `DATETIME` column is scanned into a `Time`, a `TEXT` column is not, and the text stored in it is what decides the zone. `2026-08-26T14:48:00+02:00` keeps the offset; `2026-08-26 14:48:00` is read as UTC whatever it meant.
 
@@ -307,7 +307,7 @@ A `Time` is exempt from the named-binding rule under [Execute queries](#execute-
 $db->query("insert into events (at) values (?)", $t);
 ```
 
-That needs pdo v0.2.4 or later. Before it, a lone `Time` was read as a bag of named parameters, and the statement reached the server with its `?` unbound.
+That needs pdo v0.2.4 or later. An earlier pdo reads a lone `Time` as a bag of named parameters, and the statement reaches the server with its `?` unbound.
 
 ## Tracing
 

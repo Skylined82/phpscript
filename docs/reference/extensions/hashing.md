@@ -101,7 +101,7 @@ if (password_needs_rehash($stored, PASSWORD_DEFAULT)) {
 }
 ```
 
-The cost is recorded inside the hash, so `password_verify` costs what the hash was written at and `password_needs_rehash` is how a deployment moves its stored hashes to a new one. A login is the only place in a request that pays it.
+The cost is recorded inside the hash, so `password_verify` costs what the hash carries and `password_needs_rehash` is how a deployment moves its stored hashes to a new one. A login is the only place in a request that pays it.
 
 **The fast digests belong on the token.** A session identifier or a bearer token is 128 bits from `random_bytes`, so it holds nothing to guess and nothing for a cost parameter to defend. Store a digest of it and compare with `hash_equals`. An authenticated request then costs one digest:
 

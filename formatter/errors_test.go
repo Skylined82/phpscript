@@ -7,7 +7,7 @@ import (
 )
 
 // TestSkipError covers the error a refused file carries. Formatting rewrites a
-// file in place, so the message names the file as well as what was wrong with
+// file in place, so the message names the file as well as the fault in
 // it, and Unwrap answers the reason, so a caller matches on the parse error
 // itself and never on the wrapper.
 func TestSkipError(t *testing.T) {

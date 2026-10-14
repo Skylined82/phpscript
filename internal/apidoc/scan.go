@@ -239,7 +239,7 @@ func (src *sources) resolveSignature(entry *sourceEntry, pkg, name string, expr 
 			}
 		}
 	case *ast.SelectorExpr:
-		// The qualifier has to agree with the package the declaration was
+		// The qualifier has to agree with the package holding the declaration
 		// found in. Without that check a registration of regexp.Compile reads
 		// the signature of flatstack/engine.Compile, which shares the name and
 		// nothing else, and publishes its parameters.

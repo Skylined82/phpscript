@@ -84,7 +84,7 @@ A returned value takes PHP's own coercions into the declared result: `1` fills a
 
 ## Concurrency
 
-A `*runner.Runtime` serves one goroutine, and a looked-up function belongs to the runtime it was found on. A host calling one from several goroutines builds a runtime per goroutine and shares the two caches between them:
+A `*runner.Runtime` serves one goroutine, and a looked-up function belongs to the runtime holding it. A host calling one from several goroutines builds a runtime per goroutine and shares the two caches between them:
 
 ```go
 includes, exprs := runner.NewIncludeCache(), runner.NewExprCache()
@@ -143,7 +143,7 @@ One thing a pool does not carry: the writer is fixed when the runtime is built. 
 
 ## Limits
 
-A looked-up symbol runs on the interpreter even when the runtime was built with `NewFlatStack`, because a flat-declared function lives in the bytecode program's own table and not the runtime's.
+A looked-up symbol runs on the interpreter even under a runtime built with `NewFlatStack`, because a flat-declared function lives in the bytecode program's own table and not the runtime's.
 
 `Options.Include` is not run per invocation, so a composer autoloader is not installed by a lookup. A function that needs one requires it in its own body, or the host runs the prelude on the runtime before looking anything up.
 

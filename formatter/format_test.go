@@ -142,7 +142,7 @@ func TestQuoteStyleOfStringLiteralsIsKept(t *testing.T) {
 	}
 }
 
-// A literal that was built and never parsed has no source spelling to keep,
+// A literal a caller builds without parsing has no source spelling to keep,
 // so the printer picks the quoting: single quotes when they avoid escaping a
 // dollar sign, which a double-quoted literal would interpolate.
 func TestSyntheticStringLiteralAvoidsInterpolation(t *testing.T) {
