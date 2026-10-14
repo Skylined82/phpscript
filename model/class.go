@@ -9,9 +9,8 @@ package model
 type Class struct {
 	Name string
 	// Implements is every interface name the declaration listed, plus the names
-	// those interfaces extend, lower-cased. It records which contracts the
-	// class was checked against, and is what `instanceof` answers an interface
-	// name from. No member arrives through it; see docs/design.md.
+	// those interfaces extend, lower-cased. It records the contracts the class
+	// checks against, and is what `instanceof` answers an interface name from. No member arrives through it; see docs/design.md.
 	Implements []string
 	Fields     []Field
 	Statics    []Field // static property declarations (Name + default Expr)
@@ -30,7 +29,7 @@ func (c *Class) declares(name string) bool {
 }
 
 // Field returns the declaration of the named field, for a caller that needs the
-// visibility or type a property was declared with.
+// visibility or type a property declares.
 func (c *Class) Field(name string) (Field, bool) {
 	for _, field := range c.Fields {
 		if field.Name == name {

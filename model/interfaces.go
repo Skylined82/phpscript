@@ -8,8 +8,8 @@ import (
 // InterfaceViolation is one method an interface names and a class declaring
 // `implements` did not declare.
 //
-// Decl is the class declaration it was found on, so a caller holding the
-// program's source spans can report the line the class was written on.
+// Decl is the class declaration carrying it, so a caller holding the
+// program's source spans can report the class's line.
 type InterfaceViolation struct {
 	Decl      *ClassDecl
 	Class     string
@@ -189,7 +189,7 @@ func declaredMethods(cd *ClassDecl, stmts []Stmt) map[string]bool {
 // It is the same union contractOf walks, taken as names and not as methods,
 // and it is what `instanceof` answers an interface name from. Nothing is
 // inherited through it: the class holds the list it declared, and the list says
-// which contracts it was checked against.
+// which contracts it checks against.
 func InterfaceNames(cd *ClassDecl, stmts []Stmt) []string {
 	if cd == nil || len(cd.Implements) == 0 {
 		return nil

@@ -191,7 +191,7 @@ func (a *Array) Delete(key any) {
 //
 // It lives here and not in the shim because of the append index, which is
 // the one piece of state a caller cannot reach. PHP decrements it only when the
-// removed key was the one it was about to hand out, so popping 9 from
+// removed key is the one it would hand out next, so popping 9 from
 // [5 => a, 9 => c] leaves the next append at 9, while popping 5 from
 // [5 => a, 9 => c] leaves it at 10. Rebuilding the array from its entries
 // cannot express that, because it loses the counter.

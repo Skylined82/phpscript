@@ -52,7 +52,7 @@ PATH="$PWD/bin:$PATH"
 command -v phpscript | grep -q "^$PWD/bin/" || exit 1
 ```
 
-`bin/` is already gitignored. The third line is the first line of every measurement log. `phpscript test` runs the binary on `PATH` and not the tree, so without it a sprint silently measures whatever was installed last.
+`bin/` is already gitignored. The third line is the first line of every measurement log. `phpscript test` runs the binary on `PATH` and not the tree, so without it a sprint silently measures whatever the last install left.
 
 The whole thing as one locked session:
 
@@ -163,11 +163,11 @@ done
 
 **`--cache` costs memory as well as deciding what is measured.** `worker` keeps one set of caches per worker loop, which is the production shape and the larger heap. `off` drops the runtime with the fixture, holds far less resident, and prices the parser and not execution. A whole-suite run that has to stay in one process uses `off`.
 
-`atkins bench` and `atkins default` are not exempt. Both compile and run the tree, and the OOM above was raised by atkins.
+`atkins bench` and `atkins default` are not exempt. Both compile and run the tree, and atkins raises the OOM above.
 
 ### GC and drift
 
-Four rules. They were enforced by a script that has been deleted; they are protocol now.
+Four rules. No script enforces them; they are protocol.
 
 - **Medians and percentiles, never means.** `--json` reports `p50_ns`, `p95_ns` and `p99_ns`; `benchstat` reports medians; `wrk --latency` reports a distribution. All three percentiles go in the artifact. p50 and p99 go in the table. Check the generator's resolution before believing its percentiles: `hey` reports latency to four decimal places of a second, so every percentile of a sub-millisecond handler comes back as the same number, and `performance.md` uses wrk.
 - **A static control that never reaches the interpreter.** For the HTTP target the control is `testdata/testserver.go`, the route-for-route Go twin. It is the floor the PHP numbers are read against.
@@ -184,9 +184,9 @@ Every artifact set carries `bench-manifest-<side>.txt` holding the commit sha, `
 
 ### Counterbalance the blocks
 
-Measuring all of before and then all of after does not compare two commits. It compares two points in time, and on this box the governor is `powersave`, so the clock the pinned core runs at depends on how long it has been busy and on what else is running. A sequential pair measures that slope as if it were the change.
+Measuring all of before and then all of after does not compare two commits. It compares two points in time, and on this box the governor is `powersave`, so the clock the pinned core runs at depends on how long it has been busy and on what else is running. A sequential pair reports that slope as the change.
 
-It is not a small effect and it is not hypothetical. A main-against-main pair - the same binary measured twice - has produced a **-7.18% geomean** difference between adjacent blocks in one session. A published -7.11% improvement turned out to be exactly that artifact: re-measured with the blocks counterbalanced, the same commit was -1.96%.
+It is not a small effect and it is not hypothetical. A main-against-main pair - the same binary measured twice - has produced a **-7.18% geomean** difference between adjacent blocks in one session. A published -7.11% improvement turned out to be exactly that artifact: re-measured with the blocks counterbalanced, the same commit reports -1.96%.
 
 So alternate. Order the blocks `A B B A`, repeated, with one sample per block, which cancels a linear drift exactly: whatever the slope is, each side sits on it the same number of times and at the same average position.
 
@@ -297,7 +297,7 @@ Three tiers, and one rule that applies to all of them.
 
 **Tier 3, needs the operator before it is written, not after.** `unsafe` in any form. `unsafe.String` or `unsafe.Slice` over a buffer a caller may still write. Pointer rewriting of model values. A free list whose entries outlive a request. Any change to value semantics. These are the changes whose failure mode is a wrong answer under concurrency, and the suite is no proof of their absence. Each needs what aliases what, which test holds it, and a `-race` run over the affected packages.
 
-**All three tiers.** A technique is explored by measuring it. A technique that was measured and lost is recorded, with its number and why it lost. Rejected is a result: `../flatstack.md` records the typed-slot verdict and `../allocation-performance.md` records two reverted shapes, and both issue templates carry a considered-and-rejected field.
+**All three tiers.** A technique is explored by measuring it. A technique that loses on a measurement is recorded, with its number and the reason. Rejected is a result: `../flatstack.md` records the typed-slot verdict and `../allocation-performance.md` records two reverted shapes, and both issue templates carry a considered-and-rejected field.
 
 ## Where work lands
 
@@ -305,7 +305,7 @@ Three tiers, and one rule that applies to all of them.
 
 Three destinations, decided by what changed.
 
-**A change under `docs/agents/`** is committed and pushed straight to `main`, by the coordinator. These documents are the protocol agents read, not a product anybody reviews, and holding a protocol correction behind a review queue means every sprint in flight keeps following the version that was wrong.
+**A change under `docs/agents/`** is committed and pushed straight to `main`, by the coordinator. These documents are the protocol agents read, not a product anybody reviews, and holding a protocol correction behind a review queue means every sprint in flight keeps following the wrong version.
 
 **Everything else** goes on `area/<subject>`, one branch per subject, carrying every finding in that subject. One finding is still one commit, with the body shape below as its commit message, so the branch reads as the sequence of findings it is: the history keeps them separate and the review unit collapses them. Code, its tests, its fixtures and the documentation that describes it travel together: a reviewer cannot judge a behaviour change whose documentation is in another queue.
 
@@ -321,11 +321,11 @@ The reason is review load. A pull request per finding produces more review than 
 
 ## The pull request
 
-A reader opens it to learn what was broken and what the change does about it. Four parts, in this order.
+A reader opens it to learn which problem it answers and how. Four parts, in this order.
 
 1. **`## Problem`.** What is broken, and the number or the symptom that shows it.
 2. **`## Change`.** What the pull request does, named in the terms of the code: the function, the type, the flag, the file. A paragraph, or a short list where there are several.
-3. **The measurements**, where anything was measured: the tool's output transcribed one to one, with the command above it.
+3. **The measurements**, where the work measures anything: the tool's output transcribed one to one, with the command above it.
 4. **`worktree verdict --from=main`**, that exact command, its output raw and last. It is already markdown, so it renders without a fence.
 
 The title is `type(scope): subject`. A finding's commit message is the same Problem and Change in prose, without the table or the verdict.
@@ -338,7 +338,7 @@ What is left out, because every one of these has gone in and made a body worse:
 |--------------------------------------|----------------------------------------------------------------------------------------|
 | Anything that did not change         | A call site that still works and a package that behaves the same are not the change    |
 | An invented section                  | No audit, no reachability survey, no inventory, no "also on this branch"               |
-| How the work was done                | No agent, no sprint, no wave, no measure lock, no "verified on a private binary"       |
+| How the work happened                | No agent, no sprint, no wave, no measure lock, no "verified on a private binary"       |
 | Anything addressed to a reviewer     | No "worth reviewing", no open questions, no checklist of what to look at               |
 | A proposal in place of a change      | Either the change is in the branch or it is in an issue. A body is not a design review |
 | An adjective where the number exists | "much faster" when the benchmark printed 214.7ms to 4.17ns                             |
@@ -357,7 +357,7 @@ Six slots, one or two lines each.
 
 | Slot                 | What it says                                                                                                                               |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| Cost                 | The call, the measured number, and how it was measured                                                                                     |
+| Cost                 | The call, the measured number, and the command behind it                                                                                   |
 | What the field buys  | The behaviour that would be lost                                                                                                           |
 | Consumer and trigger | Who it serves, what triggers it, and why those two do not match                                                                            |
 | Intent               | The stated purpose the current trigger is wrong against                                                                                    |

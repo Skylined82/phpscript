@@ -71,7 +71,7 @@ CGO_ENABLED=0 go test -count 1 -v ./runner
 
 `bench-gotest-<side>.json`, which is test2json: one JSON object per line, with `Action` (`run`, `pass`, `fail`, `output`), `Package`, `Test` and `Elapsed`. Already ignored by `bench*.json`.
 
-`cover/pkg.cov` when `-cover` was on. Already ignored by `/cover/*` and `*.cov`. It is large, in the tens of megabytes, and it stays behind for `go tool cover -html`.
+`cover/pkg.cov` under `-cover`. Already ignored by `/cover/*` and `*.cov`. It is large, in the tens of megabytes, and it stays behind for `go tool cover -html`.
 
 `bench-manifest-<side>.txt` alongside, as the contract requires.
 

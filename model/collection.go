@@ -124,7 +124,7 @@ func RangeValues(v any, fn func(key, val any) bool) {
 	}
 }
 
-// LenValues reports a collection's entry count and whether v was a collection
+// LenValues reports a collection's entry count and whether v is a collection
 // at all. It backs count(): a non-collection reports (0, false) so callers can
 // apply PHP's "count of a scalar" behaviour themselves.
 func LenValues(v any) (int, bool) {

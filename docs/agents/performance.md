@@ -6,7 +6,7 @@ Read this when optimising the HTTP path. It runs under the contract in [README.m
 
 ## The target
 
-`testdata/testserver.php` is a PHP program that is itself the HTTP server. `testdata/testserver.go` is the same routes on `net/http.ServeMux`, with the same encoder and the same bodies, and no VM. The two were written to be put through one load generator so the difference could be read off.
+`testdata/testserver.php` is a PHP program that is itself the HTTP server. `testdata/testserver.go` is the same routes on `net/http.ServeMux`, with the same encoder and the same bodies, and no VM. One load generator drives both, so the difference reads off directly.
 
 Two things drive them, and both arrived with this sprint's first pull request. `scripts/bench-http.sh` puts both sides through one load generator and reports a latency distribution and a request rate per route; `BenchmarkTestServerRoute` in `tests/testserver_bench_test.go` answers one request per iteration through the router the file builds, and reports `allocs/op`. There is still no fixture and no venom suite over either.
 
@@ -31,13 +31,13 @@ Path B is already structurally right - nothing re-parses, nothing re-registers -
 
 ## The harness
 
-`scripts/bench-http.sh` is the sweep and `wrk --latency` is the generator inside it. `hey` was named here first and lost the job on its own output: it prints every latency as four decimal places of a second, which is coarser than any handler here answers in, so every percentile it reported came back as the same number. wrk prints no 95th percentile, reporting 50, 75, 90 and 99, so the 90th is collected in its place.
+`scripts/bench-http.sh` is the sweep and `wrk --latency` is the generator inside it. `hey` loses the job on its own output: it prints every latency as four decimal places of a second, coarser than any handler here answers in, so every percentile it reports comes back as the same number. wrk prints no 95th percentile, reporting 50, 75, 90 and 99, so the 90th is collected in its place.
 
 A latency column end to end is never finer than the generator, and a per-request allocation cannot be read off one at all. `BenchmarkTestServerRoute` is the other half of the harness for that reason: it drives the same router through `httptest` with the socket left out, so `ns/op`, `B/op` and `allocs/op` come off the same request path at a resolution the sweep does not have. The sweep is what says the socket and the wire did not undo it.
 
 Concurrency 1 for the delta, as the contract's single-threaded rule requires. A second table at concurrency 4 for queueing behaviour, never as the headline.
 
-A segment is one wrk run and a route gets several of them, because the contract's drift guard needs two ends to compare: one long run reports one distribution with no way to tell when inside it the box was busy.
+A segment is one wrk run and a route gets several of them, because the contract's drift guard needs two ends to compare: one long run reports one distribution with no way to tell when inside it the box is busy.
 
 `testdata/testserver.go` is the floor column. It is `//go:build ignore`, so it runs as `go run testdata/testserver.go`. It is read as the floor, not as a target to reach: a VM is the whole of what the comparison measures.
 
@@ -59,7 +59,7 @@ Two asymmetries the harness has to respect. The PHP side answers four requests a
 
 `TESTSERVER_ADDR` defaults to `127.0.0.1:8099` and takes `127.0.0.1:0` to let the kernel pick. `TESTSERVER_WORKERS` defaults to 4. `TESTSERVER_LIMIT` is a duration and defaults to ten seconds.
 
-The first thing that will go wrong is that limit. Running out of time is a fatal: the shutdown callback fires, the server stops listening, and the process disappears part-way through a run that was still measuring. Set `TESTSERVER_LIMIT` past the length of the whole sweep before starting it.
+The first thing that will go wrong is that limit. Running out of time is a fatal: the shutdown callback fires, the server stops listening, and the process disappears part-way through a run still measuring. Set `TESTSERVER_LIMIT` past the length of the whole sweep before starting it.
 
 ## The known allocation sites
 
@@ -110,7 +110,7 @@ The three tiers are in the contract. What this target invites, by name:
 
 The one that goes to the operator before it is written is `unsafe` over the output buffer. The failure mode is a response body that aliases a buffer the next request is writing, and the suite does not prove its absence.
 
-A technique that lost is recorded with its number. `../flatstack.md` is the model: typed slots were measured and rejected, and the verdict is in the document so nobody spends the week again.
+A technique that lost is recorded with its number. `../flatstack.md` is the model: it refuses typed slots on a measurement, and the verdict sits in the document so nobody spends the week again.
 
 ## The pull request
 
@@ -125,7 +125,7 @@ The table states the path in its caption and carries the Go floor as a row, so t
 | Route          | p50 us | p99 us | req/s |
 |----------------|-------:|-------:|------:|
 | `/hello` (go)  |        |        |       |
-| `/hello` (was) |        |        |       |
+| `/hello` (before) |        |        |       |
 | `/hello` (now) |        |        |       |
 
 The allocation table is the second one, in the shape [../allocation-performance.md](../allocation-performance.md) owns, and it carries no Go floor: `testdata/testserver.go` is `//go:build ignore` and its handlers cannot be imported, so the floor lives in the latency table only.

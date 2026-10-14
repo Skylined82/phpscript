@@ -39,7 +39,7 @@ const (
 // ParseRoutePath returns the parameters declared in an @route path, in order.
 //
 // An error names the offending segment, so a caller can report it against the
-// line the annotation was written on. Every rejected spelling is one a router
+// annotation's line. Every rejected spelling is one a router
 // would otherwise accept and answer wrongly: chi registers {module=users} as a
 // parameter of that literal name, matches every request to the segment and
 // exports nothing.

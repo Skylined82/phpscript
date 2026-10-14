@@ -343,12 +343,11 @@ func TestCatch(t *testing.T) {
 	}
 }
 
-// TestSwitchCase covers the arms of a switch and the line each `case` keyword
-// was written on, which the formatter places comments by.
+// TestSwitchCase covers the arms of a switch and the line of each `case`
+// keyword, which the formatter places comments by.
 //
 // An arm with an empty body falls through to the next one under PHP's
-// semantics, so an empty Body is an arm that was written and no arm that is
-// missing. Default is held apart from Cases because it matches no value.
+// semantics, so an empty Body is a written arm and no missing one. Default is held apart from Cases because it matches no value.
 func TestSwitchCase(t *testing.T) {
 	sw := &Switch{
 		Cond: &Var{Name: "code"},

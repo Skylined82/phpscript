@@ -44,7 +44,7 @@ The same applies in the other direction: `phpscript run` over one file includes 
 
 Both Go runners, through `--matrix --skip-php`. `php` is excluded: it is another process with another engine, and its latency is not this project's to optimise. It stays in the correctness matrix and out of the timing one.
 
-`--cache` decides what is being timed. `worker` amortises the parse across the fixtures a worker runs, which is the production shape. `off` re-parses per fixture, which measures the parser. Picking the wrong one is the common error, and the report names which was used.
+`--cache` decides what is being timed. `worker` amortises the parse across the fixtures a worker runs, which is the production shape. `off` re-parses per fixture, which measures the parser. Picking the wrong one is the common error, and the report names the mode it ran under.
 
 It also decides what the run costs in resident memory, so layer 3 runs one process per area under `GOMEMLIMIT`. The contract's memory section has the reasoning and the loop.
 

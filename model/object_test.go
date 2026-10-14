@@ -36,8 +36,8 @@ func TestObject(t *testing.T) {
 }
 
 // TestObject_SetID covers the name a constructed object records. The runtime
-// writes the receiving variable there, so a value printed back can name where
-// it was assigned.
+// writes the receiving variable there, so a value printed back names its
+// assignment site.
 func TestObject_SetID(t *testing.T) {
 	obj := NewObject(nil)
 	if obj.ID != "" {

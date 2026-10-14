@@ -58,7 +58,7 @@ type RouteAnnotation struct {
 	Method string
 	Path   string
 
-	// Line is the 1-based line the annotation was written on, for a
+	// Line is the 1-based line holding the annotation, for a
 	// diagnostic that names where to fix it. Zero when the source is unknown.
 	Line int
 }
@@ -327,8 +327,8 @@ type SwitchCase struct {
 	Line  int
 }
 
-// Break exits the nearest loop or switch. Line is the source line it was
-// written on, which also makes the node an address of its own: Go assigns every
+// Break exits the nearest loop or switch. Line is its source line, which also
+// makes the node an address of its own: Go assigns every
 // zero-sized allocation the same one, and the formatter keys source spans by
 // node.
 type Break struct {
@@ -474,7 +474,7 @@ func (*Declare) stmt() {}
 // came from a parsed file. Decoding a string is lossy (`'$a'` and `"\$a"`
 // decode to the same value, and only one of them can be re-encoded from it),
 // so the formatter prints from Raw and falls back to encoding Value for nodes
-// that were built and never parsed.
+// a caller builds without parsing.
 type Lit struct {
 	Value any
 	Raw   string

@@ -9,7 +9,7 @@ import (
 // into expr-lang exposes its Props for `$obj->field` style access.
 //
 // Props is a Go map and has no order of its own, so order records the sequence
-// the properties were added in. Every reader passes through Names or Range and
+// the properties arrive in. Every reader passes through Names or Range and
 // than ranging the map, because PHP reads properties back in a defined order
 // and a script can see it: json_encode, print_r, var_dump, get_object_vars, the
 // `(array)` cast and `foreach` all read them back in it.

@@ -123,7 +123,7 @@ func TestCheckInterfaces(t *testing.T) {
 // TestInterfaceContractError covers the type a caller recovers the violations
 // through. Both backends raise it where they register classes, so a program
 // fails the same way whichever one ran it, and a caller holding the program's
-// source spans reads Decl to report the line the class was written on.
+// source spans reads Decl to report the class's line.
 func TestInterfaceContractError(t *testing.T) {
 	stmts := []model.Stmt{iface("R", nil, "get", "has"), class("S", []string{"R"}, "get")}
 

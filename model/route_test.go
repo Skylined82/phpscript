@@ -73,8 +73,8 @@ func TestParseRoutePathRejects(t *testing.T) {
 	}
 }
 
-// The rendered pattern is what each router is handed. The expectations were
-// measured against chi v5.3.2 and net/http.ServeMux: chi 404s on {tail...} and
+// The rendered pattern is what each router is handed. The expectations come
+// from chi v5.3.2 and net/http.ServeMux: chi 404s on {tail...} and
 // ServeMux panics on {id:[0-9]+}, so neither dialect is the authored one.
 func TestRenderRoutePath(t *testing.T) {
 	tests := []struct {

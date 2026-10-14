@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-// legacyArray is the map-backed *Array as it was before list mode: every array
-// allocated a map[any]any and a key slice up front. The differential test below
+// legacyArray is the map-backed *Array without list mode: every array
+// allocates a map[any]any and a key slice up front. The differential test below
 // replays operation sequences against both implementations and requires
 // identical observable behaviour; the benchmarks measure what list mode saves.
 // Following docs/allocation-performance.md ("keep the old implementation as a
@@ -873,7 +873,7 @@ func TestArray_Delete(t *testing.T) {
 	}
 
 	// The append index is not rewound: unset never renumbers, so the next
-	// append lands past the key that was removed.
+	// append lands past the removed key.
 	arr.Append("d")
 	if got, want := arr.Keys(), []any{int64(1), int64(3)}; !reflect.DeepEqual(got, want) {
 		t.Errorf("Keys() = %v after appending over a deleted tail, want %v", got, want)
@@ -888,8 +888,8 @@ func TestArray_Delete(t *testing.T) {
 }
 
 // TestArray_Pop covers array_pop, which is here and not in the shim because of
-// the append index. PHP decrements it only when the removed key was the one it
-// was about to hand out: popping 9 from [5 => a, 9 => c] leaves the next append
+// the append index. PHP decrements it only when the removed key is the one it
+// would hand out next: popping 9 from [5 => a, 9 => c] leaves the next append
 // at 9, and popping 5 from the same array leaves it at 10. Rebuilding the array
 // from its entries loses that counter.
 func TestArray_Pop(t *testing.T) {
@@ -958,7 +958,7 @@ func TestArray_Int64List(t *testing.T) {
 
 // TestArray_ReplaceInt64List covers the other half of that path: a sorted
 // []int64 goes back as a dense list, replacing whatever the array held and
-// whichever mode it was in. An empty replacement appends at 0, because an array
+// whichever mode it holds. An empty replacement appends at 0, because an array
 // that holds no integer key has not had the index set.
 func TestArray_ReplaceInt64List(t *testing.T) {
 	arr := NewArray()

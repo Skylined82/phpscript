@@ -37,13 +37,13 @@ A `SKIP` is a fixture that opted a runtime out, or a missing `php` binary. Any o
 
 **A thin fixture area.** `../test-fixtures.md` is one table per area. An area with three fixtures covering a stdlib surface with thirty functions is where a defect is sitting unobserved.
 
-**`tests/fixtures/github/`** is the log of what was reported, not a backlog: the three files there are closed, each naming the regression test that now guards it. It is worth reading for the shape of a good report, not for open work.
+**`tests/fixtures/github/`** is the record of each report and no backlog: the three files there are closed, each naming the regression test that guards it. Read it for the shape of a good report; it holds no open work.
 
 ## Diagnosis
 
 A diagnosis comes before a fix and has four parts:
 
-- The smallest source that shows it. Not the program it was found in.
+- The smallest source that shows it, and never the whole program around it.
 - What `php` prints for that same source. Run it; do not reason about it.
 - The file and line that decides. Not the file the symptom appears in.
 - Whether it is a bug or a documented divergence.
@@ -93,7 +93,7 @@ When a count reaches zero in `scripts/splint-baseline.json`, the rule comes out 
 
 ## Simplification
 
-What counts: one implementation where there were two. A helper with one caller, inlined. A branch no input reaches. An error path that cannot happen.
+What counts: two implementations of one thing, reduced to one. A helper with one caller, inlined. A branch no input reaches. An error path that cannot happen.
 
 The gate is that behaviour is identical:
 

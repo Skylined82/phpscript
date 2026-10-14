@@ -75,7 +75,7 @@ phpscript --cover=file --coverfile=cover/script.cov run path/to/script.php
 
 `bench-http-<side>.txt` when a load generator ran, already ignored by `bench*.txt`.
 
-`bench-manifest-<side>.txt` alongside, as the contract requires. For a server run it also records `TESTSERVER_WORKERS` and `TESTSERVER_LIMIT`, because both change what was measured.
+`bench-manifest-<side>.txt` alongside, as the contract requires. For a server run it also records `TESTSERVER_WORKERS` and `TESTSERVER_LIMIT`, because both change the subject of the measurement.
 
 ## Reading it
 
