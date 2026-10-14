@@ -11,7 +11,7 @@ import (
 
 // TestPool covers the two numbers a pool is built from, which are its contract:
 // the worker count is the parallelism and the queue depth is the backpressure,
-// so a caller can read both back off the pool it was handed.
+// so a caller can read both back off the pool it holds.
 //
 // Zero workers is GOMAXPROCS, the parallelism the machine has for work that is
 // all CPU, and zero queue is DefaultQueue.
@@ -38,7 +38,7 @@ func TestPool(t *testing.T) {
 }
 
 // TestPool_Submit covers running work on a worker and waiting for it. The run
-// is handed a forked runtime and not the one the pool was built from, which is
+// is handed a forked runtime and never the pool's own, which is
 // what keeps two submits off one set of frames.
 func TestPool_Submit(t *testing.T) {
 	parent := New(io.Discard, Options{})

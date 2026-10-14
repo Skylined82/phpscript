@@ -65,9 +65,9 @@ func constant(t testing.TB, rt *runner.Runtime, name string) any {
 // needs a declaration to run and refuses anything that is not one.
 //
 // The two array spellings are the documented refusal (docs/README.md): they stay
-// callable everywhere else. Class::method is not one of them and was
-// refused as "no PHP function of that name is declared", which was untrue of a
-// method the class declares.
+// callable everywhere else. Class::method is not one of them, and
+// "no PHP function of that name is declared" describes no method a class
+// declares.
 func TestAsCallableTakesEverySpellingButAnArray(t *testing.T) {
 	rt := callableRuntime(t)
 

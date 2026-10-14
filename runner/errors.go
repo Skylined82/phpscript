@@ -38,13 +38,13 @@ func (e *ExitError) ScriptExit() int {
 	return e.Code
 }
 
-// TimeLimitError ends a script that ran past set_time_limit, or whose client
-// went away while it was not ignoring that.
+// TimeLimitError ends a script running past set_time_limit, or one whose
+// client goes away while the script heeds that.
 //
 // A host distinguishes the two causes through Aborted, because they call for
 // different answers: a timeout is the site's problem and a disconnect is not.
 type TimeLimitError struct {
-	// Limit is the limit that was set, zero when the client went away first.
+	// Limit is the limit in force, zero when the client goes away first.
 	Limit time.Duration
 
 	// Aborted reports that the client closed the connection.
@@ -155,7 +155,7 @@ func (e *UndefinedConstantError) Error() string {
 	return fmt.Sprintf("Undefined constant %q", e.Name)
 }
 
-// IsExit reports whether err was caused by PHP die()/exit().
+// IsExit reports whether PHP die()/exit() raised err.
 func IsExit(err error) (*ExitError, bool) {
 	var exitErr *ExitError
 	if errors.As(err, &exitErr) {

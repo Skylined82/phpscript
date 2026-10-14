@@ -24,7 +24,7 @@ type Scope struct {
 	// args holds the current call's positional arguments for
 	// func_get_args(). A typed field and no vars entry: storing the
 	// slice under a hidden name boxed it into an interface on every call,
-	// and the map write was a second cost on the same hot path.
+	// and the map write adds a second cost on the same hot path.
 	args []any
 
 	// statics maps a name declared by a `static $x` statement in this frame to
@@ -71,8 +71,8 @@ func (s *Scope) Set(name string, val any) {
 	s.vars[name] = val
 }
 
-// Unset removes name from the frame (PHP's unset). Removing a name that was
-// never set is not an error. Unsetting a static-bound name breaks the local
+// Unset removes name from the frame (PHP's unset). Removing a name nothing set
+// is not an error. Unsetting a static-bound name breaks the local
 // link and leaves the stored value for the next call, as PHP does.
 func (s *Scope) Unset(name string) {
 	delete(s.statics, name)
@@ -106,12 +106,12 @@ func (s *Scope) DefinedVars() map[string]any {
 	return vars
 }
 
-// contextWithScope carries to a binding the frame it was called from, and the
+// contextWithScope carries to a binding the calling frame, and the
 // file and line to attribute its spans to.
 //
 // The line belongs to the runtime and to no scope. The parser compiles __LINE__ to a
 // literal, so no frame carries it, and writing it into one per statement to be
-// read back here was a map write on every statement executed. It is resolved
+// read back here costs a map write on every statement executed. It is resolved
 // here and never recorded, for the reason currentStmt states.
 func (rt *Runtime) contextWithScope(ctx context.Context, scope *Scope) context.Context {
 	if filename, ok := scope.Get("__FILE__"); ok {

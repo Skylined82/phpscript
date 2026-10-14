@@ -48,7 +48,7 @@ type Runtime struct {
 	observers  []Observer
 	funcs      map[string]*funcEntry
 	userFns    map[string]struct{}
-	// funcSites records where each user function was declared, so a second
+	// funcSites records where each user function is declared, so a second
 	// declaration can name the first one the way PHP's fatal error does.
 	// userFns alone cannot: it is a set, and the message is the useful half.
 	funcSites map[string]FuncSite
@@ -57,15 +57,15 @@ type Runtime struct {
 	// of a redeclaration error. Only the top-level Run entry consults it: an
 	// include re-declaring a function is a real PHP error and keeps being one.
 	//
-	// The value is the filename it was hoisted under, and Fork
+	// The value is the filename it hoists under, and Fork
 	// replays onto a sibling so it declares the same symbols.
 	hoisted map[*model.Program]string
 	classes map[string]*model.Class
 
 	// interfaces holds the interface declarations hoist saw, keyed by name.
 	// An interface is still no value and no constructor: the table exists so
-	// Interface::CONST resolves through the name the constant was declared
-	// on. Implementing classes acquire nothing from it (docs/design.md).
+	// Interface::CONST resolves through the name declaring the constant.
+	// Implementing classes acquire nothing from it (docs/design.md).
 	interfaces map[string]*model.InterfaceDecl
 
 	// auto holds the request superglobals in fixed fields; see
@@ -114,7 +114,7 @@ type Runtime struct {
 
 	// stopCtx cancels ctx, which is built once per session and never rebuilt;
 	// the timers below cancel through it and derive no new context,
-	// because a binding that blocks is parked on the one it was handed. ctxDone
+	// because a binding that blocks is parked on the one it holds. ctxDone
 	// and clientDone are their Done channels, read once and kept so the
 	// per-statement check is a select on a field. See deadline.go.
 	stopCtx     context.CancelFunc
@@ -131,11 +131,11 @@ type Runtime struct {
 
 	// prepare is how the host installed this runtime's bindings, recorded so
 	// Fork can install them on a child the same way. Copying the tables is not
-	// enough: a binding is usually a closure over the runtime it was registered
-	// on, so a copied one would read and write the parent. See SetPreparer.
+	// enough: a binding is usually a closure over its registering runtime, so a
+	// copied one reads and writes the parent. See SetPreparer.
 	prepare func(*Runtime)
 
-	// profile is the area mask this runtime's bindings were installed under, so
+	// profile is the area mask this runtime's bindings install under, so
 	// that rerooting them later installs no area the mount left out. New sets
 	// every area: a runtime nobody narrowed has the whole surface.
 	profile Profile
@@ -168,8 +168,8 @@ type Runtime struct {
 	// walked once, not once per symbol. See Runtime.scanTree.
 	lookupScanned bool
 
-	// symbols is what the tree's free functions were last indexed to, held
-	// against the include cache version it was built at so binding a second
+	// symbols is the last index of the tree's free functions, held against the
+	// include cache version it is built at so binding a second
 	// handler does not walk the application again. See Runtime.symbolIndex.
 	symbols        *symbolTable
 	symbolsVersion uint64
@@ -459,7 +459,7 @@ func (rt *Runtime) ResetSession(out io.Writer, stdin io.Reader) {
 }
 
 // resetExecution drops what one program wrote and keeps what declared it: the
-// function and class tables, and the record of which files were loaded.
+// function and class tables, and the record of loaded files.
 //
 // It is ResetSession without the forgetting, for a runtime a host hands to one
 // request after another - Pool.Put is the caller. A fork's declarations came
@@ -624,7 +624,7 @@ func (rt *Runtime) CompiledTree() (programs, expressions int, heap int64) {
 	return rt.includeCache.Len(), rt.exprCache.Len(), rt.includeCache.Precompiled()
 }
 
-// Precompiled reports whether this runtime was configured to precompile.
+// Precompiled reports whether this runtime precompiles.
 func (rt *Runtime) Precompiled() bool { return rt.opts.Precompile }
 
 // AccountRequest folds the size of host-owned request-lifetime values into

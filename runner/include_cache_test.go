@@ -62,8 +62,8 @@ func TestNewIncludeCacheWithCapacity(t *testing.T) {
 }
 
 // TestIncludeCache_Account covers the heap a precompile pass reports adding.
-// It is zero until a pass runs, as a lazily filled cache reports: the files in
-// it were parsed for a request that named them. A negative figure is dropped,
+// It is zero until a pass runs, as a lazily filled cache reports: a request
+// names each file in it. A negative figure is dropped,
 // so a miscounted pass cannot credit the total.
 func TestIncludeCache_Account(t *testing.T) {
 	cache := NewIncludeCache()
@@ -91,7 +91,7 @@ func TestIncludeCache_Account(t *testing.T) {
 
 // TestIncludeCacheVersion covers the counter a reader deriving something from
 // the whole cache holds its copy against. Entry count would not serve: a Set
-// replacing a re-parsed file leaves the count where it was, so the derived copy
+// replacing a re-parsed file leaves the count alone, so the derived copy
 // would read as fresh.
 func TestIncludeCacheVersion(t *testing.T) {
 	cache := NewIncludeCache()

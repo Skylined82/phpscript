@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// FuncSite is where a user function was declared. It is what turns the second
+// FuncSite is where a user function is declared. It is what turns the second
 // declaration of a name into a message worth reading: PHP's fatal error names
 // the first site, and a script carrying two declarations of the same
 // function usually got there by including a file twice, in which case the first

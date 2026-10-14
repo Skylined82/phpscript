@@ -19,7 +19,7 @@ import (
 // nodes the parser produced.
 //
 // A program is registered before it runs, seeding every executable statement at
-// count zero under the filename it was loaded from. The entrypoint and every
+// count zero under the filename it loads from. The entrypoint and every
 // include register, so the files in a profile are the files get_included_files
 // reports, and an included-but-unexecuted statement still appears, at zero.
 type Collector struct {
@@ -29,7 +29,7 @@ type Collector struct {
 	files map[string]bool
 }
 
-// coverStmt is one registered statement: the file it was parsed from, the line
+// coverStmt is one registered statement: the file it parses from, the line
 // range charged for it, and how many times the interpreter reached it.
 type coverStmt struct {
 	file  string
@@ -137,7 +137,7 @@ func (c *Collector) registerFuncs(filename string, program *model.Program) {
 	}
 	// A function declared inside another statement's body is in no list above
 	// but carries a span like any parsed statement, so the sweep picks it up.
-	// Methods were seen through their classes, which keeps them prefixed.
+	// A method arrives through its class, which keeps it prefixed.
 	for stmt := range program.SourceSpans {
 		if fd, ok := stmt.(*model.FuncDecl); ok && !seen[fd] {
 			add(fd, fd.Class)
@@ -195,8 +195,8 @@ func (c *Collector) Hit(s model.Stmt) {
 
 // Blocks renders the collected counts as profile entries, sorted by file and
 // position. Statements sharing a line range merge into one block: NumStmt adds
-// up, and Count is the largest of theirs, so many times the line was
-// reached; summing would charge `$a = 1; $b = 2;` twice per pass.
+// up, and Count is the largest of theirs, the number of times the line runs;
+// summing would charge `$a = 1; $b = 2;` twice per pass.
 func (c *Collector) Blocks() []Block {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -249,7 +249,7 @@ func coverable(s model.Stmt) bool {
 // coverSpan is the line range charged for a statement. A compound statement's
 // parsed span covers its whole body, but the body's statements carry spans of
 // their own, so only the header line is charged here: an untaken branch must
-// not read as covered because its `if` was reached.
+// not read as covered because the interpreter reaches its `if`.
 func coverSpan(s model.Stmt, span model.SourceSpan) model.SourceSpan {
 	switch n := s.(type) {
 	case *model.If, *model.For, *model.Foreach, *model.DoWhile, *model.Switch, *model.Try:

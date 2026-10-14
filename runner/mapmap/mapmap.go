@@ -35,7 +35,7 @@ type Source interface {
 // MapMap reads through a Source and writes to a layer of its own.
 //
 // Read answers the layer first, so a script that assigns to a key sees what it
-// assigned; the source is left as it was and stays shared. Nothing is copied
+// assigned; the source is left alone and stays shared. Nothing is copied
 // out of the source until something reads the whole thing.
 type MapMap struct {
 	src Source
@@ -107,7 +107,7 @@ func (m *MapMap) Has(key string) bool {
 	return ok
 }
 
-// Write records a value for key, leaving the source as it was.
+// Write records a value for key, leaving the source alone.
 func (m *MapMap) Write(key string, value any) {
 	if i := m.find(key); i >= 0 {
 		m.edits[i].value, m.edits[i].gone = value, false

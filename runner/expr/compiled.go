@@ -26,8 +26,7 @@ type Compiled struct {
 
 // CompileExpr compiles a model.Expr directly to a closure chain. It covers
 // the whole expression vocabulary the runtime evaluates; an expression shape
-// outside it is an error, spelled the way the transpiler spelled it when it
-// was the compiler.
+// outside it is an error, spelled the way the transpiler spells one.
 func CompileExpr(e model.Expr, h *Helpers) (*Compiled, error) {
 	dc := &directCompiler{h: h, slots: map[string]int{}}
 	body, err := dc.compile(e)

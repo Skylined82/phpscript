@@ -81,7 +81,7 @@ func (rt *Runtime) lookup(symName string, typ reflect.Type) (reflect.Value, erro
 	}), nil
 }
 
-// symbolSource names where a declaration was read from.
+// symbolSource names the file a declaration reads from.
 type symbolSource struct {
 	path    string
 	program *model.Program
@@ -135,7 +135,7 @@ func (rt *Runtime) resolveSymbol(symName string) (string, error) {
 	}
 	if len(sources) > 1 {
 		// One qualified name declared by two files. Hoisting either would raise
-		// PHP's redeclaration error the moment the other was reached, so the
+		// PHP's redeclaration error the moment the other arrives, so the
 		// host is told which files disagree instead.
 		paths := make([]string, 0, len(sources))
 		for _, source := range sources {
@@ -149,7 +149,7 @@ func (rt *Runtime) resolveSymbol(symName string) (string, error) {
 	}
 	// The file counts as included from here. Its declarations are live, so an
 	// application that require_once's it must not declare them a second time;
-	// without this the tree a handler was bound out of could not be loaded by
+	// without this the tree a handler binds out of could not be loaded by
 	// the application that owns it.
 	//
 	// What it costs is the file's top-level code, which a later require_once
@@ -163,7 +163,7 @@ func (rt *Runtime) resolveSymbol(symName string) (string, error) {
 // spells one. Both name maps are keyed by the folded name, because PHP compares
 // a function name case-insensitively, and both answer with names as declared.
 type symbolTable struct {
-	// sources says where a declared name was read from. A name can be held by
+	// sources says which file a declared name reads from. A name can be held by
 	// more than one file: the tree is the whole source root and not one
 	// program, so nothing has refused the second declaration yet, and reporting
 	// both is more use than picking one.
@@ -181,7 +181,7 @@ type symbolTable struct {
 
 // symbolIndex indexes the free functions the loaded tree declares.
 //
-// The table is kept until the cache it was built from is written to again. It
+// The table is kept until the cache behind it is written to again. It
 // is a walk of every statement of every program in the tree, so rebuilding it
 // per lookup made binding a handler cost the size of the application: 546us
 // and 470KB over eight hundred files, paid again for the next handler. A host
@@ -328,7 +328,7 @@ func signatureResults(typ reflect.Type) (resultShape, error) {
 }
 
 // lookupArgs renders the call's arguments as the values a PHP scope holds. A
-// variadic tail is spread, because PHP counts the arguments it was passed and a
+// variadic tail is spread, because PHP counts the arguments a call passes and a
 // slice in the last slot is one of them.
 func lookupArgs(typ reflect.Type, in []reflect.Value) []any {
 	fixed := len(in)

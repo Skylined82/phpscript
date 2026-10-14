@@ -46,7 +46,7 @@ func TestThrowableClassOf(t *testing.T) {
 }
 
 // blankThrowable implements the interface with no class name, the shape a
-// driver type called Error would have if it were read as PHP's Error class.
+// driver type called Error takes when something reads it as PHP's Error class.
 type blankThrowable struct{}
 
 func (blankThrowable) Error() string          { return "driver failure" }

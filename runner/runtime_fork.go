@@ -46,8 +46,8 @@ func (rt *Runtime) Fork(w io.Writer) *Runtime {
 
 	// The bindings, installed and never copied.
 	//
-	// A binding is almost always a closure over the runtime it was registered
-	// on - header() reaches for that runtime's request, ignore_user_abort sets
+	// A binding is almost always a closure over its registering runtime -
+	// header() reaches for that runtime's request, ignore_user_abort sets
 	// that runtime's flag - so a copied entry would read and write the parent
 	// from inside the child. The host says how to install them and the child
 	// gets its own.
@@ -125,7 +125,7 @@ func copyEntries(dst, src map[string]*funcEntry) {
 //
 // It is the re-entry a host callback needs: a name is a program counter, and
 // everything else about the call comes in through args. A closure is not
-// callable this way: it carries the scope it was written in, which belongs to
+// callable this way: it carries its defining scope, which belongs to
 // the runtime that built it, so a host needing a callback on another goroutine
 // names one.
 func (rt *Runtime) InvokeNamed(name string, args ...any) (any, error) {
@@ -137,7 +137,7 @@ func (rt *Runtime) InvokeNamed(name string, args ...any) (any, error) {
 }
 
 // DeclaredPrograms answers the programs whose declarations this runtime holds,
-// by the filename each was hoisted under. A host building its own forks replays
+// by the filename each hoists under. A host building its own forks replays
 // them; Fork does it already.
 func (rt *Runtime) DeclaredPrograms() map[*model.Program]string {
 	out := make(map[*model.Program]string, len(rt.hoisted))
@@ -158,8 +158,8 @@ func (rt *Runtime) SetPreparer(prepare func(*Runtime)) { rt.prepare = prepare }
 // its arguments and nothing else.
 //
 // It is the re-entry a host callback needs. The declaration is AST, so it runs
-// on whichever runtime the caller has; what it does not get is the scope the
-// closure was written in, so Captures has to be false for the result
+// on whichever runtime the caller has; what it does not get is the closure's
+// defining scope, so Captures has to be false for the result
 // to mean anything. A fresh statics bag per call is the other half of that: two
 // goroutines running the same declaration are two calls, and neither
 // accumulates into the other.

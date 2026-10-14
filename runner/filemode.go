@@ -28,7 +28,7 @@ func ParseFileMode(s string) (FileMode, error) {
 		return 0, nil
 	}
 	// The 0o form is what YAML and newer PHP spell octal with; strip it and
-	// parse what is left as the octal it already was.
+	// parse what is left as the octal it already spells.
 	text = strings.TrimPrefix(strings.TrimPrefix(text, "0o"), "0O")
 
 	value, err := strconv.ParseUint(text, 8, 32)

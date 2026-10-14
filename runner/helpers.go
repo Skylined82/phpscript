@@ -218,7 +218,7 @@ func adapt(fn any) func(...any) (any, error) {
 
 // adaptOn is adapt for a wrapper whose runtime is known. A Go func declaring a
 // callable parameter gets one bound to the runtime doing the calling, which is
-// what makes a callable handed across a fork run where it was called from; the
+// what makes a callable handed across a fork run where the call sits; the
 // helpers adapt() wraps take `any` and resolve their own.
 func adaptOn(rt *Runtime, fn any) func(...any) (any, error) {
 	inv := newInvoker(fn)

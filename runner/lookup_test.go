@@ -253,7 +253,7 @@ function spread() { return implode("+", func_get_args()); }
 }
 
 // TestLookupPassesRequest is the issue's worked example: the *http.Request the
-// Go caller was serving is the script's HTTP\Request, so the method, the
+// Go caller serves is the script's HTTP\Request, so the method, the
 // headers, the query and the body all read off the value itself and not off
 // superglobals nothing seeded.
 func TestLookupPassesRequest(t *testing.T) {
@@ -323,8 +323,8 @@ function index(\HTTP\ResponseWriter $w, \HTTP\Request $r) {
 	}
 }
 
-// TestLookupCarriesOnlyItsArguments holds the lightweight contract: no request
-// was decoded, so the superglobals are undefined and not empty.
+// TestLookupCarriesOnlyItsArguments holds the lightweight contract: nothing
+// decodes a request, so the superglobals are undefined and not empty.
 func TestLookupCarriesOnlyItsArguments(t *testing.T) {
 	files := fstest.MapFS{"scope.php": {Data: []byte(`<?php
 function inspect($given) {

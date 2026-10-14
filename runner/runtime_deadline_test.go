@@ -85,7 +85,7 @@ func TestRuntime_ClientContext(t *testing.T) {
 	}
 
 	// The host ending is the connection ending for a script outside a handler,
-	// there being nothing else that was serving it.
+	// with nothing else serving it.
 	hangUp()
 	if err := rt.ClientContext().Err(); err == nil {
 		t.Error("the host ending did not reach the client context")

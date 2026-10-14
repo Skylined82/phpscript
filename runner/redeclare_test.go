@@ -25,7 +25,7 @@ func runRedeclare(t *testing.T, src string, files fstest.MapFS) (string, error) 
 	stdlib.Register(rt)
 	// Run before reading the buffer: a return statement evaluates its
 	// operands left to right, so returning both in one expression would
-	// report the output as it was before the program wrote any.
+	// report the buffer as it stands ahead of the program's first write.
 	runErr := rt.Run(prog)
 	return out.String(), runErr
 }
@@ -40,8 +40,8 @@ func TestRedeclaringAFunctionFails(t *testing.T) {
 	}{
 		{
 			// A program parsed straight from a string has no
-			// entrypoint to name, so the site falls back to saying
-			// there was one, and never points at an empty path.
+			// entrypoint to name, so the site falls back to naming
+			// one, and never points at an empty path.
 			name: "twice in one file",
 			src:  "<?php\nfunction a() { return 1; }\nfunction a() { return 2; }\n",
 			want: "Cannot redeclare function a() (previously declared in an earlier declaration)",

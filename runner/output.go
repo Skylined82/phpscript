@@ -25,7 +25,7 @@ func (rt *Runtime) PushOutput(w io.Writer) {
 	rt.outStack = append(rt.outStack, w)
 }
 
-// PopOutput ends the innermost redirection, reporting whether one was active.
+// PopOutput ends the innermost redirection, reporting whether one is active.
 // Output resumes going to the enclosing writer, so nested
 // captures compose.
 func (rt *Runtime) PopOutput() bool {
@@ -39,7 +39,7 @@ func (rt *Runtime) PopOutput() bool {
 // OutputDepth reports how many redirections are active.
 func (rt *Runtime) OutputDepth() int { return len(rt.outStack) }
 
-// releaseOutput drops every redirection and keeps the array they were held in,
+// releaseOutput drops every redirection and keeps the array holding them,
 // for a runtime answering one request after another.
 //
 // The writers are cleared and never left behind the length, because the

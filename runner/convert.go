@@ -344,7 +344,7 @@ func helperCast(typ string, v any) any {
 		}
 		// (array) on an object reads its properties out, in the order the
 		// object reads them back. PHP prefixes a private or protected name with
-		// the class it was declared in; phpscript enforces no visibility, and a
+		// its declaring class; phpscript enforces no visibility, and a
 		// key holding a NUL byte is one no script could index, so the plain
 		// name is used. See docs/README.md.
 		if obj, ok := v.(*model.Object); ok {
@@ -379,7 +379,7 @@ func helperCast(typ string, v any) any {
 // either. PHP copies the array because arrays are values there; here they are
 // handles (docs/reference/types/value-semantics.md), and the cast is not the
 // place to make one exception to that. An array nested under a property
-// therefore stays the array it was, which is also what PHP does, since its copy
+// therefore stays an array, which is also what PHP does, since its copy
 // does not convert nested arrays into objects.
 func helperToObject(v any) any {
 	switch {

@@ -22,13 +22,13 @@ type IncludeCache struct {
 
 	// precompiled is the heap a precompile pass over this cache added, as the
 	// pass measured it. Zero until one runs, as a lazily filled
-	// cache reports: the files in it were parsed for a request that asked.
+	// cache reports: a request names each file in it.
 	precompiled int64
 
 	// version counts the writes. A reader deriving something from the whole
-	// cache keeps its own copy against the version it was built at, and the
-	// count is what tells it the copy is stale. Entry count would not: a Set
-	// replacing a re-parsed file leaves it where it was.
+	// cache keeps its own copy against the version it builds at, and the
+	// count is what tells it the copy is stale. Entry count does not: a Set
+	// replacing a re-parsed file leaves the count alone.
 	version uint64
 }
 

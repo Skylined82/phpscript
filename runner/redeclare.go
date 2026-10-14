@@ -21,7 +21,7 @@ type RedeclareError struct {
 	Name string
 	// At is the declaration being refused.
 	At FuncSite
-	// Previous is where it was declared first, zero when the name belongs to
+	// Previous is the first declaration, zero when the name belongs to
 	// a registered binding and not to a declaration in PHP source.
 	Previous FuncSite
 	// Builtin reports which of the two cases this is.

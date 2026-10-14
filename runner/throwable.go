@@ -9,10 +9,9 @@ package runner
 // linter can see it; nothing in runner may read it.
 //
 // Do not add a parent table, a Parent field on model.Class, or a hierarchy
-// walk. That design was proposed and rejected. See docs/design.md.
+// walk. docs/design.md refuses that design.
 
-// Throwable is implemented by a value that records which PHP class it was
-// constructed as.
+// Throwable is implemented by a value that records its PHP class.
 //
 // The class is read from the value and not off the Go type, because every SPL
 // name is one Go type: reflection would answer "Exception" for an

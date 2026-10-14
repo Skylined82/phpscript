@@ -38,9 +38,9 @@ func TestResolveClassName(t *testing.T) {
 
 // TestClassDefaultScope covers the scope a class's declared defaults are
 // evaluated in. A default is written inside the class body, so `self::X` in one
-// resolves to that class; the scope the `new` was written in knows nothing
+// resolves to that class; the scope holding the `new` knows nothing
 // about it. __FILE__ and __DIR__ cross from the caller, so a default naming
-// either reads the file it was declared in.
+// either reads its declaring file.
 func TestClassDefaultScope(t *testing.T) {
 	rt := New(io.Discard, Options{})
 	caller := NewScope()
@@ -103,8 +103,8 @@ func TestStaticBag(t *testing.T) {
 	}
 }
 
-// TestStaticProp covers reading and writing `Class::$name`. A property that was
-// never declared reads as null, the leniency the rest of the runtime applies to
+// TestStaticProp covers reading and writing `Class::$name`. An undeclared
+// property reads as null, the leniency the rest of the runtime applies to
 // property and index access, and a write through the class name is visible to
 // the next read.
 func TestStaticProp(t *testing.T) {

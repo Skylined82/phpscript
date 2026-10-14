@@ -497,7 +497,7 @@ func (rt *Runtime) execOne(s model.Stmt, scope *Scope) (any, flow, error) {
 			return nil, flowNormal, thrown
 		}
 		// An instance of a declared class is not an error, so it travels
-		// wrapped. The wrapper carries the class it was declared as, which is
+		// wrapped. The wrapper carries its declared class, which is
 		// what a clause filters on and what get_class() reports.
 		if obj, ok := v.(*model.Object); ok {
 			return nil, flowNormal, newObjectError(obj)
@@ -714,7 +714,7 @@ func (rt *Runtime) execDoWhile(n *model.DoWhile, scope *Scope) (any, flow, error
 // travel as an error here only because that is how the interpreter unwinds, so
 // the try has to recognise the sentinel and get out of the way. A catch that
 // could swallow an exit would turn `header("Location: ...") ; exit();` inside a
-// try into a page that carries on running after the redirect was staged.
+// try into a page that carries on running past a staged redirect.
 func (rt *Runtime) execTry(n *model.Try, scope *Scope) (any, flow, error) {
 	val, fl, err := rt.exec(n.Body, scope)
 	if _, exiting := IsExit(err); exiting {
@@ -890,7 +890,7 @@ func (rt *Runtime) trace(scope *Scope, message string, kind ...telemetry.Kind) f
 
 // includeFile evaluates one include. once is the *_once form, which is answered
 // here and not at the call site so that both engines dedupe on the same
-// thing: the file that was resolved, never the spelling the script used. After a
+// thing: the resolved file, never the spelling the script used. After a
 // chdir two directories can spell one name, and a scan over spellings would
 // skip the second file as though it had already run.
 // markIncluded records a file as loaded without running it, for a caller that
@@ -1372,7 +1372,7 @@ func assignable(e model.Expr) bool {
 }
 
 // execUnset removes each target from the scope, array, property bag or static
-// bag holding it. Unsetting something that was never set is not an error, which
+// bag holding it. Unsetting a name nothing set is not an error, which
 // is what lets `unset($map[$key])` run unconditionally.
 func (rt *Runtime) execUnset(n *model.Unset, scope *Scope) error {
 	for _, target := range n.Targets {
@@ -1414,7 +1414,7 @@ func (rt *Runtime) execUnset(n *model.Unset, scope *Scope) error {
 				continue
 			}
 			// A reindexed slice is a new value, so it goes back to where the
-			// base was read from. A map deleted in place answers nothing.
+			// base reads from. A map deleted in place answers nothing.
 			if replacement, changed := unsetGoIndex(base, key); changed {
 				if err := rt.assignTo(tgt.Base, replacement, scope); err != nil {
 					return err
@@ -1735,8 +1735,8 @@ func (rt *Runtime) invokeMethod(obj *model.Object, decl *model.FuncDecl, args []
 	return val, combineErrors(runErr, rt.runDeferred(scope, 0))
 }
 
-// closureEnv is everything a closure carries away from the scope it was written
-// in: the lexical magic constants, the `use (...)` captures, and the bound
+// closureEnv is everything a closure carries away from its defining scope:
+// the lexical magic constants, the `use (...)` captures, and the bound
 // `$this` (nil for a `static function`, or for one written outside a method).
 // It is built once where the closure value is created, not on each call, which
 // is what makes the capture a snapshot the way PHP's by-value `use` is.

@@ -143,8 +143,8 @@ func (rt *Runtime) execStaticVar(n *model.StaticVar, scope *Scope) error {
 	return nil
 }
 
-// helperStaticProp reads `Class::$name`. A property that was never declared
-// reads as null, matching the leniency the rest of the runtime applies to
+// helperStaticProp reads `Class::$name`. An undeclared property reads as null,
+// matching the leniency the rest of the runtime applies to
 // property and index access.
 func (rt *Runtime) helperStaticProp(ref *scopeRef) func(class, name string) (any, error) {
 	return func(class, name string) (any, error) {

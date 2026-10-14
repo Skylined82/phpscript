@@ -339,7 +339,7 @@ func TestValueSource_Range(t *testing.T) {
 
 // TestRequestSource_Get covers the CGI names derived off the request, so
 // serving one builds no map. A header arrives under its HTTP_ spelling, a
-// header that was not sent reads as absent, Extra wins over a derived name,
+// header the client omits reads as absent, Extra wins over a derived name,
 // and a source with no request behind it answers nothing.
 func TestRequestSource_Get(t *testing.T) {
 	request := httptest.NewRequest("POST", "http://example.com/a/b?q=1", nil)

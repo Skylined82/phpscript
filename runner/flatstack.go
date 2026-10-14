@@ -81,7 +81,7 @@ func (h *flatHost) boundScope() *Scope {
 }
 
 // pullScope writes a materialised scope's variables back into the frame. The
-// scope was built fresh for one call and is discarded after, so the magic
+// scope is built fresh for one call and discarded after, so the magic
 // constants are deleted in place, with no filter into another map.
 func (h *flatHost) pullScope(scope *Scope) {
 	if h.frame == nil {

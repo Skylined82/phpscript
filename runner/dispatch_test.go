@@ -81,7 +81,7 @@ var dispatchPinSink = func(any) {}
 
 // dispatchPinArgs spells out each argument as value and dynamic type, so a
 // probe's return value records exactly what the binding received: "65(string)"
-// proves the int64 was coerced, "<nil>(<nil>)" proves the padding arrived.
+// proves the coercion of the int64, "<nil>(<nil>)" proves the padding arrives.
 func dispatchPinArgs(vs ...any) string {
 	parts := make([]string, len(vs))
 	for i, v := range vs {
@@ -90,7 +90,7 @@ func dispatchPinArgs(vs ...any) string {
 	return strings.Join(parts, ",")
 }
 
-// dispatchPinBoom reports whether a probe was asked to fail.
+// dispatchPinBoom reports whether a probe's argument asks it to fail.
 func dispatchPinBoom(v any) bool { return fmt.Sprint(v) == "boom" }
 
 // dispatchPinArray builds the array the *model.Array probes return, one
@@ -897,7 +897,7 @@ func TestDispatchPinUniformABI(t *testing.T) {
 		t.Fatalf("got %#v, want %q", v, "[65]")
 	}
 
-	// A non-callable value is refused with the type it actually was.
+	// A non-callable value is refused with the type it actually holds.
 	if _, err := invokeAny(nil, 42, nil); err == nil || !strings.Contains(err.Error(), "not callable: int") {
 		t.Fatalf("err = %v, want the not-callable report", err)
 	}

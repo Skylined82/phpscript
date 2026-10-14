@@ -5,8 +5,8 @@ import (
 )
 
 // TestFuncSite covers the three shapes a declaration site prints in. PHP's
-// fatal error for a redeclared function names where the name was taken first,
-// and a script that got there by including a file twice is told the file, which
+// fatal error for a redeclared function names the first site, and a script
+// carrying two declarations through a doubled include is told the file, which
 // is the only thing naming the include.
 //
 // A site with no file is what a host passes in when it built the AST itself,

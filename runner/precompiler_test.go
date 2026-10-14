@@ -97,7 +97,7 @@ func TestPrecompilerOffReparses(t *testing.T) {
 }
 
 // TestPrecompilerBrokenEntrypointStillFails covers the error a precompiled tree
-// must keep reporting: the file was left out of the cache, so the request that
+// must keep reporting: the cache holds no entry for it, so the request that
 // reaches it parses it and fails the way it does without precompilation.
 func TestPrecompilerBrokenEntrypointStillFails(t *testing.T) {
 	includes := runner.NewIncludeCache()

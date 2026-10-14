@@ -124,7 +124,7 @@ func TestRuntime_RegisterInclude(t *testing.T) {
 
 // TestRuntime_RecordError covers the failure a script has no throw to catch:
 // one that happened around the script and no statement in it, a request body
-// refused for its size being the case it was written for. It records and
+// refused for its size being the case it covers. It records and
 // returns, so the host sees it and PHP execution is not unwound.
 func TestRuntime_RecordError(t *testing.T) {
 	rt := New(io.Discard, Options{})
@@ -353,11 +353,11 @@ func TestRunnerThrowablesNameTheirClass(t *testing.T) {
 }
 
 // TestNoInheritanceAtRuntime is the executable form of a design decision:
-// phpscript has no OOP, and `extends` confers nothing. It was implemented once
-// and rejected. If this test fails, read docs/design.md before changing it.
+// phpscript has no OOP, and `extends` confers nothing. docs/design.md refuses
+// it; read that before changing this test.
 func TestNoInheritanceAtRuntime(t *testing.T) {
 	// model.Class may record what a declaration listed, so
-	// Implements is allowed: it is a list of names a class was checked
+	// Implements is allowed: it is a list of names a class checks
 	// against, and no member arrives through it. A parent is different, and
 	// forbidden: a class that has one would start acquiring members it did not
 	// declare.

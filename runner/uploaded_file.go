@@ -13,7 +13,7 @@ type UploadedFile struct {
 	Type     string // client-supplied content type
 	TmpName  string // path of the temporary copy, empty when Error is set
 	Size     int64
-	Error    int // an UPLOAD_ERR_* code, UploadErrOK when the part was stored
+	Error    int // an UPLOAD_ERR_* code, UploadErrOK for a stored part
 }
 
 // refuse marks an upload as not stored, in the shape PHP writes for an entry it

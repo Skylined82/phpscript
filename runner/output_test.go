@@ -96,8 +96,8 @@ func TestRuntime_OutputDepth(t *testing.T) {
 
 // TestRuntime_Output covers the writer every echo, every piece of inline HTML
 // and every builtin emitting text writes to. A runtime with no redirection
-// answers the writer it was built on, so the text joins the response body in
-// the order the script produced it.
+// answers the writer behind it, so the text joins the response body in
+// the order the script writes it.
 func TestRuntime_Output(t *testing.T) {
 	base := &bytes.Buffer{}
 	rt := New(base, Options{})

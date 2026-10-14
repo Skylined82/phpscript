@@ -720,7 +720,7 @@ echo json_encode([
 
 // TestHTTPResponseCodeIgnoresANonStatus pins that a zero, and anything that is
 // not a number at all, is not a status: PHP reads the call as the reporting one
-// and leaves the response where it was.
+// and leaves the response alone.
 func TestHTTPResponseCodeIgnoresANonStatus(t *testing.T) {
 	ctx := runner.NewContext()
 	got := runSAPI(t, ctx, "cgi-phpscript", `<?php
@@ -829,7 +829,7 @@ func TestPostMaxSizeUnknownLength(t *testing.T) {
 
 // TestUploadMaxFilesize covers a single file part over the limit. PHP keeps the
 // rest of the form and marks that one entry UPLOAD_ERR_INI_SIZE, so a script
-// can tell the user which file was refused.
+// can tell the user which file it refuses.
 func TestUploadMaxFilesize(t *testing.T) {
 	r := multipartRequest(t,
 		map[string]string{"name": "bob"},
@@ -1027,7 +1027,7 @@ func TestBodyDecodeIsFormOnly(t *testing.T) {
 // TestWithRoutePattern covers which pattern the path values are built from: the
 // one the route's author declared, and not the one the router matched. chi
 // registers /c/{tail...} as /c/* and reports that back, so a value exported
-// under a name would have no name at all if r.Pattern were the only source.
+// under a name would have no name at all with r.Pattern as the only source.
 func TestWithRoutePattern(t *testing.T) {
 	r := httptest.NewRequest("GET", "/c/deep/path", nil)
 	r.Pattern = "/c/*"
@@ -1060,9 +1060,9 @@ func TestWithRoutePattern(t *testing.T) {
 
 // TestRequestContext covers how a request-aware Go binding reaches the request:
 // Register puts the Context on the runtime's context, and the binding reads it
-// back off the context it was handed. A context with no request answers false,
-// the answer a session binding gets on a CLI run, so it can say so instead of
-// reading a zero Context as an empty request.
+// back off the context it holds. A context with no request answers false, which
+// is what a session binding gets on a CLI run, so it reports the absence and
+// reads no zero Context as an empty request.
 func TestRequestContext(t *testing.T) {
 	r := httptest.NewRequest("GET", "/?page=2", nil)
 	ctx := runner.FromRequest(r)
@@ -1094,7 +1094,7 @@ func TestContext_AddResponseHeader(t *testing.T) {
 		t.Fatalf("Set-Cookie = %v, want both values", got)
 	}
 	// header() replaces unless told not to, so the two are not one call under
-	// two names: what a script writes through header() drops what was added.
+	// two names: what a script writes through header() drops the earlier value.
 	ctx.Header("Set-Cookie: c=3")
 	if got := ctx.ResponseHeaders()["Set-Cookie"]; len(got) != 1 || got[0] != "c=3" {
 		t.Errorf("Set-Cookie = %v after header(), want the one value it set", got)

@@ -70,14 +70,14 @@ type Context struct {
 	// decoder needs: `a[]=1&a[]=2` is one repeated name, so a map keeps only
 	// the second value.
 	//
-	// Nil when the Context was not built from a request; Register falls back
+	// Nil for a Context built from no request; Register falls back
 	// to the flat map, so a host that fills c.Get itself is unaffected.
 	GetVars    *model.Array
 	PostVars   *model.Array
 	CookieVars *model.Array
 
 	// Files holds the file parts of a multipart body keyed by form field name,
-	// in the order they were sent. A field carries more than one file when the
+	// in the order sent. A field carries more than one file when the
 	// form repeats it, which HTML spells as a "name[]" field.
 	Files map[string][]*UploadedFile
 
@@ -98,7 +98,7 @@ type Context struct {
 
 	// decode holds the request and what has been decoded out of it so far. A
 	// Context built by a host has none: there is nothing to decode, and the
-	// fields above are what it was given. It is a pointer for the same reason
+	// fields above are what it holds. It is a pointer for the same reason
 	// status is, so decoding through one copy is seen by every other.
 	decode *decoder
 }
@@ -283,7 +283,7 @@ func (c Context) CookieMap() map[string]string {
 }
 
 // FileMap answers the file parts of a multipart body, keyed by field name, in
-// the order they were sent.
+// the order sent.
 func (c Context) FileMap() map[string][]*UploadedFile {
 	c.decodeForm()
 	if c.Files != nil || c.decode == nil {
@@ -442,8 +442,7 @@ func (c Context) decodeForm() {
 // which $_REQUEST merges over the request fields.
 //
 // The names come from the declared path and not the matched one, so a
-// parameter reads back under the name it was written with whichever router
-// served it. Both routers publish the values through r.PathValue: ServeMux
+// parameter reads back under its declared name whichever router serves it. Both routers publish the values through r.PathValue: ServeMux
 // natively, chi by calling SetPathValue for every URL param it captured.
 //
 // A {name...} parameter is the exception. chi has no such syntax and is
@@ -606,8 +605,8 @@ func (c *Context) parseBody(r *http.Request, opts Options) {
 	}
 
 	// A body that did not announce its length is only found to be too large
-	// once it has been read past the cap. Whatever was decoded before that
-	// point is dropped, so this ends the same way an announced one does.
+	// once it has been read past the cap. Everything decoded before that point
+	// is dropped, so this ends the same way an announced one does.
 	var tooLarge *http.MaxBytesError
 	if errors.As(err, &tooLarge) {
 		c.recordError(fmt.Errorf("POST body exceeds the post_max_size limit of %d bytes", tooLarge.Limit))
@@ -1172,7 +1171,7 @@ func (s arraySource) Len() int {
 	return s.array.Len()
 }
 
-// Range visits the entries in the order they were decoded.
+// Range visits the entries in the order decoded.
 func (s arraySource) Range(fn func(key string, value any) bool) bool {
 	if s.array == nil {
 		return true
@@ -1221,7 +1220,7 @@ func (c Context) serverArrayInto(arr *model.Array) *model.Array {
 // PHP's default request order, with the route's path values written over them
 // last. The path values are the one deviation from PHP, whose $_REQUEST
 // carries no route parameters: a path parameter is request input here, and
-// carrying it under PHP's name was chosen over keeping a name PHP does not
+// it carries under PHP's name, so nothing here spells a name PHP does not
 // have. See the predefined-variables reference.
 //
 // Every entry is a copy. $_REQUEST is its own array in PHP, so a write to it
@@ -1246,7 +1245,7 @@ func (c Context) requestArrayInto(arr *model.Array) *model.Array {
 
 // superglobal prefers the decoded record, and falls back to the flat map for a
 // Context assembled by hand: a CLI run, a scheduled job, the fixture harness,
-// or an embedder filling c.Get itself. There was no request to decode.
+// or an embedder filling c.Get itself. No request arrives to decode.
 func superglobal(vars *model.Array, flat map[string]string) *model.Array {
 	if vars != nil {
 		return vars

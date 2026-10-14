@@ -76,7 +76,7 @@ func TestRuntime_DeclaredPrograms(t *testing.T) {
 }
 
 // TestRuntime_SetPreparer covers how a fork gets its bindings. A binding is
-// almost always a closure over the runtime it was registered on, so a copied
+// almost always a closure over its registering runtime, so a copied
 // entry would read and write the parent from inside the child; the preparer is
 // the host saying how to install them again.
 func TestRuntime_SetPreparer(t *testing.T) {

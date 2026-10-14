@@ -12,7 +12,7 @@ import (
 // A time limit is a timer that cancels it, and changing the limit resets the
 // timer and derives no new context, because a binding that blocks -
 // HTTP\Server::wait, which is a serving script's whole run - is parked on the
-// context it was handed and a rebuild would end it. A handler calling
+// context it holds and a rebuild would end it. A handler calling
 // set_time_limit is the ordinary way to reach that.
 //
 // The connection is checked beside the context and never merged into it, for
@@ -110,7 +110,7 @@ func (rt *Runtime) EnterRequest(ctx context.Context) func() {
 // non-blocking select on a field and not a call through a context. A
 // channel and not a flag an AfterFunc sets, because an AfterFunc runs on
 // its own goroutine: a sleep that returned the instant its context ended would
-// reach the next statement before the flag was written.
+// reach the next statement ahead of the flag write.
 func watchEnd(ctx context.Context) <-chan struct{} {
 	if ctx == nil {
 		return nil
@@ -139,7 +139,7 @@ func ended(done <-chan struct{}) bool {
 // It does not cancel the one it replaces. A host layering onto the context it
 // already gave - runner.Context.Register does exactly that, seeding the request
 // onto rt.Context() - would otherwise have its new context cancelled through
-// the old one it was derived from, and every script would end before its first
+// the old one it derives from, and every script would end before its first
 // statement. The old one is released with the program, in resetLimits.
 func (rt *Runtime) bindContext() {
 	base := rt.host
@@ -240,7 +240,7 @@ func (rt *Runtime) resetLimits() {
 	used := rt.scriptTimer != nil || rt.timedOut.Load()
 	rt.releaseDeadline()
 	if used && rt.stopCtx != nil {
-		// The program is over, so the context it was handed is released and a
+		// The program is over, so the context it holds is released and a
 		// fresh one built from the same host: a runtime the host reuses without
 		// setting a context again must not start the next program on a
 		// cancelled one.

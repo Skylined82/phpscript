@@ -18,10 +18,10 @@ const (
 	ProfileExec
 )
 
-// SetProfile records the area mask this runtime's bindings were installed
-// under. stdlib.Mount calls it, so that a later reroot of one area can test
+// SetProfile records the area mask this runtime's bindings install under.
+// stdlib.Mount calls it, so that a later reroot of one area can test
 // whether the mount included it.
 func (rt *Runtime) SetProfile(profile Profile) { rt.profile = profile }
 
-// Profile reports the area mask this runtime's bindings were installed under.
+// Profile reports the area mask this runtime's bindings install under.
 func (rt *Runtime) Profile() Profile { return rt.profile }

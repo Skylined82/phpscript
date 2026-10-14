@@ -10,7 +10,7 @@ import (
 
 // concatHelpers is the helper table a string concatenation reads. Nothing
 // else is filled, so a chain that reaches another helper panics on a nil
-// func and the test says which one it was.
+// func and the test names it.
 func concatHelpers() *Helpers {
 	return &Helpers{
 		Concat: func(a, b any) string { return fmt.Sprint(a) + fmt.Sprint(b) },

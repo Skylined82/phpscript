@@ -13,7 +13,7 @@ type InfoField struct {
 
 // InfoSection reports the rows a subsystem contributes to phpinfo(), or none
 // when it has nothing to say. It runs at the moment phpinfo() is called, so a
-// section reports what is there at that moment, and not what was there at
+// section reports the state at that moment and never the state at
 // registration.
 type InfoSection func(rt *Runtime) []InfoField
 

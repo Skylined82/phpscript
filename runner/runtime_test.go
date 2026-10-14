@@ -518,7 +518,7 @@ func TestRuntimeAnswersForItsOptions(t *testing.T) {
 	}
 
 	// The whitelist is answered as a copy, so a binding that sorts or filters
-	// what it was given does not edit the host's configuration.
+	// what it holds does not edit the host's configuration.
 	paths := rt.WritablePaths()
 	if len(paths) != 2 {
 		t.Fatalf("WritablePaths() = %v, want both", paths)
@@ -567,8 +567,8 @@ func TestRuntime_SetWorkDir(t *testing.T) {
 		t.Errorf("WorkDirPath() = %q, want /app", got)
 	}
 
-	// A path naming no directory is refused, with the directory left where it
-	// was, which is the false php documents.
+	// A path naming no directory is refused, with the directory left alone,
+	// which is the false php documents.
 	for _, dir := range []string{"nope", "index.php", "app/index.php"} {
 		if rt.SetWorkDir(dir) {
 			t.Errorf("SetWorkDir(%q) was accepted", dir)
@@ -800,7 +800,7 @@ func TestRuntime_Reset(t *testing.T) {
 		t.Error("a frozen constant was cleared by Reset, so the bindings would be undefined")
 	}
 
-	// Output goes to the writer Reset was handed, so the next program's text
+	// Output goes to the writer Reset holds, so the next program's text
 	// does not join the previous one's.
 	echo, err := rt.Load(`<?php echo "second";`)
 	if err != nil {
@@ -1110,7 +1110,7 @@ func TestScriptEnvironment(t *testing.T) {
 // TestScopeBuiltins covers the names installed per-environment and no entry in
 // the function table. function_exists() and the linter both read that table, so
 // a call to one of these would read as a call to something undefined if the
-// list were not published.
+// list stayed unpublished.
 func TestScopeBuiltins(t *testing.T) {
 	builtins := ScopeBuiltins()
 	if len(builtins) == 0 {

@@ -120,7 +120,7 @@ func TestStatusFor(t *testing.T) {
 		{name: "plain go error", err: errors.New("parse failed"), want: 500},
 
 		// A failure overrides whatever the script staged before it: the status
-		// describes how the request ended, not how it was going.
+		// describes how the request ends and never how it ran.
 		{name: "failure after a staged status", staged: 200, err: &exception{"boom", 0}, want: 500},
 	}
 
