@@ -142,7 +142,7 @@ func TestRunReportsAnsiTableOnATerminal(t *testing.T) {
 // TestNewCommand covers the two flags this command owns and the shared one it
 // reads. --flatstack and -o are its own; --include is global, and the Run
 // closure copies it into the options at call time, because main fills the
-// global options from the configuration after the command was built.
+// global options from the configuration past the command's construction.
 func TestNewCommand(t *testing.T) {
 	command := NewCommand(nil, &flags.Options{})
 

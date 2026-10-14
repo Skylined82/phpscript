@@ -55,7 +55,7 @@ func TestSuiteIncludeIsAPreludeWithoutTheFlag(t *testing.T) {
 
 // TestSuiteHooksRunOncePerSession covers both hooks and the order they run in.
 // Each appends to a file, so what is left records how many times each ran and
-// which side of the fixtures it was on.
+// which side of the fixtures each sits on.
 func TestSuiteHooksRunOncePerSession(t *testing.T) {
 	tmp := writeTree(t, map[string]string{
 		"suite/phpscript.yml": "test:\n  hooks:\n    setup: setup.php\n    teardown: teardown.php\n",
@@ -102,7 +102,7 @@ func TestSuiteTeardownRunsAfterAFailure(t *testing.T) {
 }
 
 // TestSuiteSetupFailureStopsTheRun covers why a setup failure is fatal: the
-// fixtures below it assert against state that was not laid down, and reporting
+// fixtures below it assert against state nothing laid down, and reporting
 // each of them says the same thing many times and names none of it.
 func TestSuiteSetupFailureStopsTheRun(t *testing.T) {
 	tmp := writeTree(t, map[string]string{
@@ -127,7 +127,7 @@ func TestSuiteSetupFailureStopsTheRun(t *testing.T) {
 
 // TestSuiteEnvIsTheOnlyConnectionsBelowIt covers the replacement rule a virtual
 // host is already held to: a suite that names its connections gets those and
-// not the ones the run was started with.
+// never the run's own.
 func TestSuiteEnvIsTheOnlyConnectionsBelowIt(t *testing.T) {
 	writeTree(t, map[string]string{
 		"suite/phpscript.yml": "env:\n  - \"PLATFORM_DB_AREA=sqlite://:memory:\"\n",

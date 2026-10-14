@@ -194,7 +194,7 @@ func TestVirtualHostRecordsIntoItsOwnTracer(t *testing.T) {
 	if traces.Code != http.StatusOK {
 		t.Fatalf("status = %d", traces.Code)
 	}
-	// The listing names the host each trace was recorded for. shop's page has
+	// The listing names the host of each trace. shop's page has
 	// to show shop's traffic, or the absence of blog's below proves nothing.
 	if !strings.Contains(traces.Body.String(), "shop.example.com") {
 		t.Fatal("shop dashboard does not show its own traffic")

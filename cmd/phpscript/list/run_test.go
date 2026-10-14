@@ -110,7 +110,7 @@ func TestRun(t *testing.T) {
 
 // TestRunRejectsBindingsWithPaths pins the refusal. The two modes answer about
 // different things, so a caller that named both named one of them by mistake and is
-// told which one was dropped, and never left to guess.
+// told which one it drops, and never left to guess.
 func TestRunRejectsBindingsWithPaths(t *testing.T) {
 	var out bytes.Buffer
 	err := run(&out, []string{"."}, true)

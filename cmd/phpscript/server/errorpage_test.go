@@ -335,7 +335,7 @@ echo $_SERVER["REDIRECT_STATUS"], "|",
 
 // TestErrorPageMayChooseItsOwnStatus pins that the page has the last word. A
 // site that would rather answer a missing article with a redirect or a 410 says
-// so in the page, and the status it was called for is only the default.
+// so in the page, and the status of the call is only the default.
 func TestErrorPageMayChooseItsOwnStatus(t *testing.T) {
 	h := newErrorPageHandler(t, fstest.MapFS{
 		"public/404.php": {Data: []byte(`<?php http_response_code(410); echo "gone for good";`)},
@@ -384,7 +384,7 @@ func post(h http.Handler, target, contentType, body string, headers map[string]s
 // TestUnroutedRequestKeepsItsBody is what lets 404.php dispatch a site's own
 // routes. A request that matched no file ran no script, so nothing read its
 // body and the page answering for it is the last thing that can. It sees the
-// form the way the endpoint it was meant for would have.
+// form the way its target endpoint would.
 func TestUnroutedRequestKeepsItsBody(t *testing.T) {
 	h := newErrorPageHandler(t, fstest.MapFS{
 		"public/404.php": {Data: []byte(`<?php
@@ -407,7 +407,7 @@ echo $_SERVER["REQUEST_METHOD"], "|",
 
 // TestUnroutedPageMayAnswerOK covers the dispatcher shape end to end: the page
 // reads the failed path, includes the file it routes to, and answers 200. A
-// site whose 404.php is its router never keeps the status it was called for.
+// site whose 404.php is its router never keeps the status of the call.
 func TestUnroutedPageMayAnswerOK(t *testing.T) {
 	h := newErrorPageHandler(t, fstest.MapFS{
 		"routes/article.php": {Data: []byte(`<?php echo "article ", $_POST["id"];`)},

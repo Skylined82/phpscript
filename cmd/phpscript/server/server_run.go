@@ -90,7 +90,7 @@ type handler struct {
 	observers     []runner.Observer
 
 	// coverage counts the statements every request runs, folded in per request
-	// so nothing keyed by an AST node outlives the program it was parsed from.
+	// so nothing keyed by an AST node outlives its own program.
 	// Nil is off, as a server started without --cover carries.
 	coverage *coverage.Aggregator
 
@@ -410,7 +410,7 @@ func newManager(ctx context.Context, args []string, started config.Config, globa
 		return appConfig.Validate(name, root)
 	}
 
-	// A reload discards the platform value registration was made against,
+	// A reload discards the platform value every registration binds to,
 	// so all of it belongs here and not in Run.
 	manager.Setup = func(svc *platform.Platform) error {
 		appConfig, err := reloadConfig(started, globals)

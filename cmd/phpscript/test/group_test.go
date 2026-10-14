@@ -64,7 +64,7 @@ func TestMapFixturesSerialRun(t *testing.T) {
 	}
 
 	// One fixture is one fixture whatever --parallel says, so the batching is
-	// skipped rather than entered with a single job in it.
+	// skipped, and never entered with a single job in it.
 	results := mapFixtures(fixtures[:1], 8, func(worker int, _ int, fx *tests.Fixture) string {
 		if worker != 0 {
 			t.Errorf("the only fixture ran on worker %d", worker)

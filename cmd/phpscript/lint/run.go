@@ -174,7 +174,7 @@ func (s sink) summary(format string, args ...any) {
 }
 
 // collect lints every file and returns one result per finding, plus a passing
-// result for a file that had none, so the table reports what was checked
+// result for a file with no findings, so the table reports every file it checks
 // and not only what went wrong.
 func collect(args []string, checkFlatstack bool) ([]result, error) {
 	files, err := list.ExpandFiles(args)

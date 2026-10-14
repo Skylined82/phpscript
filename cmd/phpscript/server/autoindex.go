@@ -74,8 +74,8 @@ func (h *handler) serveAutoindex(w http.ResponseWriter, r *http.Request, dir str
 }
 
 // renderAutoindex returns the listing page for one directory. urlPath is the
-// path the directory was requested under, which every link is relative to, and
-// entries are what fs.ReadDir returned: already sorted by name.
+// request path of the directory, which every link is relative to, and entries
+// are what fs.ReadDir answers: already sorted by name.
 //
 // The page is built here and not with html/template. A listing is a fixed
 // shape with no user supplied markup in it, so a template buys nothing but a

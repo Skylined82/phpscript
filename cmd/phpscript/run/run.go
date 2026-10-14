@@ -69,9 +69,9 @@ func Run(ctx context.Context, args []string, config config.Config, globals *flag
 		runErr := runOnce(generation, script, root, args, config, globals)
 		stop()
 
-		// A reload replaces the generation and its error with it: the script
-		// was ended by the script, and what it ended with is no failure of the
-		// run. Anything else is the end of the run.
+		// A reload replaces the generation and its error with it: the reload
+		// ends the script, and that ending is no failure of the run. Anything
+		// else is the end of the run.
 		if ctx.Err() != nil || !reloaded() {
 			return runErr
 		}
@@ -83,7 +83,7 @@ func Run(ctx context.Context, args []string, config config.Config, globals *flag
 //
 // The signal cancels the generation and not the run, so the script stops
 // the way it stops for anything else - its context ends - and the loop above
-// decides whether that was the last one.
+// decides whether another generation follows.
 func reloadScope(ctx context.Context) (context.Context, func() bool, func()) {
 	generation, cancel := context.WithCancel(ctx)
 

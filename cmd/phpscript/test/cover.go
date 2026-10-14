@@ -241,7 +241,7 @@ func coverFuncs(fixtures []*tests.Fixture) []coverage.FuncSpan {
 // coverFiles merges every fixture's registered files, resolved to the paths
 // the profile names, fixture entrypoints excluded. This is the report's file
 // universe: a file of pure declarations carries no profile block, and only the
-// register record says it was loaded at all.
+// register record reports the load at all.
 func coverFiles(fixtures []*tests.Fixture) []string {
 	seen := map[string]bool{}
 	for _, fx := range fixtures {

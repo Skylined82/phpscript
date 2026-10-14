@@ -104,7 +104,7 @@ func TestDirectoryWithoutAnIndexIsNotFound(t *testing.T) {
 
 // TestDirectoryWithoutASlashRedirects pins that the trailing slash is added
 // before the index page is served. The page's relative links resolve against
-// the URL it was served under, so /docs must become /docs/ or every link in it
+// its serving URL, so /docs must become /docs/ or every link in it
 // points a directory too high.
 func TestDirectoryWithoutASlashRedirects(t *testing.T) {
 	h := newErrorPageHandler(t, fstest.MapFS{

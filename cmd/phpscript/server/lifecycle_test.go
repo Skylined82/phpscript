@@ -157,7 +157,7 @@ func TestReload(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		// The site the edit added, and the one that was already there.
+		// The site the edit added, and the one already there.
 		if status, got := body(t, fixture.manager.URL(), "b.localhost"); status != 200 || got != "b" {
 			t.Fatalf("b.localhost = %d %q, want the reloaded site", status, got)
 		}

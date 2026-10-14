@@ -75,8 +75,8 @@ func (h *handler) serveErrorPage(w http.ResponseWriter, r *http.Request, status 
 // thing that can,
 // and a site whose 404.php dispatches its own routes needs it to. A form
 // posting to a URL no file backs arrives with $_POST, $_FILES and php://input
-// filled the way the endpoint it was meant for would have seen them, and the
-// page may answer 200.
+// filled the way its target endpoint would see them, and the page may answer
+// 200.
 func (h *handler) serveUnrouted(w http.ResponseWriter, r *http.Request, status int) bool {
 	return h.errorPageFor(w, r, status, "", true)
 }
@@ -123,7 +123,7 @@ func (h *handler) errorPageFor(w http.ResponseWriter, r *http.Request, status in
 	}
 
 	// The page may answer with a status of its own; one that names none answers
-	// with the status it was called for.
+	// with the status of the call.
 	if staged := reqCtx.ResponseStatus(); staged != 0 {
 		status = staged
 	}

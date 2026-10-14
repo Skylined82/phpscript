@@ -67,7 +67,7 @@ func (s suites) resolve(path string) *tests.Suite {
 // discoverSuites reads the configuration the run is under and every
 // phpscript.yml below the argument paths.
 //
-// Both halves are read whether or not a fixture below them was selected, so a
+// Both halves are read whether or not the arguments select a fixture below them, so a
 // narrower path argument does not silently skip a suite's setup. The walk is
 // the fixture walk: a bare directory is not recursive, and `./...` is what
 // reaches a tree.
@@ -192,7 +192,7 @@ func walkRoot(p string) (string, bool, error) {
 //
 // --include still wins over what a suite named, and speaks from the
 // invocation root and not from a suite: it is what an operator typed about
-// this run, and the file it names sits where the command was invoked.
+// this run, and the file it names sits in the invocation directory.
 func applySuites(fixtures []*tests.Fixture, found suites, opts Options) {
 	for _, fx := range fixtures {
 		suite := found.resolve(fx.Path)

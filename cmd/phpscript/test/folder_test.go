@@ -12,8 +12,8 @@ import (
 
 // TestRatio covers the form both coverage columns take. The header says what
 // is counted, so the cell carries the counts and the percent they come to, and
-// the percent is rounded to whole rather than truncated: 1 of 2 reads 50% and
-// not 49%.
+// the percent rounds to whole: 1 of 2 reads 50%, where truncation would
+// read 49%.
 func TestRatio(t *testing.T) {
 	for want, counts := range map[string][2]int{
 		"4/50 (8%)":       {4, 50},

@@ -12,7 +12,7 @@ import (
 )
 
 // TestReportArgs covers the invocation the provenance comment names. It is
-// derived from the options the run was given rather than hardcoded, so the
+// derived from the run's own options and never hardcoded, so the
 // committed report says which job wrote it and a reader can run the same
 // command. The flags come out in one order, so a regenerated report differs
 // only where a result differs.
@@ -119,7 +119,7 @@ func TestTeeResultTable(t *testing.T) {
 	}
 
 	// A tee of nothing is the shape a run with no sink at all takes, and every
-	// call has to be a no-op rather than a nil dereference.
+	// call has to be a no-op and never a nil dereference.
 	empty := teeResultTable{}
 	empty.writeGroup("arrays", nil)
 	empty.writeResult(&fixtureRun{Result: &tests.TestResult{Passed: true}})

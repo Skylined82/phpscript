@@ -61,8 +61,8 @@ func TestMatrixRowFailed(t *testing.T) {
 }
 
 // TestEngineOrder covers the order every table and summary line prints the
-// per-engine durations in, which is the runner order the run was given and not
-// the map's. A runner whose fixtures all opted out reports 0ms and stays in the
+// per-engine durations in, which is the run's own runner order and never the
+// map's. A runner whose fixtures all opted out reports 0ms and stays in the
 // report, so a column does not appear and vanish between folders.
 func TestEngineOrder(t *testing.T) {
 	runners := []tests.Runner{tests.RunnerFlatstack, tests.RunnerRuntime, tests.RunnerPHP}

@@ -70,7 +70,8 @@ func TestSignal(t *testing.T) {
 		}
 	})
 
-	// A pid that was real and is not. /bin/true is reaped by Run, so the
+	// A stale pid, real at the time of writing and gone now. Run reaps
+	// /bin/true, so the
 	// send reports ESRCH and races no live process.
 	t.Run("a stale pid reports the process is gone", func(t *testing.T) {
 		cmd := exec.Command("/bin/true")

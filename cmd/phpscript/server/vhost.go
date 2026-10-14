@@ -149,21 +149,21 @@ func newVirtualHost(ctx context.Context, host config.VirtualHost, siteConfig con
 	}
 
 	// The site's connections come from its own env and nowhere else. A
-	// provider holds the credentials it was given, so a site cannot name a
-	// connection another site configured. Relative sqlite paths anchor to the
-	// site's root: the site wrote its DSN against its own tree, and where the
-	// server process was started is not the site's to know.
+	// provider holds its own credentials, so a site cannot name a connection
+	// another site configures. Relative sqlite paths anchor to the site's
+	// root: a site writes its DSN against its own tree, and the directory the
+	// server process runs in is not the site's to know.
 	runnerOptions := siteConfig.Runner
 	runnerOptions.Database = database.NewAt(host.Root, siteConfig.Env)
 
-	// So do its mail servers. A provider holds the credentials it was given,
-	// so a site can name the servers its own file configured and no others,
+	// So do its mail servers. A provider holds its own credentials, so a site
+	// can name the servers its own file configures and no others,
 	// and a script on it never sees what any of them are reached with.
 	runnerOptions.Mail = mail.NewProvider(siteConfig.Mail)
 
-	// So does the environment its scripts read. A site is handed the env it
-	// declared and not the process environment, so getenv() reports nothing
-	// about what the operator, or another site, was started with.
+	// So does the environment its scripts read. A site holds its declared env
+	// and no part of the process environment, so getenv() reports nothing
+	// about what the operator, or another site, declares.
 	runnerOptions.Env = siteConfig.Env
 
 	// A site names its own prelude in the runner block of its phpscript.yml,

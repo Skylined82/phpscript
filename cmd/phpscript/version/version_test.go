@@ -12,7 +12,7 @@ import (
 // behind it fills Commit, CommitTime and Branch with "unknown", and a line
 // reading "Commit: unknown" is noise, so each of the three is printed only
 // when it holds something else. The version line is always printed, because
-// "dev" is itself the fact that this binary was not released.
+// "dev" is itself the report of an unreleased binary.
 func TestInfo(t *testing.T) {
 	out := render(t, Info{Version: "dev", Commit: "unknown", CommitTime: "unknown", Branch: "unknown"})
 

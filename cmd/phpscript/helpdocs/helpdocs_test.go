@@ -18,8 +18,8 @@ const document = `Some prose.
 Closing prose.
 `
 
-// TestRenderMarkdown pins that a redirected --help is the document as it was
-// written. Round-tripping it through the table renderer would re-pad every cell
+// TestRenderMarkdown pins that a redirected --help is the document unchanged.
+// Round-tripping it through the table renderer would re-pad every cell
 // and rewrite the alignment markers, which is a diff in a file nobody edited.
 func TestRenderMarkdown(t *testing.T) {
 	var out bytes.Buffer

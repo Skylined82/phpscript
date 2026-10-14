@@ -49,7 +49,7 @@ func TestAutoindexIsOffUnlessTheSiteAsksForIt(t *testing.T) {
 }
 
 // TestAutoindexListsTheDirectory pins what a listing holds: every entry linked
-// relative to the directory it was requested under, images shown as well as
+// relative to the directory's request path, images shown as well as
 // named, sizes for files, a way back up, and nothing beginning with a dot.
 func TestAutoindexListsTheDirectory(t *testing.T) {
 	rr := fetch(newAutoindexHandler(t, autoindexFS), http.MethodGet, "/files/", nil)

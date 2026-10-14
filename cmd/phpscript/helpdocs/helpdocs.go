@@ -119,7 +119,7 @@ func flagTable(w io.Writer, fs *FlagSet, markdown bool) {
 // Render writes src to w, turning each markdown table into the table view the
 // rest of the tool prints and passing everything else through unchanged.
 //
-// In markdown the source is written back as it was written. A round trip
+// In markdown the source is written back unchanged. A round trip
 // through the table renderer would re-pad every cell and rewrite alignment
 // markers, which is a diff in a document nobody edited.
 func Render(w io.Writer, src string, markdown bool) error {

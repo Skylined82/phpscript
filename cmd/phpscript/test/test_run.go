@@ -46,9 +46,9 @@ type Options struct {
 	// tree is read over this one in turn.
 	Config config.Config
 
-	// typed reports whether a flag was given on the command line, which is
-	// what decides between it and the value a configuration file supplied. It
-	// is nil for an Options a test assembled, where nothing was typed.
+	// typed reports whether the command line carries a flag, and so decides
+	// between it and the value a configuration file supplies. It is nil for
+	// an Options a test assembles, where no command line exists.
 	typed func(string) bool
 }
 
@@ -67,7 +67,7 @@ func (o *Options) fromConfig(test config.Test) {
 	}
 }
 
-// given reports whether the named flag was typed.
+// given reports whether the command line carries the named flag.
 func (o Options) given(name string) bool {
 	return o.typed != nil && o.typed(name)
 }
@@ -129,10 +129,10 @@ func NewCommand(cfg *config.Config, globals *flags.Options) *cli.Command {
 		Name:  "test",
 		Title: Name,
 		Bind: func(fs *cli.FlagSet) {
-			// Kept so Run can ask which flags were typed. A configuration
-			// supplies a default and a flag overrides it, and the two are only
-			// distinguishable from the value when the flag was not given: an
-			// operator forcing -p 1 over a file naming 4 means it.
+			// Kept so Run can read which flags the command line carries. A
+			// configuration supplies a default and a flag overrides it, and
+			// the value alone cannot tell the two apart: an operator forcing
+			// -p 1 over a file naming 4 means it.
 			bound = fs
 			fs.BoolVar(&opts.JSON, "json", false, "Write machine-readable JSON to stdout")
 			fs.BoolVar(&opts.Matrix, "matrix", false, "Run every fixture through all runtimes and report a matrix")
@@ -202,7 +202,7 @@ func runFixtureLoop(ctx context.Context, fx *tests.Fixture, r tests.Runner, opts
 
 	// MemStats only when something reports it. ReadMemStats stops the world,
 	// and this runs once per fixture per runner - 1368 pauses over a 342-file
-	// matrix: for two numbers nothing prints unless --profile was passed.
+	// matrix: for two numbers nothing prints without --profile.
 	// The GC count comes from runtime/metrics either way, which does not stop
 	// anything, so the column stays.
 	var before, after runtime.MemStats
@@ -515,9 +515,9 @@ func run(ctx context.Context, args, paths []string, found suites, opts Options) 
 
 	sinks.writeSummary(passedCount, failedCount, len(fixtures), time.Since(startAll))
 
-	// With -v, coverage drops to the file it was measured on, under the folder
-	// that loaded it. A fixture table cannot report that: its column says how
-	// much of what a fixture loaded ran, and never which file went unvisited.
+	// With -v, coverage drops to the file level, under the folder loading it.
+	// A fixture table cannot report that: its column says how much of what a
+	// fixture loads runs, and never which file goes unvisited.
 	// A folder whose fixtures loaded no PHP file of their own has no section.
 	if opts.Verbose {
 		writeFolderFileReport(os.Stdout, covers)

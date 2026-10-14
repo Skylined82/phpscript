@@ -13,7 +13,7 @@ import (
 )
 
 // folderCover is one folder's coverage, in the two counts the summary reports:
-// how many of the PHP files its fixtures loaded were reached at all, and how
+// how many of the PHP files its fixtures load run at all, and how
 // many of the statements in them ran.
 //
 // The two answer different questions. A file count says what the suite has not
@@ -52,8 +52,8 @@ func ratio(covered, total int) string {
 	return fmt.Sprintf("%d/%d (%d%%)", covered, total, percentOf(covered, total))
 }
 
-// noCoverage is what a folder reports when there was nothing to measure: its
-// fixtures loaded no PHP file of their own. A percentage there would be an
+// noCoverage is what a folder reports with nothing to measure: its fixtures
+// load no PHP file of their own. A percentage there would be an
 // answer to a question nobody asked, and a zero would drag the run's reading
 // down for no finding.
 const noCoverage = "-"

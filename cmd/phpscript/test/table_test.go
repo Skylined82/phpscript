@@ -191,8 +191,8 @@ func TestFormatDuration(t *testing.T) {
 }
 
 // TestEngineTime reads one runner's share out of the per-engine split. A
-// runner absent from the split has no figure, which is what a matrix run that
-// skipped an engine for every fixture in the folder leaves behind.
+// runner absent from the split has no figure, the state a matrix run leaves
+// behind where every fixture in the folder skips an engine.
 func TestEngineTime(t *testing.T) {
 	engines := []engineDuration{
 		{Runner: tests.RunnerFlatstack, Duration: time.Millisecond},

@@ -33,7 +33,7 @@ type coverageModule struct {
 	aggregator *coverage.Aggregator
 	globals    *flags.Options
 
-	// roots are the source trees the counted files were read from, one per
+	// roots are the source trees the counted files read from, one per
 	// site. A profile carries columns resolved from the source text, and the
 	// server is what knows where the text is.
 	roots []fs.FS
