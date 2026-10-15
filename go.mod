@@ -13,7 +13,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/spf13/pflag v1.0.10
 	github.com/titpetric/cli v0.7.0
-	github.com/titpetric/oida v0.4.2
+	github.com/titpetric/oida v0.4.3
 	github.com/titpetric/pdo v0.2.5
 	github.com/titpetric/platform v0.9.1
 	golang.org/x/crypto v0.57.0
