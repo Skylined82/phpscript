@@ -335,8 +335,13 @@ func (rt *Runtime) hoist(prog *model.Program, filename string) error {
 	return nil
 }
 
-// exec runs a statement list, propagating return flow.
+// exec runs a statement list, propagating return flow. The statement running
+// when the list began is current again once it ends: a call inside an
+// expression returns into the statement that made it, and a span the rest of
+// that statement starts belongs to its line, not to the callee's last one. An
+// error leaves the statement that failed current, for the span reporting it.
 func (rt *Runtime) exec(stmts []model.Stmt, scope *Scope) (any, flow, error) {
+	outer := rt.currentStmt
 	// On entry as well as per statement. A loop body can be empty - `while
 	// (true) {}` is the shortest way to write one - and a check that only ran
 	// per statement would never run for it, so the limit would not hold.
@@ -387,9 +392,11 @@ func (rt *Runtime) exec(stmts []model.Stmt, scope *Scope) (any, flow, error) {
 			return nil, flowNormal, err
 		}
 		if fl != flowNormal {
+			rt.currentStmt = outer
 			return val, fl, nil
 		}
 	}
+	rt.currentStmt = outer
 	return nil, flowNormal, nil
 }
 
