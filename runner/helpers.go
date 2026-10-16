@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"time"
 
@@ -47,7 +48,7 @@ func wantsContext(t reflect.Type) bool {
 func (rt *Runtime) invokeWithScopeContext(fn any, args []any, scope *Scope) (any, error) {
 	if wantsContext(reflect.TypeOf(fn)) {
 		full := make([]any, 0, len(args)+1)
-		full = append(full, rt.contextWithScope(contextWithEnv(rt.ctx, rt.Env), scope))
+		full = append(full, rt.bindingContext(scope))
 		full = append(full, args...)
 		args = full
 	}
@@ -177,8 +178,10 @@ func (rt *Runtime) helperGet(ref *scopeRef) func(base any, name string) any {
 		rv := reflect.ValueOf(base)
 		value := reflect.Indirect(rv)
 		if value.Kind() == reflect.Struct {
-			if f := fieldByNameFold(value, name); f.IsValid() && f.CanInterface() {
-				return f.Interface()
+			if index, ok := rt.structField(value.Type(), name); ok {
+				if f, err := value.FieldByIndexErr(index); err == nil {
+					return f.Interface()
+				}
 			}
 		}
 		// A method read without parentheses is a bound callable, as in
@@ -556,7 +559,11 @@ func (rt *Runtime) helperCall(ref *scopeRef) func(base any, methodValue any, arg
 		method := phpString(methodValue)
 		if obj, ok := base.(*model.Object); ok && obj.Class != nil {
 			if decl, ok := lookupPHPMethod(obj.Class, method); ok {
-				return rt.invokeMethod(obj, decl, args, scope)
+				// The frame keeps its arguments for func_get_args, and the
+				// slice arriving here is the expression arena's, borrowed for
+				// the call: the frame gets its own. expr.scratchName names
+				// this clone as what makes __call safe on the arena.
+				return rt.invokeMethod(obj, decl, slices.Clone(args), scope)
 			}
 		}
 		return rt.callGoMethod(base, method, args, func() *Scope { return scope })
@@ -676,6 +683,12 @@ type goMethodInfo struct {
 	// type, not per receiver, and the runtime because a callable argument is
 	// bound to the runtime making the call.
 	bind func(rt *Runtime, m reflect.Value, args []any) (any, error)
+	// direct is the typed call for the method shapes a handler touches per
+	// request, dispatched through an interface assertion in place of
+	// reflect.Value.Call and its per-call receiver, frame and result
+	// allocations. Nil when no shape matches; a false from it sends the
+	// call down bind with its coercion and its errors intact.
+	direct func(base any, args []any) (any, bool, error)
 }
 
 // resolveGoMethod resolves the way callGoMethod always has: the exact name,
@@ -717,6 +730,7 @@ func resolveGoMethod(rv reflect.Value, name string) goMethodInfo {
 		wantsCtx: wantsContext(mtype),
 		found:    true,
 		bind:     bindGoMethod(mtype),
+		direct:   directGoMethod(rv.Interface(), t.Method(index).Name),
 	}
 }
 
@@ -802,7 +816,14 @@ func (rt *Runtime) callGoMethod(base any, method string, args []any, scopeFor fu
 		return nil, fmt.Errorf("call to undefined method %s::%s()", phpClassName(base), method)
 	}
 	if info.wantsCtx {
-		args = append([]any{rt.contextWithScope(contextWithEnv(rt.ctx, rt.Env), scopeFor())}, args...)
+		args = append([]any{rt.bindingContext(scopeFor())}, args...)
+	} else if info.direct != nil {
+		if result, handled, err := info.direct(base, args); handled {
+			if err != nil {
+				return nil, methodCallError(err, method)
+			}
+			return result, nil
+		}
 	}
 	result, err = info.bind(rt, rv.Method(info.index), args)
 	if err != nil {
@@ -879,6 +900,41 @@ func methodByNameFold(rv reflect.Value, method string) reflect.Value {
 		}
 	}
 	return reflect.Value{}
+}
+
+// goFieldInfo is one cached field resolution: the index chain
+// Value.FieldByIndexErr reads, and whether the name resolved to an exported
+// field at all. A miss is cached so a probe does not rescan the field set.
+type goFieldInfo struct {
+	index []int
+	found bool
+}
+
+// structField resolves a property read's field once per (struct type, spelled
+// name), climbing the ladder fieldByNameFold climbs: the exact name, then
+// case-insensitively, then without underscores. An unexported match resolves
+// as not found, which is the CanInterface check the uncached read made.
+func (rt *Runtime) structField(t reflect.Type, name string) ([]int, bool) {
+	key := goMethodKey{t: t, name: name}
+	if info, ok := rt.goFields[key]; ok {
+		return info.index, info.found
+	}
+	field, ok := t.FieldByName(name)
+	if !ok {
+		field, ok = t.FieldByNameFunc(func(n string) bool { return strings.EqualFold(n, name) })
+	}
+	if !ok {
+		folded := strings.ReplaceAll(name, "_", "")
+		field, ok = t.FieldByNameFunc(func(n string) bool {
+			return strings.EqualFold(strings.ReplaceAll(n, "_", ""), folded)
+		})
+	}
+	info := goFieldInfo{index: field.Index, found: ok && field.PkgPath == ""}
+	if rt.goFields == nil {
+		rt.goFields = map[goMethodKey]goFieldInfo{}
+	}
+	rt.goFields[key] = info
+	return info.index, info.found
 }
 
 // fieldByNameFold finds a struct field the way methodByNameFold finds a method:

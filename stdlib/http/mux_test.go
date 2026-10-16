@@ -167,6 +167,31 @@ define("MUX", $mux);
 	}
 }
 
+// TestMuxEchoThenThrowKeepsTheBody holds the 500 guard to its own comment: a
+// handler that has begun its response gets no second status. An echo is the
+// response beginning the way $w->write() is, so a throw after one leaves the
+// truncated body as the signal and appends no "Internal Server Error".
+func TestMuxEchoThenThrowKeepsTheBody(t *testing.T) {
+	t.Parallel()
+	_, handler := serveScript(t, `<?php
+$mux = new HTTP\Mux();
+$mux->handle("GET /half", function ($w, $r) {
+	echo "half a document";
+	throw new Exception("detonated");
+});
+define("MUX", $mux);
+`)
+
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(nethttp.MethodGet, "/half", nil))
+	if response.Code != nethttp.StatusOK {
+		t.Errorf("status = %d, want the 200 the echo already sent", response.Code)
+	}
+	if got := response.Body.String(); got != "half a document" {
+		t.Errorf("body = %q, want the truncated body and nothing appended", got)
+	}
+}
+
 // TestMuxHandlerSeesItsOwnConnection is what EnterRequest is for: a client
 // that leaves mid-request is the one the handler asks about, and the handler
 // gets to decide what to do about it.
@@ -240,6 +265,173 @@ define("MUX", $mux);
 		}
 	case <-time.After(5 * time.Second):
 		t.Error("the handler reported nothing")
+	}
+}
+
+// muxValueKey is the key the middleware tests attach a request value under.
+type muxValueKey struct{}
+
+// TestMuxBindingObservesDisconnect holds the context a binding receives to the
+// request being answered: a binding blocked in I/O wakes when the client
+// leaves, where a session-scoped context would hold it parked.
+func TestMuxBindingObservesDisconnect(t *testing.T) {
+	t.Parallel()
+	var out strings.Builder
+	rt := runner.New(&out, runner.Options{})
+	stdlib.Register(rt)
+	rt.SetContext(context.Background())
+
+	reported := make(chan string, 4)
+	rt.RegisterFunc("report", func(what string) { reported <- what })
+	rt.RegisterFunc("wait_for_client", func(ctx context.Context) string {
+		select {
+		case <-ctx.Done():
+			return "client gone"
+		case <-time.After(5 * time.Second):
+			return "timed out"
+		}
+	})
+
+	program, err := rt.Load(`<?php
+$mux = new HTTP\Mux();
+$mux->handle("GET /wait", function ($w, $r) {
+	report(wait_for_client());
+});
+define("MUX", $mux);
+`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := rt.Run(program); err != nil {
+		t.Fatal(err)
+	}
+	value, _ := rt.Const("MUX")
+	handler := value.(nethttp.Handler)
+
+	leaving, disconnect := context.WithCancel(context.Background())
+	request := httptest.NewRequest(nethttp.MethodGet, "/wait", nil).WithContext(leaving)
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		handler.ServeHTTP(httptest.NewRecorder(), request)
+	}()
+
+	time.Sleep(50 * time.Millisecond)
+	disconnect()
+
+	select {
+	case got := <-reported:
+		if got != "client gone" {
+			t.Errorf("binding reported %q, want the disconnect observed", got)
+		}
+	case <-time.After(5 * time.Second):
+		t.Error("the binding reported nothing")
+	}
+	<-done
+}
+
+// TestMuxIgnoreUserAbortKeepsBindingWork is the other half of the derivation:
+// after ignore_user_abort(true), a binding's context keeps the request's
+// values and drops its cancellation, so work the handler chose to finish
+// finishes.
+func TestMuxIgnoreUserAbortKeepsBindingWork(t *testing.T) {
+	t.Parallel()
+	var out strings.Builder
+	rt := runner.New(&out, runner.Options{})
+	stdlib.Register(rt)
+	rt.SetContext(context.Background())
+
+	reported := make(chan string, 4)
+	rt.RegisterFunc("report", func(what string) { reported <- what })
+	rt.RegisterFunc("finish_work", func(ctx context.Context) string {
+		select {
+		case <-ctx.Done():
+			return "cancelled"
+		case <-time.After(400 * time.Millisecond):
+			return "finished"
+		}
+	})
+
+	program, err := rt.Load(`<?php
+$mux = new HTTP\Mux();
+$mux->handle("GET /work", function ($w, $r) {
+	ignore_user_abort(true);
+	report(finish_work());
+});
+define("MUX", $mux);
+`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := rt.Run(program); err != nil {
+		t.Fatal(err)
+	}
+	value, _ := rt.Const("MUX")
+	handler := value.(nethttp.Handler)
+
+	leaving, disconnect := context.WithCancel(context.Background())
+	request := httptest.NewRequest(nethttp.MethodGet, "/work", nil).WithContext(leaving)
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		handler.ServeHTTP(httptest.NewRecorder(), request)
+	}()
+
+	time.Sleep(50 * time.Millisecond)
+	disconnect()
+
+	select {
+	case got := <-reported:
+		if got != "finished" {
+			t.Errorf("binding reported %q, want the work finished", got)
+		}
+	case <-time.After(5 * time.Second):
+		t.Error("the binding reported nothing")
+	}
+	<-done
+}
+
+// TestMuxMiddlewareValueReachesBindings is why the request is the base: Go
+// middleware ahead of the mux attaches values to r.Context(), and a binding
+// called from the handler reads them off its injected context.
+func TestMuxMiddlewareValueReachesBindings(t *testing.T) {
+	t.Parallel()
+	var out strings.Builder
+	rt := runner.New(&out, runner.Options{})
+	stdlib.Register(rt)
+	rt.SetContext(context.Background())
+
+	rt.RegisterFunc("middleware_value", func(ctx context.Context) string {
+		value, _ := ctx.Value(muxValueKey{}).(string)
+		return value
+	})
+
+	program, err := rt.Load(`<?php
+$mux = new HTTP\Mux();
+$mux->handle("GET /tenant", function ($w, $r) {
+	$w->write(middleware_value());
+});
+define("MUX", $mux);
+`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := rt.Run(program); err != nil {
+		t.Fatal(err)
+	}
+	value, _ := rt.Const("MUX")
+	mux := value.(nethttp.Handler)
+
+	wrapped := nethttp.HandlerFunc(func(w nethttp.ResponseWriter, r *nethttp.Request) {
+		mux.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), muxValueKey{}, "tenant-42")))
+	})
+
+	response := httptest.NewRecorder()
+	wrapped.ServeHTTP(response, httptest.NewRequest(nethttp.MethodGet, "/tenant", nil))
+	if got := response.Body.String(); got != "tenant-42" {
+		t.Errorf("body = %q, want the middleware value read by the binding", got)
 	}
 }
 

@@ -1,7 +1,6 @@
 package core
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -187,53 +186,6 @@ func jsonEncodeValue(v any) any {
 	default:
 		return v
 	}
-}
-
-// jsonObject is a JSON object that keeps the order its entries arrive in.
-//
-// encoding/json sorts the keys of a Go map and PHP does not: json_encode writes
-// an array in build order, so a row encoded for a client reads back
-// in the order the script assembled it. A map cannot carry that order, which is
-// why this type exists in place of a map[string]any.
-type jsonObject struct {
-	keys   []string
-	values []any
-}
-
-func newJSONObject(size int) *jsonObject {
-	return &jsonObject{
-		keys:   make([]string, 0, size),
-		values: make([]any, 0, size),
-	}
-}
-
-func (o *jsonObject) add(key string, value any) {
-	o.keys = append(o.keys, key)
-	o.values = append(o.values, value)
-}
-
-// MarshalJSON writes the entries in insertion order.
-func (o *jsonObject) MarshalJSON() ([]byte, error) {
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range o.keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		encoded, err := json.Marshal(key)
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(encoded)
-		buf.WriteByte(':')
-		encoded, err = json.Marshal(o.values[i])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(encoded)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
 }
 
 // arrayIsList reports whether an *model.Array's keys are the dense int64

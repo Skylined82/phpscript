@@ -68,6 +68,11 @@ type Runtime struct {
 	// Implementing classes acquire nothing from it (docs/design.md).
 	interfaces map[string]*model.InterfaceDecl
 
+	// lazyGlobals binds one superglobal on its first read. Context.Register
+	// installs it per request in place of building all seven views eagerly,
+	// because a page reads one superglobal or none; see Runtime.resolveAuto.
+	lazyGlobals func(name string) any
+
 	// auto holds the request superglobals in fixed fields; see
 	// phpval.AutoGlobals for why they are not globals map entries.
 	auto phpval.AutoGlobals
@@ -108,9 +113,12 @@ type Runtime struct {
 	// host is the context the host set, which ctx is derived from. client is
 	// the connection being answered right now: host, until a handler enters a
 	// request. connection_aborted() reads client, so it survives
-	// ignore_user_abort detaching ctx from the disconnect. See deadline.go.
-	host   context.Context
-	client context.Context
+	// ignore_user_abort detaching ctx from the disconnect. inRequest reports
+	// a request being live, which is when a binding's context derives from
+	// client in place of ctx; see deadline.go and bindingContext.
+	host      context.Context
+	client    context.Context
+	inRequest bool
 
 	// stopCtx cancels ctx, which is built once per session and never rebuilt;
 	// the timers below cancel through it and derive no new context,
@@ -216,6 +224,13 @@ type Runtime struct {
 	// every call otherwise, and a method loop pays them per iteration. Misses
 	// are cached too, so a probe does not rescan the method set.
 	goMethods map[goMethodKey]goMethodInfo
+
+	// goFields caches struct field resolution per (struct type, spelled
+	// name), for the same reason goMethods exists: fieldByNameFold walks the
+	// field set through two FieldByNameFunc closures on every property read
+	// otherwise, and a handler reads $r->method per request. Misses are
+	// cached too.
+	goFields map[goMethodKey]goFieldInfo
 
 	sourceSpans map[model.Stmt]model.SourceSpan
 	// currentStmt is the statement exec is running, for the two telemetry
@@ -479,6 +494,7 @@ func (rt *Runtime) resetExecution(out io.Writer, stdin io.Reader) {
 	rt.preludeDone = false
 	clear(rt.globals)
 	rt.auto.Reset()
+	rt.lazyGlobals = nil
 	// The scratch containers stay for the next Register, emptied now so a
 	// reset session retains nothing of the last request's values.
 	for _, arr := range rt.sgScratch {
@@ -1326,13 +1342,33 @@ func (rt *Runtime) resolveVar(name, ident string, scope *Scope) (any, error) {
 	if c, ok := rt.constants[name]; ok {
 		return c, nil
 	}
-	if v, ok := rt.auto.Lookup(name); ok {
+	if v, ok := rt.resolveAuto(name); ok {
 		return v, nil
 	}
 	if strings.HasPrefix(ident, constIdentPrefix) {
 		return nil, &UndefinedConstantError{Name: name}
 	}
 	return nil, nil
+}
+
+// resolveAuto answers a superglobal read: the bound value, or the view the
+// request's lazy binder builds on the first read of that name. What the
+// binder answers is bound, so the next read is one field read, and a write
+// through the view reaches every later reader the way an eagerly bound view
+// did.
+func (rt *Runtime) resolveAuto(name string) (any, bool) {
+	if v, ok := rt.auto.Lookup(name); ok {
+		return v, true
+	}
+	if rt.lazyGlobals == nil || !rt.auto.Claims(name) {
+		return nil, false
+	}
+	v := rt.lazyGlobals(name)
+	if v == nil {
+		return nil, false
+	}
+	rt.auto.Set(name, v)
+	return v, true
 }
 
 func (rt *Runtime) compileExpr(e model.Expr) (*compiledExpr, error) {
@@ -1495,7 +1531,12 @@ func (rt *Runtime) releaseEnv(st *evalEnv) {
 		st.vars[i] = nil
 	}
 	st.vars = st.vars[:0]
-	st.cenv = expr.Env{}
+	// The arena's backing array survives the release; its values do not. The
+	// length is zero whenever the calls balanced, so the clear covers what a
+	// panic left behind and the references parked beyond the length.
+	scratch := st.cenv.Scratch
+	clear(scratch[:cap(scratch)])
+	st.cenv = expr.Env{Scratch: scratch[:0]}
 
 	rt.envMu.Lock()
 	if len(rt.envFree) < maxFreeEnvs {

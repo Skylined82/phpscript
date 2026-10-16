@@ -87,20 +87,8 @@ func (rt *Runtime) ClientContext() context.Context {
 // connection_aborted() reports, whether a disconnect ends it, and the limit,
 // because php settles all three per request and there a request is a script.
 func (rt *Runtime) EnterRequest(ctx context.Context) func() {
-	client, clientDone, ignoreAbort := rt.client, rt.clientDone, rt.ignoreAbort
-
-	rt.client = ctx
-	rt.clientDone = watchEnd(ctx)
-	// Off for every request, so a handler that ignored a disconnect does not
-	// decide it for the next one. The limit is not saved: it is
-	// the runtime's and a handler moving it means to move it.
-	rt.ignoreAbort = false
-	rt.refreshDeadlineArmed()
-
-	return func() {
-		rt.client, rt.clientDone, rt.ignoreAbort = client, clientDone, ignoreAbort
-		rt.refreshDeadlineArmed()
-	}
+	saved := rt.BeginRequest(ctx)
+	return func() { rt.EndRequest(saved) }
 }
 
 // watchEnd answers the channel that closes when ctx ends, nil for a context
@@ -253,6 +241,7 @@ func (rt *Runtime) resetLimits() {
 	rt.timedOut.Store(false)
 	rt.client = rt.host
 	rt.clientDone = watchEnd(rt.client)
+	rt.inRequest = false
 	rt.refreshDeadlineArmed()
 }
 
