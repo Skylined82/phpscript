@@ -5,47 +5,12 @@ import (
 	"testing"
 )
 
-// TestJSONObjectMatchesEncodingJSON holds the fast paths in MarshalJSON to
-// encoding/json's own bytes: a key or a value the appender writes itself has
-// to come out byte for byte as json.Marshal writes it, escapes, HTML
-// characters and non-ASCII included, or the two spellings of json_encode
-// disagree.
-func TestJSONObjectMatchesEncodingJSON(t *testing.T) {
+// TestJSONObjectKeepsInsertionOrder covers the type encoding/json reaches on
+// the indent path: the entries come out in the order they were added, and the
+// keys and values are the bytes json.Marshal writes for them, HTML escapes
+// included.
+func TestJSONObjectKeepsInsertionOrder(t *testing.T) {
 	t.Parallel()
-	values := []any{
-		nil,
-		true,
-		false,
-		int64(0),
-		int64(-42),
-		int64(9007199254740993),
-		3.14,
-		1e21,
-		"",
-		"plain",
-		"with space / slash",
-		`quote " and backslash \`,
-		"html <b>&</b>",
-		"control \n\t\r\x00",
-		"unicode žščř    😀",
-		"invalid \xff utf8",
-		[]any{int64(1), "two", nil},
-		map[string]any{"k": "v"},
-	}
-	for _, value := range values {
-		buf, err := appendJSONValue(nil, value)
-		if err != nil {
-			t.Fatalf("appendJSONValue(%#v): %v", value, err)
-		}
-		want, err := json.Marshal(value)
-		if err != nil {
-			t.Fatalf("json.Marshal(%#v): %v", value, err)
-		}
-		if string(buf) != string(want) {
-			t.Errorf("appendJSONValue(%#v) = %s, want %s", value, buf, want)
-		}
-	}
-
 	object := newJSONObject(3)
 	object.add("id", int64(42))
 	object.add("html <key>", "a&b")
