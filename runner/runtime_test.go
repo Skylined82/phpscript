@@ -164,6 +164,177 @@ func TestRuntimeContextCarriesActiveSourceLine(t *testing.T) {
 	}
 }
 
+// TestRuntimeContextLineAfterNestedCall covers a binding called in the same
+// statement as a PHP call that ran before it, the shape of
+// `$this->conn->db()->get(...)`: the call returns into that statement, so the
+// binding's span is attributed to its line, not to the last line the callee ran.
+func TestRuntimeContextLineAfterNestedCall(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name   string
+		source string
+		line   int
+	}{
+		{
+			name: "function result",
+			source: `<?php
+function pick() {
+	return 1;
+}
+inspect_context(pick());
+`,
+			line: 5,
+		},
+		{
+			name: "method result",
+			source: `<?php
+class Conn {
+	function db() {
+		return 1;
+	}
+}
+$conn = new Conn;
+inspect_context($conn->db());
+`,
+			line: 8,
+		},
+		{
+			name: "closure result",
+			source: `<?php
+$pick = function () {
+	return 1;
+};
+inspect_context($pick());
+`,
+			line: 5,
+		},
+		{
+			name: "inside a method",
+			source: `<?php
+class Store {
+	function conn() {
+		return 1;
+	}
+	function read() {
+		return inspect_context($this->conn());
+	}
+}
+$store = new Store;
+$store->read();
+`,
+			line: 7,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			traceOptions := telemetry.NewOptions("phpscript")
+			traceOptions.Enabled = true
+			tracer, err := telemetry.New(traceOptions)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ctx, trace, err := tracer.StartTrace(context.Background(), "request")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			rt := New(nil, Options{RootFS: fstest.MapFS{
+				"main.php": {Data: []byte(test.source)},
+			}})
+			rt.SetContext(ctx)
+			rt.RegisterFunc("inspect_context", func(ctx context.Context, _ any) {
+				telemetry.StartSpan(ctx, "inspect").End()
+			})
+			program, err := rt.LoadFile("main.php")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := rt.Run(program); err != nil {
+				t.Fatal(err)
+			}
+
+			span := findSpan(trace, "inspect")
+			if span == nil || span.Filename != "/main.php" || span.Line != test.line {
+				t.Fatalf("inspect span = %+v, want /main.php:%d", span, test.line)
+			}
+		})
+	}
+}
+
+// TestRuntimeObserverMethodLineAfterNestedCall covers a PHP method whose
+// argument is another call: both spans belong to the statement making them.
+func TestRuntimeObserverMethodLineAfterNestedCall(t *testing.T) {
+	t.Parallel()
+	recorder := newTelemetryRecorder(t)
+	rt := New(nil, Options{RootFS: fstest.MapFS{
+		"main.php": {Data: []byte(`<?php
+class Pair {
+	function inner() {
+		return 1;
+	}
+	function outer($value) {
+		return $value;
+	}
+}
+$pair = new Pair;
+$pair->outer($pair->inner());
+`)},
+	}})
+	rt.Observe(recorder)
+	program, err := rt.LoadFile("main.php")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := rt.Run(program); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"pair.inner", "pair.outer"} {
+		var found *telemetry.Span
+		for _, span := range recorder.spans {
+			if span.Name == name {
+				found = span
+			}
+		}
+		if found == nil || found.Line != 11 {
+			t.Errorf("%s span = %+v, want line 11", name, found)
+		}
+	}
+}
+
+// TestRuntimeObserverErrorLineAfterNestedCall covers an error the statement
+// raises after a call in it returned: the error span names the statement.
+func TestRuntimeObserverErrorLineAfterNestedCall(t *testing.T) {
+	t.Parallel()
+	recorder := newTelemetryRecorder(t)
+	rt := New(nil, Options{RootFS: fstest.MapFS{
+		"main.php": {Data: []byte(`<?php
+function pick() {
+	return "key";
+}
+$value = 1;
+$value[pick()] = 2;
+`)},
+	}})
+	rt.Observe(recorder)
+	program, err := rt.LoadFile("main.php")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := rt.Run(program); err == nil {
+		t.Fatal("expected execution error")
+	}
+	var found *telemetry.Span
+	for _, span := range recorder.spans {
+		if span.Name == "php error" {
+			found = span
+		}
+	}
+	if found == nil || found.Line != 6 {
+		t.Fatalf("error span = %+v, want line 6", found)
+	}
+}
+
 func TestRuntimeObserverReceivesEntrypointFilename(t *testing.T) {
 	t.Parallel()
 	recorder := newTelemetryRecorder(t)
