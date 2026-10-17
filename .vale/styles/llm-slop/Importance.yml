@@ -20,3 +20,8 @@ tokens:
   - '\bcannot be overstated\b'
   - '\bis not optional\b'
   - '\bis non-negotiable\b'
+  # A test is described by what it detects: "fails when the reset stops
+  # clearing the buffer stack", not by a figure of speech about its strength.
+  - '\bhas (?:real )?teeth\b'
+  - '\bwith teeth\b'
+  - '\btoothless\b'
