@@ -48,7 +48,7 @@ func TestAppendJSONValueMatchesEncodingJSON(t *testing.T) {
 	}
 }
 
-// phpValues answers the value shapes a script hands the encoder: the
+// phpValues answers the value shapes a script passes to the encoder: the
 // collections, nested inside each other, and the keys that decide between a
 // JSON array and a JSON object.
 func phpValues() []any {

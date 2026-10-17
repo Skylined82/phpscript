@@ -6,7 +6,7 @@ import (
 )
 
 // TestJSONObjectKeepsInsertionOrder covers the type encoding/json reaches on
-// the indent path: the entries come out in the order they were added, and the
+// the indent path: the entries come out in the order add put them in, and the
 // keys and values are the bytes json.Marshal writes for them, HTML escapes
 // included.
 func TestJSONObjectKeepsInsertionOrder(t *testing.T) {

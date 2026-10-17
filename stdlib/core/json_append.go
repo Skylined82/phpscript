@@ -9,13 +9,13 @@ import (
 	"github.com/titpetric/phpscript/model"
 )
 
-// This file appends a PHP value's JSON encoding to a buffer, which is what
-// json_encode() returns and what JSON\Encoder writes. The bytes are the ones
+// This file appends a PHP value's JSON encoding to a buffer. json_encode()
+// returns that buffer as a string and JSON\Encoder writes it. The bytes are the ones
 // encoding/json writes for the same document: the shapes handled here are the
 // ones it writes verbatim, and everything else defers to it.
 //
-// The walks are written out and call Range directly rather than taking it as a
-// parameter. A closure appending to buf captures buf, and a closure reaching a
+// The walks are written out and call Range directly, taking no function value
+// as a parameter. A closure appending to buf captures buf, and a closure reaching a
 // function value the compiler cannot see through escapes to the heap along with
 // everything it captured: that is an allocation per collection, paid again per
 // row of a list of rows.
